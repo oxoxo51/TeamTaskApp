@@ -1,0 +1,34 @@
+@(mode: String, form1: Form[dto.user.CreateUserDto])
+
+@import helper._
+
+@main("ユーザー登録・編集") {
+    <div class="container">
+        <h2 class="bg-info">
+        @{val title = if(mode == "CREATE") {
+              "ユーザー登録"
+            } else if(mode == "UPDATE") {
+              "ユーザー編集"
+            }
+            title
+        }
+        </h2>
+        @form(action = routes.UserController.create(), 'class -> "form-horizontal") {
+            @(inputText(
+                field = form1("userName"),
+                args = '_label -> "ユーザー名"
+            ))
+            @(inputText(
+                field = form1("password"),
+                args = 'type -> "password",
+                        '_label -> "パスワード"
+            ))
+            @(inputText(
+                field = form1("passwordConfirm"),
+                args = 'type -> "password",
+                        '_label -> "パスワード（確認）"
+            ))
+            <input type="submit">
+        }
+    </div>
+}
