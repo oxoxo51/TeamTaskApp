@@ -2,9 +2,14 @@ package models;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import java.util.List;
 
 /**
+ * このサービスを利用するユーザー.<br>
+ * 初回利用時に新規登録する.<br>
  * Created on 2016/05/07.
  */
 @Entity
@@ -13,7 +18,7 @@ public class User extends Model {
 	/**
 	 * DB上のID.
 	 */
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
 	public long id;
 
 	/**
@@ -26,6 +31,10 @@ public class User extends Model {
 	 */
 	public String password;
 
-
+	/**
+	 * 所属するチーム.
+	 */
+	@ManyToMany
+	public List<Team> teams;
 
 }

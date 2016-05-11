@@ -5,9 +5,8 @@ import dto.user.CreateUserDto;
 import play.data.Form;
 import play.mvc.Result;
 import services.UserService;
-
+import views.html.teamList;
 import views.html.user;
-import views.html.index;
 
 /**
  * Created on 2016/05/08.
@@ -36,8 +35,9 @@ public class UserController extends Apps {
 			CreateUserDto dto = createUserDtoForm.get();
 			service.create(dto);
 			flash("success", "登録しました。");
-			// ログイン済みの状態にしてチーム一覧に遷移
-			return ok(index.render(""));
+			// TODO ログイン済みの状態にしてチーム一覧に遷移
+			// TODO redirectにしてControllerでユーザー情報を取得すべきか
+			return ok(teamList.render(dto.userName));
 		} else {
 			// TODO
 			flash("error", "登録できません。");

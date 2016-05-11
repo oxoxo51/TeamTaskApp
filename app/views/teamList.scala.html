@@ -1,0 +1,19 @@
+@(userName: String)
+
+@main("所属チーム一覧") {
+    <div class="container">
+        <p class="bg-primary">チーム一覧</p>
+        <p>@userName</p>
+        <table class="table table-striped table-sm">
+            <tbody>
+            @* 所属チーム数分だけfor文回す *@
+            <tr>
+                <td>TODO:チーム名</td>
+                <td>TODO:編集リンク</td>
+            </tr>
+            </tbody>
+        </table>
+        @* チーム新規作成へのリンク *@
+        <a href="./#">チーム新規作成</a>
+    </div>
+}
