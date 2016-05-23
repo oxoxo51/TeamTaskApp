@@ -37,4 +37,9 @@ public class User extends Model {
 	@ManyToMany
 	public List<Team> teams;
 
+	/**
+	 * Finder.
+	 */
+	public static Find<Long, User> find = new Find<Long, User>() {};
+
 }

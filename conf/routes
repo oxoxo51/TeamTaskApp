@@ -6,8 +6,14 @@
 GET     /                           controllers.Apps.index
 
 GET     /user/new                   controllers.UserController.displayCreateUser
-
 POST    /user/create                controllers.UserController.create
+
+GET     /team/new                   controllers.TeamController.displayCreateTeam
+POST    /team/create                controllers.TeamController.create
+GET     /team/list                  controllers.TeamController.displayTeamList
+
+
+
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count
 # An example controller showing how to write asynchronous code

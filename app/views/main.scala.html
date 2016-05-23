@@ -18,8 +18,11 @@
         <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
     </head>
     <body>
-        @* And here's where we render the `Html` object containing
-         * the page content. *@
-        @content
+        @* エラーメッセージ表示*@
+        @tag.flashMessage()
+        <div class="content">
+            @* ページ内コンテンツ出力 *@
+            @content
+        </div>
     </body>
 </html>

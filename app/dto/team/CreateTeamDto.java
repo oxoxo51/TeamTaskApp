@@ -1,8 +1,5 @@
 package dto.team;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Created on 2016/05/10.
  */
@@ -15,7 +12,7 @@ public class CreateTeamDto {
 
 	/**
 	 * チームメンバーリスト.
-	 * チームメンバーのid,ユーザー名
+	 * チームメンバー名をカンマ区切りで渡す.
 	 */
-	public List<Map<Long, String>> teamMemberList;
+	public String memberListStr;
 }

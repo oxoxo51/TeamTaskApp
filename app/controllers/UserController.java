@@ -5,7 +5,6 @@ import dto.user.CreateUserDto;
 import play.data.Form;
 import play.mvc.Result;
 import services.UserService;
-import views.html.teamList;
 import views.html.user;
 
 /**
@@ -37,7 +36,7 @@ public class UserController extends Apps {
 			flash("success", "登録しました。");
 			// TODO ログイン済みの状態にしてチーム一覧に遷移
 			// TODO redirectにしてControllerでユーザー情報を取得すべきか
-			return ok(teamList.render(dto.userName));
+			return redirect("/team/list");
 		} else {
 			// TODO
 			flash("error", "登録できません。");

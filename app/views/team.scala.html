@@ -1,0 +1,30 @@
+@(mode: String, form1: Form[dto.team.CreateTeamDto])
+
+@import helper._
+
+@main("チーム登録・編集") {
+    <div class="container">
+        <h2 class="bg-info">
+            @{val title = if (mode == "CREATE") {
+                "チーム登録"
+                } else if (mode == "UPDATE") {
+                "チーム編集"
+                }
+                title
+            }
+        </h2>
+        @form(action = routes.TeamController.create(), 'class -> "form-horizontal") {
+            @(inputText(
+                field = form1("teamName"),
+                args = '_label -> "チーム名"
+            ))
+            @*メンバーの表示方法要検討*@
+            @(inputText(
+                field = form1("memberListStr"),
+                args = '_label -> "メンバー"
+            ))
+            <input type="submit">
+        }
+    </div>
+
+}
