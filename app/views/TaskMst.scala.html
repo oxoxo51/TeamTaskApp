@@ -1,0 +1,47 @@
+@(mode: String, form1: Form[dto.task.CreateTaskMstDto])
+
+@import helper._
+
+@main("タスク登録・編集") {
+<div class="container">
+    <h2 class="bg-info">
+        @{val title = if (mode == "CREATE") {
+        "タスク登録"
+        } else if (mode == "UPDATE") {
+        "タスク編集"
+        }
+        title
+        }
+    </h2>
+    @form(action = routes.TaskController.create(), 'class -> "form-horizontal") {
+    @(inputText(
+    field = form1("taskName"),
+    args = '_label -> "タスク名"
+    ))
+    @(inputText(
+    field = form1("taskInfo"),
+    args = '_label -> "タスク内容"
+    ))
+    @(inputText(
+    field = form1("repType"),
+    args = '_label -> "実施頻度タイプ"
+    ))
+    @(inputText(
+    field = form1("repetition"),
+    args = '_label -> "実施頻度"
+    ))
+    @(inputText(
+    field = form1("mainUserName"),
+    args = '_label -> "主担当ユーザー"
+    ))
+    @(inputText(
+    field = form1("teamName"),
+    args = '_label -> "タスク所有チーム",
+            'readonly -> true
+
+    ))
+    <input type="submit">
+    }
+</div>
+
+}

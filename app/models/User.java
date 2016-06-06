@@ -42,4 +42,5 @@ public class User extends Model {
 	 */
 	public static Find<Long, User> find = new Find<Long, User>() {};
 
+
 }

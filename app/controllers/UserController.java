@@ -33,7 +33,9 @@ public class UserController extends Apps {
 		if (!createUserDtoForm.hasErrors()) {
 			CreateUserDto dto = createUserDtoForm.get();
 			service.create(dto);
-			flash("success", "登録しました。");
+			String msg = "登録しました。";
+			msg += " userName: " + dto.userName;
+			flash("success", msg);
 			// TODO ログイン済みの状態にしてチーム一覧に遷移
 			// TODO redirectにしてControllerでユーザー情報を取得すべきか
 			return redirect("/team/list");

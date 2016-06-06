@@ -1,5 +1,7 @@
 package models;
 
+import com.avaje.ebean.Model;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -11,7 +13,7 @@ import java.util.Date;
  * Created on 2016/05/11.
  */
 @Entity
-public class TaskTrn {
+public class TaskTrn extends Model {
 
 	/**
 	 * DB上のID.
@@ -40,4 +42,9 @@ public class TaskTrn {
 	 */
 	@OneToOne
 	public User operationUser;
+
+	/**
+	 * Finder.
+	 */
+	public static Find<Long, TaskTrn> find = new Find<Long, TaskTrn>() {};
 }

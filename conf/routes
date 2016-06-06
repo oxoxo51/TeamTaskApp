@@ -12,6 +12,10 @@ GET     /team/new                   controllers.TeamController.displayCreateTeam
 POST    /team/create                controllers.TeamController.create
 GET     /team/list                  controllers.TeamController.displayTeamList
 
+GET     /:teamName/task/new                   controllers.TaskController.displayCreateTaskMst(teamName: String)
+POST    /task/create                          controllers.TaskController.create
+GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
+GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
 
 
 # An example controller showing how to use dependency injection

@@ -1,7 +1,8 @@
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import com.avaje.ebean.Model;
+
+import javax.persistence.*;
 
 /**
  * タスクのマスタ.<br>
@@ -9,7 +10,7 @@ import javax.persistence.Id;
  * Created on 2016/05/11.
  */
 @Entity
-public class TaskMst {
+public class TaskMst extends Model {
 
 	/**
 	 * DB上のID.
@@ -28,6 +29,12 @@ public class TaskMst {
 	public String taskInfo;
 
 	/**
+	 * タスク所有チーム.
+	 */
+	@ManyToOne(cascade= CascadeType.ALL)
+	public Team taskTeam;
+
+	/**
 	 * 実施頻度タイプ.
 	 */
 	public String repType;
@@ -36,5 +43,16 @@ public class TaskMst {
 	 * 実施頻度.
 	 */
 	public String repetition;
+
+	/**
+	 * 主担当ユーザー.
+	 */
+	@ManyToOne(cascade= CascadeType.ALL)
+	public User mainUser;
+
+	/**
+	 * Finder.
+	 */
+	public static Find<Long, TaskMst> find = new Find<Long, TaskMst>() {};
 
 }

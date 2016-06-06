@@ -37,5 +37,10 @@ public class Team extends Model{
 	@ManyToMany(mappedBy = "teams", cascade = CascadeType.ALL)
 	public List<User> members;
 
+	/**
+	 * Finder.
+	 */
+	public static Find<Long, Team> find = new Find<Long, Team>() {};
+
 
 }

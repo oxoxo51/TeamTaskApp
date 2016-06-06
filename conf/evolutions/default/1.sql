@@ -7,8 +7,10 @@ create table task_mst (
   id                            bigint not null,
   task_name                     varchar(255),
   task_info                     varchar(255),
+  task_team_id                  bigint,
   rep_type                      varchar(255),
   repetition                    varchar(255),
+  main_user_id                  bigint,
   constraint pk_task_mst primary key (id)
 );
 create sequence task_mst_seq;
@@ -46,6 +48,12 @@ create table user_team (
   constraint pk_user_team primary key (user_id,team_id)
 );
 
+alter table task_mst add constraint fk_task_mst_task_team_id foreign key (task_team_id) references team (id) on delete restrict on update restrict;
+create index ix_task_mst_task_team_id on task_mst (task_team_id);
+
+alter table task_mst add constraint fk_task_mst_main_user_id foreign key (main_user_id) references user (id) on delete restrict on update restrict;
+create index ix_task_mst_main_user_id on task_mst (main_user_id);
+
 alter table task_trn add constraint fk_task_trn_task_mst_id foreign key (task_mst_id) references task_mst (id) on delete restrict on update restrict;
 create index ix_task_trn_task_mst_id on task_trn (task_mst_id);
 
@@ -62,6 +70,12 @@ create index ix_user_team_team on user_team (team_id);
 
 
 # --- !Downs
+
+alter table task_mst drop constraint if exists fk_task_mst_task_team_id;
+drop index if exists ix_task_mst_task_team_id;
+
+alter table task_mst drop constraint if exists fk_task_mst_main_user_id;
+drop index if exists ix_task_mst_main_user_id;
 
 alter table task_trn drop constraint if exists fk_task_trn_task_mst_id;
 drop index if exists ix_task_trn_task_mst_id;

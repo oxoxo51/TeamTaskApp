@@ -1,0 +1,143 @@
+package services.implement;
+
+import dto.task.CreateTaskMstDto;
+import models.TaskMst;
+import models.TaskTrn;
+import models.Team;
+import models.User;
+import play.Logger;
+import services.TaskService;
+import util.DateUtil;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created on 2016/05/24.
+ */
+public class TaskServiceImpl implements TaskService {
+	@Override
+	public void createTaskMst(CreateTaskMstDto createTaskMstDto) {
+		Logger.info("TaskServiceImpl#createTaskMst");
+
+		TaskMst taskMst = new TaskMst();
+		taskMst.taskName = createTaskMstDto.taskName;
+		taskMst.taskInfo = createTaskMstDto.taskInfo;
+		taskMst.repType = createTaskMstDto.repType;
+		taskMst.repetition = createTaskMstDto.repetition;
+
+		// タスク利用チーム
+		String teamName = createTaskMstDto.getTeamName();
+		List<Team> teamList = Team.find.where().eq("teamName", teamName).findList();
+		if (teamList.size() == 0) {
+			// TODO エラー
+			Logger.error("team not found");
+
+			return;
+		} else {
+			taskMst.taskTeam = teamList.get(0);
+		}
+
+		// 主担当者
+		List<User> user = User.find.where().eq(
+				"userName", createTaskMstDto.mainUserName)
+				.findList();
+		List<String> errorMessages = new ArrayList<String>();
+
+		// 取得できなかった場合エラー
+		if (user.size() == 0) {
+			errorMessages.add("ユーザー：" + createTaskMstDto.mainUserName + "は存在しません。");
+		} else {
+			// ユーザー名は重複ない前提
+			taskMst.mainUser = user.get(0);
+		}
+
+		if (errorMessages.size() > 0) {
+			// TODO エラーメッセージの返し方
+		} else {
+			taskMst.save();
+		}
+	}
+
+	/**
+	 * チームと日付からタスクリストを検索する.
+	 * @param teamId
+	 * @param dateStr
+	 * @return
+	 */
+	@Override
+	public List<TaskTrn> findTaskList(long teamId, String dateStr) {
+		Logger.info("TaskServiceImpl#findTaskList");
+		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
+		// 1.チームからタスクマスタの一覧を取得する
+		Team team = Team.find.byId(teamId);
+		if (team == null) {
+			// TODO エラー
+			return null;
+		} else {
+			try {
+				List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
+
+				// 2.タスクマスタの一覧から、紐付く該当日付のタスクトランを取得する
+				// タスクマスタと日付からは1件のみ取得される想定
+				for (TaskMst taskMst : taskMstList) {
+					List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
+							.where().eq("taskDate", DateUtil.getDate(dateStr, "yyyyMMdd")).findList();
+					taskTrnList.addAll(taskTrn);
+				}
+
+			} catch (ParseException e) {
+				// TODO エラーハンドリング
+				e.printStackTrace();
+			}
+		}
+		return taskTrnList;
+	}
+
+	/**
+	 * チームと日付でタスクトランを作成する.
+	 * @param teamId
+	 * @param dateStr
+	 */
+	@Override
+	public List<TaskTrn> createTaskTrn(long teamId, String dateStr) {
+		Logger.info("TaskServiceImpl#createTaskTrn");
+		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
+		// 1.チームからタスクマスタの一覧を取得する
+		Team team = Team.find.byId(teamId);
+		if (team == null) {
+			// TODO エラー
+			return null;
+		} else {
+			try {
+				Logger.info("teamName:" + team.teamName);
+				List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
+
+				// 2.タスクマスタの一覧を元に、該当日付のタスクトランを作成する
+				for (TaskMst taskMst : taskMstList) {
+					TaskTrn taskTrn = new TaskTrn();
+					taskTrn.taskMst = taskMst;
+					taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
+					taskTrn.save();
+					taskTrnList.add(taskTrn);
+				}
+
+			} catch (ParseException e) {
+				// TODO エラーハンドリング
+				e.printStackTrace();
+			}
+		}
+		return taskTrnList;
+	}
+
+	/**
+	 * IDからタスク名称を取得する.
+	 * @param mstId
+	 * @return
+	 */
+	public String getTaskMstName(long mstId) {
+		TaskMst mst = TaskMst.find.byId(mstId);
+		return mst.taskName;
+	}
+}

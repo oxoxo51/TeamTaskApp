@@ -1,0 +1,47 @@
+@(taskList: List[TaskTrn], dateStr: String, teamName: String)
+
+@import util.DateUtil
+@import services.implement.TaskServiceImpl
+
+@main("タスクリスト：" + DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")) {
+    <div class="container">
+        <p class="bg-primary">
+            <a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">昨日 </a>タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")<a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">明日</a>
+        </p>
+        <table class="table table-striped table-sm">
+        @* 表示イメージ
+            [未実施]
+                [主担当：USER1]
+                    [TASK1]
+                    [TASK2]
+                [主担当：USER2]
+                    [TASK3]
+            [実施対象外]
+                [TASK4]
+            [実施済]
+                [実施者：USER1]
+                    [TASK5]
+                    [TASK6]
+                [実施者：USER2]
+                    [TASK7]
+        *@
+        @* 一旦は全部1つのfor分でテーブル出力 *@
+            @for(task <- taskList){
+                <tr>
+                    <td>@{
+                            var service = new TaskServiceImpl
+                            service.getTaskMstName(task.taskMst.id)
+                        }
+                    </td>
+
+                </tr>
+            }
+        </table>
+        @* タスクマスタ新規作成へのリンク、ほんとはここじゃなくてメニューに持って行きたい *@
+        <a href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
+
+    </div>
+
+
+}
+
