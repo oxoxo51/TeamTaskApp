@@ -5,6 +5,8 @@ import models.User;
 import play.Logger;
 import services.UserService;
 
+import java.util.List;
+
 /**
  * Created on 2016/05/08.
  */
@@ -18,4 +20,11 @@ public class UserServiceImpl implements UserService {
 		user.password = createUserDto.password;
 		user.save();
 	}
+
+	@Override
+	public 	List<User> findUser(String userName, String password) {
+		Logger.info("UserServiceImpl#findUser");
+		return User.find.where().eq("userName", userName).eq("password", password).findList();
+	}
+
 }

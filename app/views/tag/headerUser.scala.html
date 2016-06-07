@@ -1,0 +1,12 @@
+@()
+<ul class="nav nav-inline">
+    <li class="nav-item">
+        <a class="nav-link" href="@routes.Apps.index()">TeamTaskApp</a>
+    </li>
+    <li class="nav-item">
+        USER:@{Apps.getLoginUserName()}
+    </li>
+    <li class="nav-item">
+        <a href="@routes.Apps.logout()">LOGOUT</a>
+    </li>
+</ul>

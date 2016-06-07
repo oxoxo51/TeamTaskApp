@@ -4,6 +4,8 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.Apps.index
+POST    /login                      controllers.Apps.auth
+GET     /logout                     controllers.Apps.logout
 
 GET     /user/new                   controllers.UserController.displayCreateUser
 POST    /user/create                controllers.UserController.create
@@ -16,12 +18,6 @@ GET     /:teamName/task/new                   controllers.TaskController.display
 POST    /task/create                          controllers.TaskController.create
 GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
-
-
-# An example controller showing how to use dependency injection
-GET     /count                      controllers.CountController.count
-# An example controller showing how to write asynchronous code
-GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

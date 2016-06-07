@@ -3,10 +3,10 @@ package controllers;
 import com.google.inject.Inject;
 import dto.team.CreateTeamDto;
 import models.Team;
-import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
+import play.mvc.Security;
 import services.TeamService;
 import views.html.team;
 import views.html.teamList;
@@ -24,21 +24,19 @@ public class TeamController extends Apps {
 	 * チームリスト表示.
 	 * @return
 	 */
+	@Security.Authenticated(Secured.class)
 	public Result displayTeamList() {
 		Logger.info("TeamController#displayTeamList");
 
 		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
-		// TODO 今は暫定でユーザーの1件目で取得
-		// TODO 取得部分はサービスに寄せてここでは呼出のみにすべきか
-		User user = User.find.all().get(0);
-		List<Team> teams = service.findTeamListByUserName(user.userName);
-		return ok(teamList.render(user.userName, teams));
+		return getTeamList();
 	}
 
 	/**
 	 * チーム新規登録画面表示.
 	 * @return
 	 */
+	@Security.Authenticated(Secured.class)
 	public Result displayCreateTeam() {
 		Logger.info("TeamController#displayCreateTeam");
 
@@ -50,6 +48,7 @@ public class TeamController extends Apps {
 	 * チーム新規登録.
 	 * @return
 	 */
+	@Security.Authenticated(Secured.class)
 	public Result create() {
 		Logger.info("TeamController#create");
 
@@ -60,15 +59,23 @@ public class TeamController extends Apps {
 			String msg = "登録しました。";
 			msg += " teamName: " + dto.teamName;
 			flash("success", msg);
-			// TODO 実際にはログインユーザからチーム一覧を取得するが、暫定でユーザの1件目から取得
-			User user = User.find.all().get(0);
-			List<Team> teams = service.findTeamListByUserName(user.userName);
-			return ok(teamList.render(user.userName, teams));
+			// チームリストを表示
+			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			// TODO
 			flash("error", "登録できません。");
 			return badRequest(team.render("CREATE", createTeamDtoForm));
 		}
+	}
+
+	/**
+	 * セッションのログインユーザーに紐付くチームリストを返却する.
+	 * @return
+	 */
+	private Result getTeamList() {
+		String userName = session().get("userName");
+		List<Team> teams = service.findTeamListByUserName(userName);
+		return ok(teamList.render(userName, teams));
 	}
 
 

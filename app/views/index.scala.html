@@ -1,14 +1,25 @@
-@(message: String)
+@(form1: Form[dto.user.LoginUserDto])
 
-@*
- * Call the `main` template with two arguments. The first
- * argument is a `String` with the title of the page, the second
- * argument is an `Html` object containing the body of the page.
- *@
+@import helper._
+
+@* ユーザ名/パスワードを入力しログイン *@
 @main("ログイン") {
+    <div class="container">
+        <h2 class="bg-info">ログイン</h2>
+        @form(action = routes.Apps.auth(), 'class -> "form-horizontal") {
+            @(inputText(
+            field = form1("userName"),
+            args = '_label -> "ユーザー名"
+            ))
+            @(inputText(
+            field = form1("password"),
+            args = 'type -> "password",
+                   '_label -> "パスワード"
+            ))
+            <input type="submit">
+        }
 
-    @* TODO ユーザ名/パスワードを入力しログイン *@
-
-    <a href="@routes.UserController.displayCreateUser()">新規登録</a>
+        <a href="@routes.UserController.displayCreateUser()">新規登録</a>
+    </div>
 
 }

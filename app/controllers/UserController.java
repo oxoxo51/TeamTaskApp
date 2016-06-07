@@ -37,8 +37,9 @@ public class UserController extends Apps {
 			msg += " userName: " + dto.userName;
 			flash("success", msg);
 			// TODO ログイン済みの状態にしてチーム一覧に遷移
-			// TODO redirectにしてControllerでユーザー情報を取得すべきか
-			return redirect("/team/list");
+			session().clear();
+			session("userName", dto.userName);
+			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			// TODO
 			flash("error", "登録できません。");
