@@ -39,6 +39,9 @@ public class TaskController extends Apps {
 		Logger.info("TaskController#displayTaskListWithDate teamName:" + teamName +
 					" dateStr:" + dateStr);
 
+		// セッションにチーム名を保持する
+		this.setSessionTeamName(teamName);
+
 		// 利用チームに紐付くタスクリストを表示
 		List<Team> teamList = Team.find.where().eq("teamName", teamName).findList();
 		if (teamList.size() == 0) {

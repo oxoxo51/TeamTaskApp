@@ -1,1 +1,9 @@
 @()
+<ul class="nav nav-inline">
+    <li class="nav-item">
+        TEAM:@{Apps.getSessionTeamName}
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="@routes.TeamController.displayTeamList">チーム選択</a>
+    </li>
+</ul>

@@ -28,6 +28,9 @@ public class TeamController extends Apps {
 	public Result displayTeamList() {
 		Logger.info("TeamController#displayTeamList");
 
+		// セッションのチームをクリアする
+		session().remove("teamName");
+
 		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
 		return getTeamList();
 	}
@@ -77,7 +80,5 @@ public class TeamController extends Apps {
 		List<Team> teams = service.findTeamListByUserName(userName);
 		return ok(teamList.render(userName, teams));
 	}
-
-
 
 }

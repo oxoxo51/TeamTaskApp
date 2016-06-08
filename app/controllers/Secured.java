@@ -20,7 +20,7 @@ public class Secured extends Security.Authenticator {
 	@Override
 	public Result onUnauthorized(Http.Context ctx) {
 		Logger.info("Secured#onUnauthorized");
-		Controller.flash("success", "ログインして下さい。");
+		Controller.flash("error", "ログインして下さい。");
 		return redirect(routes.Apps.index());
 	}
 

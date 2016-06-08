@@ -29,13 +29,20 @@ public class Apps extends Controller {
 
 	/**
 	 * ルートにアクセスしたときのAction.
+	 * 状態により適切な画面へ遷移する.
+	 * ①ログイン済みかつチーム選択済み：該当チームのタスクリスト
+	 * ②ログイン済みかつチーム未選択：該当ユーザーのチームリスト
+	 * ③未ログイン：ログイン画面
 	 * @return
 	 */
 	public Result index() {
 		Logger.info("Apps#index");
-		// ログイン済みの場合はチーム一覧画面へリダイレクトする
-		if (session().get("userName") != null) {
-			return redirect(routes.TeamController.displayTeamList());
+		if (session("userName") != null) {
+			if (session("teamName") != null) {
+				return redirect(routes.TaskController.displayTaskList(session("teamName")));
+			} else {
+				return redirect(routes.TeamController.displayTeamList());
+			}
 		} else {
 			Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class);
 			return ok(index.render(loginForm));
@@ -65,6 +72,7 @@ public class Apps extends Controller {
 	 * ログアウト試行時のAction.
 	 * @return
 	 */
+	@Security.Authenticated(Secured.class)
 	public Result logout() {
 		Logger.info("Apps#logout");
 		session().clear();
@@ -78,7 +86,38 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getLoginUserName() {
-		return request().username();
+		if (session("userName") != null) {
+			return session("userName");
+		} else {
+			return "---";
+		}
 	}
+
+	/**
+	 * セッションにチーム名を保持する.
+	 * @param teamName
+	 */
+	@Security.Authenticated(Secured.class)
+	public void setSessionTeamName(String teamName) {
+		Logger.info("Apps#setSessionTeamName" + teamName);
+		session("teamName", teamName);
+	}
+
+	/**
+	 * セッションに保持しているチーム名を取得する.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public static String getSessionTeamName() {
+		Logger.info("Apps#getSessionTeamName" + session("teamName"));
+		if (session("teamName") != null) {
+			return session("teamName");
+		} else {
+			return "---";
+		}
+	}
+
+
+
 }
 
