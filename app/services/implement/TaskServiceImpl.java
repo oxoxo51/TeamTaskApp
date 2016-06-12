@@ -1,12 +1,15 @@
 package services.implement;
 
+import com.google.inject.Inject;
 import dto.task.CreateTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
 import models.Team;
 import models.User;
 import play.Logger;
+import play.mvc.Http;
 import services.TaskService;
+import services.UserService;
 import util.DateUtil;
 
 import java.text.ParseException;
@@ -17,6 +20,10 @@ import java.util.List;
  * Created on 2016/05/24.
  */
 public class TaskServiceImpl implements TaskService {
+
+	@Inject
+	UserService userService;
+
 	@Override
 	public void createTaskMst(CreateTaskMstDto createTaskMstDto) {
 		Logger.info("TaskServiceImpl#createTaskMst");
@@ -82,8 +89,12 @@ public class TaskServiceImpl implements TaskService {
 				// 2.タスクマスタの一覧から、紐付く該当日付のタスクトランを取得する
 				// タスクマスタと日付からは1件のみ取得される想定
 				for (TaskMst taskMst : taskMstList) {
+					Logger.debug("taskMst.taskName: " + taskMst.taskName);
 					List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
 							.where().eq("taskDate", DateUtil.getDate(dateStr, "yyyyMMdd")).findList();
+					for (TaskTrn task : taskTrn) {
+						Logger.debug("taskTrn.taskName, date: " + task.taskMst.taskName + ", " + task.taskDate );
+					}
 					taskTrnList.addAll(taskTrn);
 				}
 
@@ -119,6 +130,7 @@ public class TaskServiceImpl implements TaskService {
 					TaskTrn taskTrn = new TaskTrn();
 					taskTrn.taskMst = taskMst;
 					taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
+
 					taskTrn.save();
 					taskTrnList.add(taskTrn);
 				}
@@ -136,8 +148,41 @@ public class TaskServiceImpl implements TaskService {
 	 * @param mstId
 	 * @return
 	 */
+	@Override
 	public String getTaskMstName(long mstId) {
 		TaskMst mst = TaskMst.find.byId(mstId);
 		return mst.taskName;
 	}
+
+	/**
+	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する.
+	 * エラー有無をBooleanで返却する.
+	 * @param taskTrnId
+	 * @return
+	 */
+	@Override
+	public Boolean updateTaskTrnStatus(long taskTrnId) {
+		TaskTrn trn = TaskTrn.find.byId(taskTrnId);
+		if (trn == null) {
+			return false;
+		} else {
+			if (trn.operationUser == null) {
+				// 未実施→実施済
+				// 実施ユーザーの取得
+				List<User> userList = userService.findUserByName(Http.Context.current().session().get("userName"));
+				if (userList == null || userList.get(0) == null) {
+					// TODO エラー
+					return false;
+				} else {
+					trn.operationUser = userList.get(0);
+				}
+			} else {
+				// 実施済→未実施
+				trn.operationUser = null;
+			}
+			trn.update();
+			return true;
+		}
+	}
+
 }

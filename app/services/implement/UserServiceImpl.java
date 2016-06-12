@@ -22,9 +22,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public 	List<User> findUser(String userName, String password) {
+	public List<User> findUser(String userName, String password) {
 		Logger.info("UserServiceImpl#findUser");
 		return User.find.where().eq("userName", userName).eq("password", password).findList();
+	}
+
+	@Override
+	public List<User> findUserByName(String userName) {
+		Logger.info("UserServiceImpl#findUserByName");
+		return User.find.where().eq("userName", userName).findList();
 	}
 
 }

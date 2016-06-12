@@ -28,11 +28,14 @@
         @* 一旦は全部1つのfor分でテーブル出力 *@
             @for(task <- taskList){
                 <tr>
-                    <td>@{
-                            var service = new TaskServiceImpl
-                            service.getTaskMstName(task.taskMst.id)
+                    <td>
+                        <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">
+                        @{
+                            if (task.operationUser == null) { "実行" } else { "戻す" }
                         }
+                        </a>
                     </td>
+                    <td>@task.taskMst.taskName</td>
 
                 </tr>
             }

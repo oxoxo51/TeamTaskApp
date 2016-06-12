@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import dto.task.CreateTaskMstDto;
 import models.TaskTrn;
 import models.Team;
-import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
@@ -46,9 +45,8 @@ public class TaskController extends Apps {
 		List<Team> teamList = Team.find.where().eq("teamName", teamName).findList();
 		if (teamList.size() == 0) {
 			// TODO エラーハンドリング
-			User user = User.find.all().get(0);
-			List<Team> teams = teamService.findTeamListByUserName(user.userName);
-			return ok(views.html.teamList.render(user.userName, teams));
+			List<Team> teams = teamService.findTeamListByUserName(session("userName"));
+			return ok(views.html.teamList.render(session("userName"), teams));
 		}
 		// チーム名は重複しない想定
 		Team team = teamList.get(0);
@@ -122,6 +120,24 @@ public class TaskController extends Apps {
 			return badRequest(taskMst.render("CREATE", createTaskMstDtoForm));
 		}
 
+	}
+
+	/**
+	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する
+	 * @param taskTrnId
+	 * @param dateStr
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
+		if (service.updateTaskTrnStatus(taskTrnId)) {
+			// タスクリストを再表示
+			return displayTaskListWithDate(session("teamName"), dateStr);
+		} else {
+			// TODO
+			flash("error", "更新できません。");
+			return displayTaskListWithDate(session("teamName"), dateStr);
+		}
 	}
 
 }

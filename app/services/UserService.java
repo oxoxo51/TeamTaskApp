@@ -16,4 +16,6 @@ public interface UserService {
 	void create(CreateUserDto createUserDto);
 
 	List<User> findUser(String userName, String password);
+
+	List<User> findUserByName(String userName);
 }

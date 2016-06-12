@@ -21,7 +21,6 @@ create table task_trn (
   task_date                     timestamp,
   operation_flg                 varchar(255),
   operation_user_id             bigint,
-  constraint uq_task_trn_operation_user_id unique (operation_user_id),
   constraint pk_task_trn primary key (id)
 );
 create sequence task_trn_seq;
@@ -58,6 +57,7 @@ alter table task_trn add constraint fk_task_trn_task_mst_id foreign key (task_ms
 create index ix_task_trn_task_mst_id on task_trn (task_mst_id);
 
 alter table task_trn add constraint fk_task_trn_operation_user_id foreign key (operation_user_id) references user (id) on delete restrict on update restrict;
+create index ix_task_trn_operation_user_id on task_trn (operation_user_id);
 
 alter table team add constraint fk_team_create_user_id foreign key (create_user_id) references user (id) on delete restrict on update restrict;
 create index ix_team_create_user_id on team (create_user_id);
@@ -81,6 +81,7 @@ alter table task_trn drop constraint if exists fk_task_trn_task_mst_id;
 drop index if exists ix_task_trn_task_mst_id;
 
 alter table task_trn drop constraint if exists fk_task_trn_operation_user_id;
+drop index if exists ix_task_trn_operation_user_id;
 
 alter table team drop constraint if exists fk_team_create_user_id;
 drop index if exists ix_team_create_user_id;

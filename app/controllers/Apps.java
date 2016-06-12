@@ -99,7 +99,7 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public void setSessionTeamName(String teamName) {
-		Logger.info("Apps#setSessionTeamName" + teamName);
+		Logger.info("Apps#setSessionTeamName: " + teamName);
 		session("teamName", teamName);
 	}
 
@@ -109,7 +109,7 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
-		Logger.info("Apps#getSessionTeamName" + session("teamName"));
+		Logger.info("Apps#getSessionTeamName: " + session("teamName"));
 		if (session("teamName") != null) {
 			return session("teamName");
 		} else {

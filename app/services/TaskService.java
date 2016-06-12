@@ -20,4 +20,6 @@ public interface TaskService {
 	List<TaskTrn> createTaskTrn(long teamId, String dateStr);
 
 	String getTaskMstName(long mstId);
+
+	Boolean updateTaskTrnStatus(long taskTrnId);
 }

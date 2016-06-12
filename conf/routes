@@ -19,6 +19,8 @@ POST    /task/create                          controllers.TaskController.create
 GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
 
+GET     /task/trn/update/:dateStr/:taskTrnId           controllers.TaskController.updateTaskTrnStatus(taskTrnId: Long, dateStr: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)

@@ -40,7 +40,7 @@ public class TaskTrn extends Model {
 	/**
 	 * 実施ユーザーID.
 	 */
-	@OneToOne
+	@ManyToOne(cascade= CascadeType.ALL)
 	public User operationUser;
 
 	/**
