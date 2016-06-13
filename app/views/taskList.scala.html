@@ -8,7 +8,7 @@
         <p class="bg-primary">
             <a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">昨日 </a>タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")<a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">明日</a>
         </p>
-        <table class="table table-striped table-sm">
+        <table class="table table-sm">
         @* 表示イメージ
             [未実施]
                 [主担当：USER1]
@@ -26,18 +26,33 @@
                     [TASK7]
         *@
         @* 一旦は全部1つのfor分でテーブル出力 *@
+            <!-- 未実施 -->
+            <tr><th colspan="2">未実施</th></tr>
             @for(task <- taskList){
-                <tr>
-                    <td>
-                        <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">
-                        @{
-                            if (task.operationUser == null) { "実行" } else { "戻す" }
-                        }
-                        </a>
-                    </td>
-                    <td>@task.taskMst.taskName</td>
-
-                </tr>
+                @if(task.operationUser == null) {
+                    <tr>
+                        <td>
+                            <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">実行</a>
+                        </td>
+                        <td>
+                            @task.taskMst.taskName
+                        </td>
+                    </tr>
+                }
+            }
+            <!-- 実施済 -->
+            <tr><th colspan="2">実施済</th></tr>
+            @for(task <- taskList){
+                @if(task.operationUser != null) {
+                    <tr>
+                        <td>
+                            <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">戻す</a>
+                        </td>
+                        <td>
+                            @task.taskMst.taskName
+                        </td>
+                    </tr>
+                }
             }
         </table>
         @* タスクマスタ新規作成へのリンク、ほんとはここじゃなくてメニューに持って行きたい *@
