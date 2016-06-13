@@ -21,5 +21,5 @@ public interface TaskService {
 
 	String getTaskMstName(long mstId);
 
-	Boolean updateTaskTrnStatus(long taskTrnId);
+	int updateTaskTrnStatus(long taskTrnId);
 }

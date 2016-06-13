@@ -93,7 +93,8 @@ public class TaskServiceImpl implements TaskService {
 					List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
 							.where().eq("taskDate", DateUtil.getDate(dateStr, "yyyyMMdd")).findList();
 					for (TaskTrn task : taskTrn) {
-						Logger.debug("taskTrn.taskName, date: " + task.taskMst.taskName + ", " + task.taskDate );
+						Logger.debug("taskTrn.taskName, date: "
+								+ task.taskMst.taskName + ", " + task.taskDate);
 					}
 					taskTrnList.addAll(taskTrn);
 				}
@@ -156,15 +157,18 @@ public class TaskServiceImpl implements TaskService {
 
 	/**
 	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する.
-	 * エラー有無をBooleanで返却する.
+	 * エラー有無をintで返却する.
+	 * 1:未実施→実施済
+	 * 0:実施済→未実施
+	 * -1:エラー
 	 * @param taskTrnId
 	 * @return
 	 */
 	@Override
-	public Boolean updateTaskTrnStatus(long taskTrnId) {
+	public int updateTaskTrnStatus(long taskTrnId) {
 		TaskTrn trn = TaskTrn.find.byId(taskTrnId);
 		if (trn == null) {
-			return false;
+			return -1;
 		} else {
 			if (trn.operationUser == null) {
 				// 未実施→実施済
@@ -172,16 +176,18 @@ public class TaskServiceImpl implements TaskService {
 				List<User> userList = userService.findUserByName(Http.Context.current().session().get("userName"));
 				if (userList == null || userList.get(0) == null) {
 					// TODO エラー
-					return false;
+					return -1;
 				} else {
 					trn.operationUser = userList.get(0);
+					trn.update();
+					return 1;
 				}
 			} else {
 				// 実施済→未実施
 				trn.operationUser = null;
+				trn.update();
+				return 0;
 			}
-			trn.update();
-			return true;
 		}
 	}
 

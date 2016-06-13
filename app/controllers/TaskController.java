@@ -130,13 +130,19 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
-		if (service.updateTaskTrnStatus(taskTrnId)) {
+		int status = 0;
+		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
 			// タスクリストを再表示
-			return displayTaskListWithDate(session("teamName"), dateStr);
+			if (status == 1) {
+				flash("success", "実施済にしました。");
+			} else {
+				flash("success", "未実施に戻しました。");
+			}
+			return redirect(routes.TaskController.displayTaskListWithDate(session("teamName"), dateStr));
 		} else {
 			// TODO
 			flash("error", "更新できません。");
-			return displayTaskListWithDate(session("teamName"), dateStr);
+			return redirect(routes.TaskController.displayTaskListWithDate(session("teamName"), dateStr));
 		}
 	}
 
