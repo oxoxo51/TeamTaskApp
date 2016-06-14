@@ -1,4 +1,4 @@
-@(taskList: List[TaskTrn], dateStr: String, teamName: String)
+@(html: String, dateStr: String, teamName: String)
 
 @import util.DateUtil
 @import services.implement.TaskServiceImpl
@@ -25,7 +25,9 @@
                 [実施者：USER2]
                     [TASK7]
         *@
-        @* 一旦は全部1つのfor分でテーブル出力 *@
+        @* 表示の分類毎にHTMLタグの文字列を作っていき最後にくっつける *@
+            @Html(html)
+@*****
             <!-- 未実施 -->
             <tr><th colspan="2">未実施</th></tr>
             @for(task <- taskList){
@@ -54,6 +56,7 @@
                     </tr>
                 }
             }
+*****@
         </table>
         @* タスクマスタ新規作成へのリンク、ほんとはここじゃなくてメニューに持って行きたい *@
         <a href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>

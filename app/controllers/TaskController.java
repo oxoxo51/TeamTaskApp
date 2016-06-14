@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import dto.task.CreateTaskMstDto;
 import models.TaskTrn;
 import models.Team;
+import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
@@ -14,8 +15,7 @@ import util.DateUtil;
 import views.html.taskList;
 import views.html.taskMst;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created on 2016/05/25.
@@ -25,6 +25,22 @@ public class TaskController extends Apps {
 	TaskService service;
 	@Inject
 	TeamService teamService;
+
+	/**
+	 * タスクリスト画面表示（日付指定なし）.
+	 * 渡された利用チームの実行当日のタスクリストを表示する.
+	 * @param teamName
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTaskList(String teamName) {
+		Logger.info("TaskController#displayTaskList teamName:" +teamName);
+
+		String dateStr = DateUtil.getDateStr(new Date(), "yyyyMMdd");
+
+		// 本日のタスクリストを表示する.
+		return displayTaskListWithDate(teamName, dateStr);
+	}
 
 	/**
 	 * タスクリスト画面表示（日付指定あり）.
@@ -60,25 +76,105 @@ public class TaskController extends Apps {
 						+ "taskMstId:" + task.taskMst.id);
 		}
 
-		return ok(taskList.render(taskTrnList, dateStr, teamName));
+		String html = this.editTaskListHtml(taskTrnList, dateStr);
+
+		return ok(taskList.render(html, dateStr, teamName));
 
 	}
 
 	/**
-	 * タスクリスト画面表示（日付指定なし）.
-	 * 渡された利用チームの実行当日のタスクリストを表示する.
-	 * @param teamName
+	 * タスクリスト画面に表示するHTMLを作成する.
+	 * @param taskTrnList
+	 * @param dateStr
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayTaskList(String teamName) {
-		Logger.info("TaskController#displayTaskList teamName:" +teamName);
+	private String editTaskListHtml(List<TaskTrn> taskTrnList, String dateStr) {
+		String html = "";
+		// タスクリストをキーとタスクトランのマップに置き換える
+		// キー：実施状態(未実施：0,実施済：1,実施対象外：-1)
+		// 		担当者or実施者のユーザーID
+		// キーはカンマ区切りのStringとする
+		Map<String, TaskTrn> taskMap = new HashMap<String, TaskTrn>();
+		for (TaskTrn task : taskTrnList) {
+			String key = "";
+			// 実施状態
+			// TODO 実施対象かどうかの判定を追加する必要あり:条件分岐の先頭に追加
+			if (task.operationUser != null) {
+				// 実施済
+				key = "1," + task.operationUser.id + "," + task.id;
+			} else {
+				// TODO 実施対象化どうかの判定を追加する
+				key = "0," + task.taskMst.mainUser.id+ "," + task.id;
+			}
+			taskMap.put(key, task);
+		}
 
-		String dateStr = DateUtil.getDateStr(new Date(), "yyyyMMdd");
+		// 実施済、未実施それぞれString配列のMAPでHTMLを作成する
+		Map<String, String> finishMap = new HashMap<String, String>(); // 実施済
+		Map<String, String> notyetMap = new HashMap<String, String>(); // 未実施
 
-		// 本日のタスクリストを表示する.
-		return displayTaskListWithDate(teamName, dateStr);
+		// キーの状態毎にHTMLを作成する.
+		for (Iterator i = taskMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry)i.next();
+			String[] keyArg = ((String)entry.getKey()).split(",");
+			TaskTrn task = (TaskTrn)entry.getValue();
+			String taskUpdateurl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr).absoluteURL(request());
+			String htmlStr = "";
+			if ("1".equals(keyArg[0])) {
+				// 実施済
+				if (!finishMap.containsKey(keyArg[1])) {
+					// 実施者毎のヘッダ作成
+					htmlStr = "<tr><th colspan=\"2\">実施者："
+							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
+							+ "</th></tr>";
+					// 一度MAPに入れる
+					finishMap.put(keyArg[1], htmlStr);
+				} else {
+					htmlStr = finishMap.get(keyArg[1]);
+				}
+				htmlStr += "<tr><td>" +
+						"<a href=" + taskUpdateurl + ">戻す</a>" +
+						"</td><td>" +
+						task.taskMst.taskName +
+						"</td></tr>";
+				finishMap.replace(keyArg[1], htmlStr);
+			} else {
+				// 未実施
+				if (!notyetMap.containsKey(keyArg[1])) {
+					// 主担当者毎のヘッダ作成
+					htmlStr = "<tr><th colspan=\"2\">主担当者："
+							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
+							+ "</th></tr>";
+					// 一度MAPに入れる
+					notyetMap.put(keyArg[1], htmlStr);
+				} else {
+					htmlStr = notyetMap.get(keyArg[1]);
+				}
+				htmlStr += "<tr><td>" +
+						"<a href=" + taskUpdateurl + ">実施</a>" +
+						"</td><td>" +
+						task.taskMst.taskName +
+						"</td></tr>";
+				notyetMap.replace(keyArg[1], htmlStr);
+			}
+			Logger.debug("key:" + keyArg[0] + "," + keyArg[1] + " html:" + htmlStr);
+		}
+		// 未実施
+		html = "<tr class=\"table-info\"><th colspan=\"2\">未実施</th></tr>";
+		for (Iterator i = notyetMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry)i.next();
+			html += (String)entry.getValue();
+			Logger.debug("html:" + html);
+		}
+		// 実施済
+		html += "<tr class=\"table-success\"><th colspan=\"2\">実施済</th></tr>";
+		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry)i.next();
+			html += (String)entry.getValue();
+			Logger.debug("html:" + html);
+		}
 
+		return html;
 	}
 
 	/**
