@@ -16,8 +16,8 @@ public class UserServiceImpl implements UserService {
 	public void create(CreateUserDto createUserDto) {
 		Logger.info("UserServiceImpl#create");
 		User user = new User();
-		user.userName = createUserDto.userName;
-		user.password = createUserDto.password;
+		user.userName = createUserDto.getUserName();
+		user.password = createUserDto.getPassword();
 		user.save();
 	}
 

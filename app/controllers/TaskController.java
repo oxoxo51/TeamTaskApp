@@ -208,7 +208,7 @@ public class TaskController extends Apps {
 			flash("success", msg);
 
 			// タスクリストに遷移
-			return displayTaskList(dto.getTeamName());
+			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
 
 		} else {
 			flash("error", "入力に不備があります。");

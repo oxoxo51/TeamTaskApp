@@ -34,11 +34,11 @@ public class UserController extends Apps {
 			CreateUserDto dto = createUserDtoForm.get();
 			service.create(dto);
 			String msg = "登録しました。";
-			msg += " userName: " + dto.userName;
+			msg += " userName: " + dto.getUserName();
 			flash("success", msg);
 			// TODO ログイン済みの状態にしてチーム一覧に遷移
 			session().clear();
-			session("userName", dto.userName);
+			session("userName", dto.getUserName());
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			// TODO

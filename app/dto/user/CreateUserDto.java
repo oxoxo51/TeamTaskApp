@@ -15,13 +15,13 @@ public class CreateUserDto {
 	 * ユーザー名.
 	 */
 	@Constraints.Required
-	public String userName;
+	private String userName;
 
 	/**
 	 * パスワード.
 	 */
 	@Constraints.Required
-	public String password;
+	private String password;
 
 	/**
 	 * パスワード（確認用）
@@ -29,27 +29,27 @@ public class CreateUserDto {
 	@Constraints.Required
 	private String passwordConfirm;
 
-	private String getUserName() {
+	public String getUserName() {
 		return userName;
 	}
 
-	private void setUserName(String userName) {
+	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 
-	private String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
-	private void setPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 
-	private String getPasswordConfirm() {
+	public String getPasswordConfirm() {
 		return passwordConfirm;
 	}
 
-	private void setPasswordConfirm(String passwordConfirm) {
+	public void setPasswordConfirm(String passwordConfirm) {
 		this.passwordConfirm = passwordConfirm;
 	}
 
