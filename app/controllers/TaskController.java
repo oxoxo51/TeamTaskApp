@@ -204,15 +204,14 @@ public class TaskController extends Apps {
 			CreateTaskMstDto dto = createTaskMstDtoForm.get();
 			service.createTaskMst(dto);
 			String msg = "登録しました。";
-			msg += "taskName: " + dto.taskName;
+			msg += "taskName: " + dto.getTaskName();
 			flash("success", msg);
 
 			// タスクリストに遷移
-			return displayTaskList(dto.teamName);
+			return displayTaskList(dto.getTeamName());
 
 		} else {
-			// TODO
-			flash("error", "登録できません。");
+			flash("error", "入力に不備があります。");
 			return badRequest(taskMst.render("CREATE", createTaskMstDtoForm));
 		}
 

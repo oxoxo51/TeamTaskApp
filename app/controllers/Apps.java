@@ -58,8 +58,8 @@ public class Apps extends Controller {
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
 			session().clear();
-			session("userName", loginForm.get().userName);
-			flash("success", "ログインしました。userName:" + loginForm.get().userName);
+			session("userName", loginForm.get().getUserName());
+			flash("success", "ログインしました。userName:" + loginForm.get().getUserName());
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			flash("error", "ユーザー・パスワードが正しくありません。");

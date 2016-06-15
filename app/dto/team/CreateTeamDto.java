@@ -8,13 +8,13 @@ public class CreateTeamDto {
 	/**
 	 * チーム名.
 	 */
-	public String teamName;
+	private String teamName;
 
 	/**
 	 * チームメンバーリスト.
 	 * チームメンバー名をカンマ区切りで渡す.
 	 */
-	public String memberListStr;
+	private String memberListStr;
 
 	public String getTeamName() {
 		return teamName;

@@ -17,7 +17,7 @@ public class TeamServiceImpl implements TeamService {
 	public void create(CreateTeamDto createTeamDto) {
 		Logger.info("TeamServiceImpl#create");
 		Team team = new Team();
-		team.teamName = createTeamDto.teamName;
+		team.teamName = createTeamDto.getTeamName();
 
 		// チームメンバー
 		// TODO N:Mの登録方法はこれでよいのだろうか？

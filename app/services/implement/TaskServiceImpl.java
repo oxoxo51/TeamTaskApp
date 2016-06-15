@@ -29,10 +29,10 @@ public class TaskServiceImpl implements TaskService {
 		Logger.info("TaskServiceImpl#createTaskMst");
 
 		TaskMst taskMst = new TaskMst();
-		taskMst.taskName = createTaskMstDto.taskName;
-		taskMst.taskInfo = createTaskMstDto.taskInfo;
-		taskMst.repType = createTaskMstDto.repType;
-		taskMst.repetition = createTaskMstDto.repetition;
+		taskMst.taskName = createTaskMstDto.getTaskName();
+		taskMst.taskInfo = createTaskMstDto.getTaskInfo();
+		taskMst.repType = createTaskMstDto.getRepType();
+		taskMst.repetition = createTaskMstDto.getRepetition();
 
 		// タスク利用チーム
 		String teamName = createTaskMstDto.getTeamName();
@@ -48,13 +48,13 @@ public class TaskServiceImpl implements TaskService {
 
 		// 主担当者
 		List<User> user = User.find.where().eq(
-				"userName", createTaskMstDto.mainUserName)
+				"userName", createTaskMstDto.getMainUserName())
 				.findList();
 		List<String> errorMessages = new ArrayList<String>();
 
 		// 取得できなかった場合エラー
 		if (user.size() == 0) {
-			errorMessages.add("ユーザー：" + createTaskMstDto.mainUserName + "は存在しません。");
+			errorMessages.add("ユーザー：" + createTaskMstDto.getMainUserName() + "は存在しません。");
 		} else {
 			// ユーザー名は重複ない前提
 			taskMst.mainUser = user.get(0);

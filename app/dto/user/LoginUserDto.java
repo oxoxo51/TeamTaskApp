@@ -16,13 +16,13 @@ public class LoginUserDto {
 	 * ユーザー名.
 	 */
 	@Constraints.Required
-	public String userName;
+	private String userName;
 
 	/**
 	 * パスワード.
 	 */
 	@Constraints.Required
-	public String password;
+	private String password;
 
 	public String getUserName() {
 		return userName;

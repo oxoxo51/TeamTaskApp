@@ -60,7 +60,7 @@ public class TeamController extends Apps {
 			CreateTeamDto dto = createTeamDtoForm.get();
 			service.create(dto);
 			String msg = "登録しました。";
-			msg += " teamName: " + dto.teamName;
+			msg += " teamName: " + dto.getTeamName();
 			flash("success", msg);
 			// チームリストを表示
 			return redirect(routes.TeamController.displayTeamList());

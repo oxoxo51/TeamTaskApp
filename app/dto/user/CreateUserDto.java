@@ -27,29 +27,29 @@ public class CreateUserDto {
 	 * パスワード（確認用）
 	 */
 	@Constraints.Required
-	public String passwordConfirm;
+	private String passwordConfirm;
 
-	public String getUserName() {
+	private String getUserName() {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
+	private void setUserName(String userName) {
 		this.userName = userName;
 	}
 
-	public String getPassword() {
+	private String getPassword() {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	private void setPassword(String password) {
 		this.password = password;
 	}
 
-	public String getPasswordConfirm() {
+	private String getPasswordConfirm() {
 		return passwordConfirm;
 	}
 
-	public void setPasswordConfirm(String passwordConfirm) {
+	private void setPasswordConfirm(String passwordConfirm) {
 		this.passwordConfirm = passwordConfirm;
 	}
 
