@@ -12,6 +12,12 @@ public class Constant {
 	// privateコンストラクタでインスタンス生成を抑止する
 	private Constant() {}
 
+	/* flag:ON */
+	public static final String FLAG_ON = "1";
+
+	/* flag:OFF */
+	public static final String FLAG_OFF = "0";
+
 	/* 実施タイプ：日次 */
 	public static final String REPTYPE_DAYLY = "D";
 

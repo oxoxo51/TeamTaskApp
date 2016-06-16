@@ -1,6 +1,7 @@
 package services.implement;
 
 import com.google.inject.Inject;
+import constant.Constant;
 import dto.task.CreateTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
@@ -15,6 +16,7 @@ import util.DateUtil;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created on 2016/05/24.
@@ -131,6 +133,7 @@ public class TaskServiceImpl implements TaskService {
 					TaskTrn taskTrn = new TaskTrn();
 					taskTrn.taskMst = taskMst;
 					taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
+					taskTrn.operationFlg = getOperationFlg(taskMst.repType, taskMst.repetition, dateStr);
 
 					taskTrn.save();
 					taskTrnList.add(taskTrn);
@@ -142,6 +145,57 @@ public class TaskServiceImpl implements TaskService {
 			}
 		}
 		return taskTrnList;
+	}
+
+	/**
+	 * 実施頻度タイプ、実施頻度、タスクトランの日付を元に実施対象フラグをセットする.
+	 * @param repType
+	 * @param repetition
+	 * @param dateStr
+	 * @return 実施対象：1、実施対象外：0
+	 */
+	private String getOperationFlg(String repType, String repetition, String dateStr) {
+		switch(repType) {
+			case Constant.REPTYPE_DAYLY:
+				// 日次の場合は毎日実施対象
+				return Constant.FLAG_ON;
+			case Constant.REPTYPE_WEEKLY:
+				// dateStrの曜日を取得する
+				Locale.setDefault(Locale.US);
+				try {
+					String dow = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "E");
+					for (String rep : repetition.split(",")) {
+						if (rep.equals(dow)) {
+							return Constant.FLAG_ON;
+						}
+					}
+					// 実施頻度の中に一致する曜日が無かった場合はOFF
+					return Constant.FLAG_OFF;
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO エラーの扱い
+					return Constant.FLAG_OFF;
+				}
+			case Constant.REPTYPE_MONTHLY:
+				try {
+					// dateStrの日付部分を取得する
+					String d = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "d");
+					for (String rep : repetition.split(",")) {
+						if (rep.equals(d)) {
+							return Constant.FLAG_ON;
+						}
+					}
+					// 実施頻度の中に一致する日付が無かった場合はOFF
+					return Constant.FLAG_OFF;
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO エラーの扱い
+					return Constant.FLAG_OFF;
+				}
+			default:
+				// ありえない
+				return Constant.FLAG_OFF;
+		}
 	}
 
 	/**
