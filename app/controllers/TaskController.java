@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import constant.Constant;
 import dto.task.CreateTaskMstDto;
 import models.TaskTrn;
 import models.Team;
@@ -98,33 +99,37 @@ public class TaskController extends Apps {
 		for (TaskTrn task : taskTrnList) {
 			String key = "";
 			// 実施状態
-			// TODO 実施対象かどうかの判定を追加する必要あり:条件分岐の先頭に追加
 			if (task.operationUser != null) {
-				// 実施済
+				// 実施済:実施ユーザーあり
 				key = "1," + task.operationUser.id + "," + task.id;
-			} else {
-				// TODO 実施対象化どうかの判定を追加する
+			} else if (Constant.FLAG_ON.equals(task.operationFlg)
+					&& (task.operationUser == null)) {
+				// 未実施:実施対象ON、かつ、実施ユーザーなし
 				key = "0," + task.taskMst.mainUser.id+ "," + task.id;
+			} else {
+				// 実施対象外:実施対象OFF、かつ、実施ユーザーなし
+				key = "-1," + task.id;
 			}
 			taskMap.put(key, task);
 		}
 
-		// 実施済、未実施それぞれString配列のMAPでHTMLを作成する
+		// 実施済、未実施、対象外それぞれString配列のMAPでHTMLを作成する
 		Map<String, String> finishMap = new HashMap<String, String>(); // 実施済
 		Map<String, String> notyetMap = new HashMap<String, String>(); // 未実施
+		Map<String, String> otherMap = new HashMap<String, String>(); // 対象外
 
 		// キーの状態毎にHTMLを作成する.
 		for (Iterator i = taskMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			String[] keyArg = ((String)entry.getKey()).split(",");
 			TaskTrn task = (TaskTrn)entry.getValue();
-			String taskUpdateurl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr).absoluteURL(request());
+			String taskUpdateUrl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr).absoluteURL(request());
 			String htmlStr = "";
 			if ("1".equals(keyArg[0])) {
 				// 実施済
 				if (!finishMap.containsKey(keyArg[1])) {
 					// 実施者毎のヘッダ作成
-					htmlStr = "<tr><th colspan=\"2\">実施者："
+					htmlStr = "<tr class=\"table-warning\"><th colspan=\"2\">実施者："
 							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
@@ -133,16 +138,16 @@ public class TaskController extends Apps {
 					htmlStr = finishMap.get(keyArg[1]);
 				}
 				htmlStr += "<tr><td>" +
-						"<a href=" + taskUpdateurl + ">戻す</a>" +
+						"<a href=" + taskUpdateUrl + ">戻す</a>" +
 						"</td><td>" +
 						task.taskMst.taskName +
 						"</td></tr>";
 				finishMap.replace(keyArg[1], htmlStr);
-			} else {
+			} else if ("0".equals(keyArg[0])) {
 				// 未実施
 				if (!notyetMap.containsKey(keyArg[1])) {
 					// 主担当者毎のヘッダ作成
-					htmlStr = "<tr><th colspan=\"2\">主担当者："
+					htmlStr = "<tr class=\"table-warning\"><th colspan=\"2\">主担当者："
 							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
@@ -151,28 +156,47 @@ public class TaskController extends Apps {
 					htmlStr = notyetMap.get(keyArg[1]);
 				}
 				htmlStr += "<tr><td>" +
-						"<a href=" + taskUpdateurl + ">実施</a>" +
+						"<a href=" + taskUpdateUrl + ">実施</a>" +
 						"</td><td>" +
 						task.taskMst.taskName +
 						"</td></tr>";
 				notyetMap.replace(keyArg[1], htmlStr);
+			} else {
+				// 対象外
+				htmlStr += "<tr><td>" +
+						"<a href=" + taskUpdateUrl + ">実施</a>" +
+						"</td><td>" +
+						task.taskMst.taskName +
+						"</td></tr>";
+				//ユーザー毎にまとめる必要なし
+				otherMap.put(keyArg[1], htmlStr);
 			}
 			Logger.debug("key:" + keyArg[0] + "," + keyArg[1] + " html:" + htmlStr);
 		}
 		// 未実施
-		html = "<tr class=\"table-info\"><th colspan=\"2\">未実施</th></tr>";
+		html = "<thead><tr class=\"table-danger\"><th colspan=\"2\">未実施</th></tr></thead><tbody>";
 		for (Iterator i = notyetMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
 			Logger.debug("html:" + html);
 		}
-		// 実施済
-		html += "<tr class=\"table-success\"><th colspan=\"2\">実施済</th></tr>";
-		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
+		html += "</tbody>";
+		// 対象外
+		html += "<thead><tr class=\"table-active\"><th colspan=\"2\">実施不要</th></tr></thead><tbody>";
+		for (Iterator i = otherMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
 			Logger.debug("html:" + html);
 		}
+		html += "</tbody>";
+		// 実施済
+		html += "<thead><tr class=\"table-success\"><th colspan=\"2\">実施済</th></tr></thead><tbody>";
+		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry) i.next();
+			html += (String) entry.getValue();
+			Logger.debug("html:" + html);
+		}
+		html += "</tbody>";
 
 		return html;
 	}
