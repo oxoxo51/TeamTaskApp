@@ -62,6 +62,9 @@ public class TaskServiceImpl implements TaskService {
 			taskMst.mainUser = user.get(0);
 		}
 
+		// 開始日
+		taskMst.startDate = createTaskMstDto.getStartDate();
+
 		if (errorMessages.size() > 0) {
 			// TODO エラーメッセージの返し方
 		} else {
@@ -115,7 +118,7 @@ public class TaskServiceImpl implements TaskService {
 	 * @param dateStr
 	 */
 	@Override
-	public List<TaskTrn> createTaskTrn(long teamId, String dateStr) {
+	public List<TaskTrn> createTaskTrnByTeamId(long teamId, String dateStr) {
 		Logger.info("TaskServiceImpl#createTaskTrn");
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
 		// 1.チームからタスクマスタの一覧を取得する
@@ -129,22 +132,35 @@ public class TaskServiceImpl implements TaskService {
 				List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
 
 				// 2.タスクマスタの一覧を元に、該当日付のタスクトランを作成する
+				// ただし、タスクトランを作成する日付がタスクマスタの開始日以降の場合のみとする
 				for (TaskMst taskMst : taskMstList) {
-					TaskTrn taskTrn = new TaskTrn();
-					taskTrn.taskMst = taskMst;
-					taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
-					taskTrn.operationFlg = getOperationFlg(taskMst.repType, taskMst.repetition, dateStr);
-
-					taskTrn.save();
-					taskTrnList.add(taskTrn);
+					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, "yyyyMMdd")) <= 0) {
+						taskTrnList.add(createTaskTrn(taskMst, dateStr));
+					}
 				}
-
 			} catch (ParseException e) {
 				// TODO エラーハンドリング
 				e.printStackTrace();
 			}
 		}
 		return taskTrnList;
+	}
+
+	/**
+	 * タスクマスタを元に、指定した日付のタスクトランを作成する.
+	 * @param taskMst
+	 * @param dateStr
+	 * @return
+	 */
+	@Override
+	public TaskTrn createTaskTrn(TaskMst taskMst, String dateStr) throws ParseException {
+		TaskTrn taskTrn = new TaskTrn();
+		taskTrn.taskMst = taskMst;
+		taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
+		taskTrn.operationFlg = getOperationFlg(taskMst.repType, taskMst.repetition, dateStr);
+
+		taskTrn.save();
+		return taskTrn;
 	}
 
 	/**

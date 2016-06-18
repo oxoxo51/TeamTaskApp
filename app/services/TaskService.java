@@ -2,9 +2,11 @@ package services;
 
 import com.google.inject.ImplementedBy;
 import dto.task.CreateTaskMstDto;
+import models.TaskMst;
 import models.TaskTrn;
 import services.implement.TaskServiceImpl;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -17,7 +19,9 @@ public interface TaskService {
 
 	List<TaskTrn> findTaskList(long teamId, String dateStr);
 
-	List<TaskTrn> createTaskTrn(long teamId, String dateStr);
+	List<TaskTrn> createTaskTrnByTeamId(long teamId, String dateStr);
+
+	TaskTrn createTaskTrn(TaskMst taskMst, String dateStr) throws ParseException;
 
 	String getTaskMstName(long mstId);
 

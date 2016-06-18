@@ -3,6 +3,7 @@ package controllers;
 import com.google.inject.Inject;
 import constant.Constant;
 import dto.task.CreateTaskMstDto;
+import models.TaskMst;
 import models.TaskTrn;
 import models.Team;
 import models.User;
@@ -16,6 +17,7 @@ import util.DateUtil;
 import views.html.taskList;
 import views.html.taskMst;
 
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -70,8 +72,31 @@ public class TaskController extends Apps {
 		// 該当日付のタスクトランを取得し、0件の場合新規作成する
 		List<TaskTrn> taskTrnList = service.findTaskList(team.id, dateStr);
 		if (taskTrnList.size() == 0) {
-			taskTrnList = service.createTaskTrn(team.id, dateStr);
+			taskTrnList = service.createTaskTrnByTeamId(team.id, dateStr);
+		} else {
+			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
+			List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
+			for (TaskMst taskMst : taskMstList) {
+				// トラン未作成フラグ
+				boolean noTrnFlg = true;
+				for (TaskTrn taskTrn : taskTrnList) {
+					if (taskMst.id == taskTrn.taskMst.id) {
+						// 作成済みならfor文を抜ける
+						noTrnFlg = false;
+						break;
+					}
+				}
+				if (noTrnFlg) {
+					try {
+						taskTrnList.add(service.createTaskTrn(taskMst, dateStr));
+					} catch (ParseException e) {
+						e.printStackTrace();
+						// TODO エラーの扱い
+					}
+				}
+			}
 		}
+		// TODO DEBUG
 		for (TaskTrn task : taskTrnList) {
 			Logger.info("taskName:" + task.taskMst.taskName
 						+ "taskMstId:" + task.taskMst.id);
@@ -211,6 +236,7 @@ public class TaskController extends Apps {
 
 		CreateTaskMstDto dto = new CreateTaskMstDto();
 		dto.setTeamName(teamName);
+		dto.setStartDate(new Date());
 		Form<CreateTaskMstDto> createTaskMstDtoForm = Form.form(CreateTaskMstDto.class);
 		return ok(taskMst.render("CREATE", createTaskMstDtoForm.fill(dto)));
 	}

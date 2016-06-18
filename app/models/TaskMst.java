@@ -2,7 +2,11 @@ package models;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import java.util.Date;
 
 /**
  * タスクのマスタ.<br>
@@ -49,6 +53,11 @@ public class TaskMst extends Model {
 	 */
 	@ManyToOne(cascade= CascadeType.ALL)
 	public User mainUser;
+
+	/**
+	 * 開始日.
+	 */
+	public Date startDate;
 
 	/**
 	 * Finder.

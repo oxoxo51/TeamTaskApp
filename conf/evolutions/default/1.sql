@@ -11,6 +11,7 @@ create table task_mst (
   rep_type                      varchar(255),
   repetition                    varchar(255),
   main_user_id                  bigint,
+  start_date                    timestamp,
   constraint pk_task_mst primary key (id)
 );
 create sequence task_mst_seq;

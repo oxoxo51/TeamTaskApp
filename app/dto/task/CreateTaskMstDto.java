@@ -5,6 +5,7 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,7 +45,17 @@ public class CreateTaskMstDto {
 	 */
 	private String teamName;
 
+	/**
+	 * 開始日.
+	 */
+	@Constraints.Required
+	private Date startDate;
+
+
 	private List<ValidationError> errors;
+
+	public CreateTaskMstDto() {
+	}
 
 	public String getTaskName() {
 		return taskName;
@@ -93,6 +104,15 @@ public class CreateTaskMstDto {
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
 	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
 
 	/**
 	 * バリデーション.
