@@ -41,8 +41,9 @@ public class UserController extends Apps {
 			session("userName", dto.getUserName());
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
-			// TODO
-			flash("error", "登録できません。");
+			flash("error", "登録できません。エラーの内容を確認してください。");
+			// パスワードの入力はクリアする
+
 			return badRequest(user.render("CREATE", createUserDtoForm));
 		}
 	}

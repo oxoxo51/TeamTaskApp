@@ -65,8 +65,7 @@ public class TeamController extends Apps {
 			// チームリストを表示
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
-			// TODO
-			flash("error", "登録できません。");
+			flash("error", "エラーの内容を確認してください。");
 			return badRequest(team.render("CREATE", createTeamDtoForm));
 		}
 	}

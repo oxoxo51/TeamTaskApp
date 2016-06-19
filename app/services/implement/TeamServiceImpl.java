@@ -63,4 +63,15 @@ public class TeamServiceImpl implements TeamService {
 			return Team.find.where().eq("members", userList.get(0)).setOrderBy("teamName").findList();
 		}
 	}
+
+	/**
+	 * チーム名でチームを取得する.
+	 * @param teamName
+	 * @return
+	 */
+	@Override
+	public List<Team> findTeamByName(String teamName) {
+		Logger.info("TeamServiceImpl#findTeamByName");
+		return Team.find.where().eq("teamName", teamName).findList();
+	}
 }

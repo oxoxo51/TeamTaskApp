@@ -15,5 +15,5 @@ public interface TeamService {
 
 	void create(CreateTeamDto createTeamDto);
 	List<Team> findTeamListByUserName(String userName);
-
+	List<Team> findTeamByName(String teamName);
 }
