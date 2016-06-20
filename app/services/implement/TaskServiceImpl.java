@@ -261,4 +261,23 @@ public class TaskServiceImpl implements TaskService {
 		}
 	}
 
+	/**
+	 * チーム名からそのチームが所有するタスクマスタを取得する.
+	 * @param teamName
+	 * @return
+	 */
+	public List<TaskMst> findTaskMstByTeamName(String teamName) throws Exception {
+		Logger.info("TaskServiceImpl#findTaskMstByTeamName");
+		TeamServiceImpl teamService = new TeamServiceImpl();
+		TaskServiceImpl service = new TaskServiceImpl();
+		List<Team> teamList = teamService.findTeamByName(teamName);
+		if (teamList == null || teamList.size() == 0) {
+			// TODO Exceptionの定義
+			throw new Exception();
+		} else {
+			Team team = teamList.get(0);
+			return TaskMst.find.where().eq("taskTeam", team).findList();
+		}
+	}
+
 }

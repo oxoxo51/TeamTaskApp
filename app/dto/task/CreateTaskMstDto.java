@@ -1,8 +1,10 @@
 package dto.task;
 
 import constant.Constant;
+import models.TaskMst;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
+import services.implement.TaskServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,11 +40,13 @@ public class CreateTaskMstDto {
 	/**
 	 * 主担当ユーザー名.
 	 */
+	@Constraints.Required
 	private String mainUserName;
 
 	/**
 	 * タスク所有チーム名.
 	 */
+	@Constraints.Required
 	private String teamName;
 
 	/**
@@ -55,6 +59,7 @@ public class CreateTaskMstDto {
 	private List<ValidationError> errors;
 
 	public CreateTaskMstDto() {
+		errors = new ArrayList<ValidationError>();
 	}
 
 	public String getTaskName() {
@@ -119,7 +124,9 @@ public class CreateTaskMstDto {
 	 * @return
 	 */
 	public List<ValidationError> validate() {
-		errors = new ArrayList<>();
+
+		// タスク名称の重複チェック
+		checkDuplicateTaskName();
 
 		// 実施頻度タイプの区分値チェック
 		if (checkValueRepType()) {
@@ -127,6 +134,26 @@ public class CreateTaskMstDto {
 			checkRepTypeAndRepetition();
 		}
 		return errors.isEmpty() ? null : errors;
+	}
+
+	private void checkDuplicateTaskName() {
+		TaskServiceImpl service = new TaskServiceImpl();
+		// 登録済みのタスクマスタ一覧
+		try {
+			List<TaskMst> taskMstList = service.findTaskMstByTeamName(teamName);
+			for (TaskMst taskMst : taskMstList) {
+				// 入力のタスク名称と登録済みの名称が重複したらエラー
+				if (taskMst.taskName.equals(taskName)) {
+					errors.add(new ValidationError("taskName", "タスク：" + taskName + " は既に登録されています。"));
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// TODO エラー：チーム見つからないエラーを想定。Exceptionの定義
+			e.printStackTrace();
+			// 発生しない想定のエラー
+			errors.add(new ValidationError("teamName", "チームが見つかりません。"));
+		}
 	}
 
 	/**
