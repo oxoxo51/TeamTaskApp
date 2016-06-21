@@ -2,17 +2,9 @@
 
 @import helper._
 
-@main("ユーザー登録・編集") {
+@main("ユーザー登録") {
     <div class="container">
-        <h2 class="bg-info">
-        @{val title = if(mode == "CREATE") {
-              "ユーザー登録"
-            } else if(mode == "UPDATE") {
-              "ユーザー編集"
-            }
-            title
-        }
-        </h2>
+        <h2 class="bg-info">ユーザー登録</h2>
         @form(action = routes.UserController.create(), 'class -> "form-horizontal") {
             @(inputText(
                 field = form1("userName"),

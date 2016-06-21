@@ -1,0 +1,32 @@
+@(form1: Form[dto.user.ChangePwdDto])
+
+@import helper._
+
+@main("パスワード変更") {
+<div class="container">
+    <h2 class="bg-info">パスワード変更</h2>
+    @form(action = routes.UserController.updatePwd(), 'class -> "form-horizontal") {
+    @(inputText(
+    field = form1("userName"),
+    args = 'type -> "hidden",
+            '_label -> ""
+    ))
+    @(inputText(
+    field = form1("passwordAsIs"),
+    args = 'type -> "password",
+            '_label -> "現パスワード"
+    ))
+    @(inputText(
+    field = form1("passwordToBe"),
+    args = 'type -> "password",
+            '_label -> "新パスワード"
+    ))
+    @(inputText(
+    field = form1("passwordToBeConfirm"),
+    args = 'type -> "password",
+            '_label -> "新パスワード（確認）"
+    ))
+    <input type="submit">
+    }
+</div>
+}

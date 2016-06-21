@@ -9,6 +9,8 @@ GET     /logout                     controllers.Apps.logout
 
 GET     /user/new                   controllers.UserController.displayCreateUser
 POST    /user/create                controllers.UserController.create
+GET     /user/changepwd             controllers.UserController.displayChangePwd
+POST    /user/updatepwd             controllers.UserController.updatePwd
 
 GET     /team/new                   controllers.TeamController.displayCreateTeam
 POST    /team/create                controllers.TeamController.create

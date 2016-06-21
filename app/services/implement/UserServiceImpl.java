@@ -1,5 +1,6 @@
 package services.implement;
 
+import dto.user.ChangePwdDto;
 import dto.user.CreateUserDto;
 import models.User;
 import play.Logger;
@@ -31,6 +32,14 @@ public class UserServiceImpl implements UserService {
 	public List<User> findUserByName(String userName) {
 		Logger.info("UserServiceImpl#findUserByName");
 		return User.find.where().eq("userName", userName).findList();
+	}
+
+	@Override
+	public void changePwd(ChangePwdDto changePwdDto) {
+		Logger.info("UserServiceImpl#changePwd");
+		User user = findUserByName(changePwdDto.getUserName()).get(0);
+		user.password = changePwdDto.getPasswordToBe();
+		user.update();
 	}
 
 }

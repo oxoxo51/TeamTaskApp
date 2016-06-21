@@ -1,6 +1,7 @@
 package services;
 
 import com.google.inject.ImplementedBy;
+import dto.user.ChangePwdDto;
 import dto.user.CreateUserDto;
 import models.User;
 import services.implement.UserServiceImpl;
@@ -18,4 +19,6 @@ public interface UserService {
 	List<User> findUser(String userName, String password);
 
 	List<User> findUserByName(String userName);
+
+	void changePwd(ChangePwdDto changePwdDto);
 }
