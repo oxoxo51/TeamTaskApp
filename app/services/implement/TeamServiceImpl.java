@@ -1,9 +1,10 @@
 package services.implement;
 
-import dto.team.CreateTeamDto;
+import dto.team.EditTeamDto;
 import models.Team;
 import models.User;
 import play.Logger;
+import play.mvc.Controller;
 import services.TeamService;
 
 import java.util.ArrayList;
@@ -14,31 +15,21 @@ import java.util.List;
  */
 public class TeamServiceImpl implements TeamService {
 	@Override
-	public void create(CreateTeamDto createTeamDto) {
+	public void create(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#create");
 		Team team = new Team();
-		team.teamName = createTeamDto.getTeamName();
+		team.teamName = editTeamDto.getTeamName();
 
 		// チームメンバー
-		// TODO N:Mの登録方法はこれでよいのだろうか？
 		// DTOのLISTからユーザーを取得
 		// TODO ユーザー名から再度ユーザーを取得して登録ってすごく冗長。。。
-		team.members = new ArrayList<User>();
 		List<String> errorMessages = new ArrayList<String>();
-		for (String userName : createTeamDto.getMemberListStr().split(",")) {
-			// ユーザー名からユーザーを取得
-			List<User> user = User.find.where().eq("userName", userName).findList();
-			// 取得できなかった場合エラー
-			if (user.size() == 0) {
-				errorMessages.add("ユーザー：" + userName + " は存在しません。");
-			} else {
-				// ユーザー名は重複ない前提
-				team.members.add(user.get(0));
-			}
-		}
+		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
 
-		// 作成ユーザー
-		// TODO ログインユーザーから設定
+		// 作成ユーザー:ログインユーザーから設定
+		team.createUser = User.find.where().eq(
+				"userName", Controller.session("userName"))
+				.findList().get(0);
 
 		if (errorMessages.size() > 0) {
 			// TODO エラーメッセージの返し方
@@ -47,11 +38,32 @@ public class TeamServiceImpl implements TeamService {
 		}
 	}
 
+	@Override
+	public void update(EditTeamDto editTeamDto) {
+		Logger.info("TeamServiceImpl#update");
+		Team team = Team.find.byId(editTeamDto.getId());
+		team.teamName = editTeamDto.getTeamName();
+
+		// チームメンバー
+		// 一度クリアした上でDTOからセット
+		// TODO ユーザー名から再度ユーザーを取得して登録ってすごく冗長。。
+		List<String> errorMessages = new ArrayList<String>();
+		team.members.clear();
+		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
+
+		if (errorMessages.size() > 0) {
+			// TODO エラーメッセージの返し方
+		} else {
+			team.update();
+		}
+	}
+
 	/**
 	 * ユーザーが所属するチームをユーザー名から取得する.
 	 * @param userName
 	 * @return
 	 */
+	@Override
 	public List<Team> findTeamListByUserName(String userName) {
 		Logger.info("TeamServiceImpl#findTeamListByUserName");
 		// ユーザー名から該当ユーザーを取得
@@ -73,5 +85,25 @@ public class TeamServiceImpl implements TeamService {
 	public List<Team> findTeamByName(String teamName) {
 		Logger.info("TeamServiceImpl#findTeamByName");
 		return Team.find.where().eq("teamName", teamName).findList();
+	}
+
+	/**
+	 * チームメンバーをセットする.
+	 * @param memberListStr
+	 * @param members
+	 * @param errorMessages
+	 */
+	private void setMembers(String memberListStr, List<User> members, List<String> errorMessages) {
+		for (String userName : memberListStr.split(",")) {
+			// ユーザー名からユーザーを取得
+			List<User> user = User.find.where().eq("userName", userName).findList();
+			// 取得できなかった場合エラー
+			if (user.size() == 0) {
+				errorMessages.add("ユーザー：" + userName + " は存在しません。");
+			} else {
+				// ユーザー名は重複ない前提
+				members.add(user.get(0));
+			}
+		}
 	}
 }

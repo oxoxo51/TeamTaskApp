@@ -247,7 +247,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result create() {
-		Logger.info("TaskController#create");
+		Logger.info("TaskController#edit");
 
 		Form<CreateTaskMstDto> createTaskMstDtoForm = Form.form(CreateTaskMstDto.class).bindFromRequest();
 		if (!createTaskMstDtoForm.hasErrors()) {

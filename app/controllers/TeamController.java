@@ -1,8 +1,9 @@
 package controllers;
 
 import com.google.inject.Inject;
-import dto.team.CreateTeamDto;
+import dto.team.EditTeamDto;
 import models.Team;
+import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
@@ -42,31 +43,68 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayCreateTeam() {
 		Logger.info("TeamController#displayCreateTeam");
+		EditTeamDto dto = new EditTeamDto();
+		dto.setMode("CREATE");
 
-		Form<CreateTeamDto> createTeamDtoForm = Form.form(CreateTeamDto.class);
-		return ok(team.render("CREATE", createTeamDtoForm));
+		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
+		return ok(team.render("CREATE", editTeamDtoForm));
 	}
 
 	/**
-	 * チーム新規登録.
+	 * チーム更新画面表示.
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result create() {
-		Logger.info("TeamController#create");
+	public Result displayUpdateTeam(String teamName) {
+		Logger.info("TeamController#displayTeam");
 
-		Form<CreateTeamDto> createTeamDtoForm = Form.form(CreateTeamDto.class).bindFromRequest();
-		if (!createTeamDtoForm.hasErrors()) {
-			CreateTeamDto dto = createTeamDtoForm.get();
-			service.create(dto);
-			String msg = "登録しました。";
+		EditTeamDto dto = new EditTeamDto();
+		dto.setMode("UPDATE");
+
+		String memberListStr = "";
+		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
+		dto.setId(team.id);
+		for (User user : team.members) {
+			memberListStr += (user.userName + ",");
+		}
+		// 最後のカンマを除く
+		memberListStr = memberListStr.substring(0, memberListStr.length()-1);
+		dto.setMemberListStr(memberListStr);
+		dto.setTeamName(team.teamName);
+
+		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).fill(dto);
+		return ok(views.html.team.render("UPDATE", editTeamDtoForm));
+	}
+
+	/**
+	 * チーム登録/更新.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result edit(String mode) {
+		Logger.info("TeamController#edit MODE:" + mode);
+
+		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).bindFromRequest();
+		if (!editTeamDtoForm.hasErrors()) {
+			String msg ="";
+			EditTeamDto dto = editTeamDtoForm.get();
+			switch (mode) {
+				case "CREATE" :
+					service.create(dto);
+					msg += "登録しました。";
+					break;
+				case "UPDATE" :
+					service.update(dto);
+					msg += "更新しました。";
+					break;
+			}
 			msg += " teamName: " + dto.getTeamName();
 			flash("success", msg);
 			// チームリストを表示
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			flash("error", "エラーの内容を確認してください。");
-			return badRequest(team.render("CREATE", createTeamDtoForm));
+			return badRequest(team.render(mode, editTeamDtoForm));
 		}
 	}
 

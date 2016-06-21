@@ -1,5 +1,6 @@
 package dto.team;
 
+import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TeamServiceImpl;
@@ -10,7 +11,12 @@ import java.util.List;
 /**
  * Created on 2016/05/10.
  */
-public class CreateTeamDto {
+public class EditTeamDto {
+
+	/**
+	 * id.
+	 */
+	private Long id;
 
 	/**
 	 * チーム名.
@@ -24,6 +30,20 @@ public class CreateTeamDto {
 	 */
 	@Constraints.Required
 	private String memberListStr;
+
+	/**
+	 * mode.
+	 * @return
+	 */
+	private String mode;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getTeamName() {
 		return teamName;
@@ -41,6 +61,15 @@ public class CreateTeamDto {
 		this.memberListStr = memberListStr;
 	}
 
+	public String getMode() {
+		return mode;
+	}
+
+	public void setMode(String mode) {
+		this.mode = mode;
+	}
+
+
 	/**
 	 * バリデーション.
 	 * @return
@@ -50,10 +79,20 @@ public class CreateTeamDto {
 
 		List<ValidationError> errors = new ArrayList<>();
 
-		if(service.findTeamByName(teamName) != null && service.findTeamByName(teamName).size() != 0) {
+		// 新規作成時のみ
+		if("CREATE".equals(mode) && service.findTeamByName(teamName) != null
+				&& service.findTeamByName(teamName).size() != 0) {
 			errors.add(new ValidationError("teamName", "チーム名:" + teamName + " は既に使用されています。"));
 		}
 
+		for (String userName : memberListStr.split(",")) {
+			// ユーザー名からユーザーを取得
+			List<User> user = User.find.where().eq("userName", userName).findList();
+			// 取得できなかった場合エラー
+			if (user.size() == 0) {
+				errors.add(new ValidationError("memberListStr", "ユーザー：" + userName + " は存在しません。"));
+			}
+		}
 		return errors.isEmpty() ? null : errors;
 	}
 }

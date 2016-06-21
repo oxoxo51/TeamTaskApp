@@ -15,7 +15,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public void create(CreateUserDto createUserDto) {
-		Logger.info("UserServiceImpl#create");
+		Logger.info("UserServiceImpl#edit");
 		User user = new User();
 		user.userName = createUserDto.getUserName();
 		user.password = createUserDto.getPassword();

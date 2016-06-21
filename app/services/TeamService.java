@@ -1,7 +1,7 @@
 package services;
 
 import com.google.inject.ImplementedBy;
-import dto.team.CreateTeamDto;
+import dto.team.EditTeamDto;
 import models.Team;
 import services.implement.TeamServiceImpl;
 
@@ -13,7 +13,8 @@ import java.util.List;
 @ImplementedBy(TeamServiceImpl.class)
 public interface TeamService {
 
-	void create(CreateTeamDto createTeamDto);
+	void create(EditTeamDto editTeamDto);
+	void update(EditTeamDto editTeamDto);
 	List<Team> findTeamListByUserName(String userName);
 	List<Team> findTeamByName(String teamName);
 }

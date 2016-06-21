@@ -1,4 +1,4 @@
-@(mode: String, form1: Form[dto.team.CreateTeamDto])
+@(mode: String, form1: Form[dto.team.EditTeamDto])
 
 @import helper._
 
@@ -13,7 +13,12 @@
                 title
             }
         </h2>
-        @form(action = routes.TeamController.create(), 'class -> "form-horizontal") {
+        @form(action = routes.TeamController.edit(mode), 'class -> "form-horizontal") {
+            @(inputText(
+            field = form1("id"),
+            args = 'type -> "hidden",
+                    '_label -> ""
+            ))
             @(inputText(
                 field = form1("teamName"),
                 args = '_label -> "チーム名"

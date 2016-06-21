@@ -13,7 +13,8 @@ GET     /user/changepwd             controllers.UserController.displayChangePwd
 POST    /user/updatepwd             controllers.UserController.updatePwd
 
 GET     /team/new                   controllers.TeamController.displayCreateTeam
-POST    /team/create                controllers.TeamController.create
+GET     /team/:teamName/edit        controllers.TeamController.displayUpdateTeam(teamName: String)
+POST    /team/edit/:mode            controllers.TeamController.edit(mode: String)
 GET     /team/list                  controllers.TeamController.displayTeamList
 
 GET     /:teamName/task/new                   controllers.TaskController.displayCreateTaskMst(teamName: String)

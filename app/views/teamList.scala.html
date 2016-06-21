@@ -9,7 +9,7 @@
             @for(team <- teamList){
                 <tr>
                     <td><a href="@{routes.TaskController.displayTaskList(team.teamName)}">@team.teamName</a></td>
-                    <td>TODO:編集リンク</td>
+                    <td><a href="@{routes.TeamController.displayUpdateTeam(team.teamName)}">編集</a></td>
                 </tr>
             }
             </tbody>
