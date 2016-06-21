@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import constant.Constant;
 import dto.team.EditTeamDto;
 import models.Team;
 import models.User;
@@ -44,10 +45,10 @@ public class TeamController extends Apps {
 	public Result displayCreateTeam() {
 		Logger.info("TeamController#displayCreateTeam");
 		EditTeamDto dto = new EditTeamDto();
-		dto.setMode("CREATE");
+		dto.setMode(Constant.MODE_CREATE);
 
 		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
-		return ok(team.render("CREATE", editTeamDtoForm));
+		return ok(team.render(Constant.MODE_CREATE, editTeamDtoForm));
 	}
 
 	/**
@@ -59,7 +60,7 @@ public class TeamController extends Apps {
 		Logger.info("TeamController#displayTeam");
 
 		EditTeamDto dto = new EditTeamDto();
-		dto.setMode("UPDATE");
+		dto.setMode(Constant.MODE_UPDATE);
 
 		String memberListStr = "";
 		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
@@ -73,7 +74,7 @@ public class TeamController extends Apps {
 		dto.setTeamName(team.teamName);
 
 		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).fill(dto);
-		return ok(views.html.team.render("UPDATE", editTeamDtoForm));
+		return ok(views.html.team.render(Constant.MODE_UPDATE, editTeamDtoForm));
 	}
 
 	/**
@@ -89,11 +90,11 @@ public class TeamController extends Apps {
 			String msg ="";
 			EditTeamDto dto = editTeamDtoForm.get();
 			switch (mode) {
-				case "CREATE" :
+				case Constant.MODE_CREATE :
 					service.create(dto);
 					msg += "登録しました。";
 					break;
-				case "UPDATE" :
+				case Constant.MODE_UPDATE :
 					service.update(dto);
 					msg += "更新しました。";
 					break;

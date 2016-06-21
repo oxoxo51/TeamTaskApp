@@ -12,6 +12,12 @@ public class Constant {
 	// privateコンストラクタでインスタンス生成を抑止する
 	private Constant() {}
 
+	/* mode:CREATE */
+	public static final String MODE_CREATE = "CREATE";
+
+	/* mode:UPDATE */
+	public static final String MODE_UPDATE = "UPDATE";
+
 	/* flag:ON */
 	public static final String FLAG_ON = "1";
 

@@ -1,13 +1,14 @@
 @(mode: String, form1: Form[dto.team.EditTeamDto])
 
 @import helper._
+@import constant.Constant
 
 @main("チーム登録・編集") {
     <div class="container">
         <h2 class="bg-info">
-            @{val title = if (mode == "CREATE") {
+            @{val title = if (mode == Constant.MODE_CREATE) {
                 "チーム登録"
-                } else if (mode == "UPDATE") {
+                } else if (mode == Constant.MODE_UPDATE) {
                 "チーム編集"
                 }
                 title
