@@ -155,8 +155,9 @@ public class EditTaskMstDto {
 		try {
 			List<TaskMst> taskMstList = service.findTaskMstByTeamName(teamName);
 			for (TaskMst taskMst : taskMstList) {
-				// 入力のタスク名称と登録済みの名称が重複したらエラー
-				if (taskMst.taskName.equals(taskName)) {
+				// 入力のタスク名称と登録済み別タスクの名称が重複したらエラー
+				if (taskMst.taskName.equals(taskName)
+						&& (id == null || taskMst.id != id)) {
 					errors.add(new ValidationError("taskName", "タスク：" + taskName + " は既に登録されています。"));
 					break;
 				}

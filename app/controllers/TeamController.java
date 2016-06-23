@@ -47,7 +47,7 @@ public class TeamController extends Apps {
 		EditTeamDto dto = new EditTeamDto();
 		dto.setMode(Constant.MODE_CREATE);
 
-		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
+		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).fill(dto);
 		return ok(team.render(Constant.MODE_CREATE, editTeamDtoForm));
 	}
 

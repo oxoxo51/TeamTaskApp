@@ -79,9 +79,9 @@ public class EditTeamDto {
 
 		List<ValidationError> errors = new ArrayList<>();
 
-		// 新規作成時のみ
-		if("CREATE".equals(mode) && service.findTeamByName(teamName) != null
-				&& service.findTeamByName(teamName).size() != 0) {
+		// 入力のタスク名称と登録済み別タスクの名称が重複したらエラー
+		if((service.findTeamByName(teamName).size() != 0)
+				&& (id == null || service.findTeamByName(teamName).get(0).id != id)) {
 			errors.add(new ValidationError("teamName", "チーム名:" + teamName + " は既に使用されています。"));
 		}
 
