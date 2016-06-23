@@ -18,7 +18,8 @@ POST    /team/edit/:mode            controllers.TeamController.edit(mode: String
 GET     /team/list                  controllers.TeamController.displayTeamList
 
 GET     /:teamName/task/new                   controllers.TaskController.displayCreateTaskMst(teamName: String)
-POST    /task/create                          controllers.TaskController.create
+GET     /:teamName/task/:taskName/edit        controllers.TaskController.displayUpdateTaskMst(teamName: String, taskName: String)
+POST    /task/edit/:mode                      controllers.TaskController.edit(mode: String)
 GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
 

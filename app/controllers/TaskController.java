@@ -2,7 +2,7 @@ package controllers;
 
 import com.google.inject.Inject;
 import constant.Constant;
-import dto.task.CreateTaskMstDto;
+import dto.task.EditTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
 import models.Team;
@@ -234,35 +234,68 @@ public class TaskController extends Apps {
 	public Result displayCreateTaskMst(String teamName) {
 		Logger.info("TaskController#displayCreateTaskMst");
 
-		CreateTaskMstDto dto = new CreateTaskMstDto();
+		EditTaskMstDto dto = new EditTaskMstDto();
 		dto.setTeamName(teamName);
 		dto.setStartDate(new Date());
-		Form<CreateTaskMstDto> createTaskMstDtoForm = Form.form(CreateTaskMstDto.class);
-		return ok(taskMst.render("CREATE", createTaskMstDtoForm.fill(dto)));
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
+		return ok(taskMst.render(Constant.MODE_CREATE, editTaskMstDtoForm.fill(dto)));
 	}
 
 	/**
-	 * タスクマスタ新規登録.
+	 * タスクマスタ更新画面表示.
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result create() {
-		Logger.info("TaskController#edit");
+	public Result displayUpdateTaskMst(String teamName, String taskName) {
+		Logger.info("TaskController#displayCreateTaskMst");
 
-		Form<CreateTaskMstDto> createTaskMstDtoForm = Form.form(CreateTaskMstDto.class).bindFromRequest();
-		if (!createTaskMstDtoForm.hasErrors()) {
-			CreateTaskMstDto dto = createTaskMstDtoForm.get();
-			service.createTaskMst(dto);
-			String msg = "登録しました。";
-			msg += "taskName: " + dto.getTaskName();
+		EditTaskMstDto dto = new EditTaskMstDto();
+
+		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
+
+		dto.setId(taskMst.id);
+		dto.setMainUserName(taskMst.mainUser.userName);
+		dto.setRepetition(taskMst.repetition);
+		dto.setRepType(taskMst.repType);
+		dto.setStartDate(taskMst.startDate);
+		dto.setTaskInfo(taskMst.taskInfo);
+		dto.setTaskName(taskMst.taskName);
+		dto.setTeamName(taskMst.taskTeam.teamName);
+
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
+		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
+	}
+	/**
+	 * タスクマスタ登録/更新.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result edit(String mode) {
+		Logger.info("TaskController#edit MODE:" + mode);
+
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class).bindFromRequest();
+		if (!editTaskMstDtoForm.hasErrors()) {
+			String msg = "";
+			EditTaskMstDto dto = editTaskMstDtoForm.get();
+			switch (mode) {
+				case Constant.MODE_CREATE :
+					service.createTaskMst(dto);
+					msg += "登録しました。";
+					break;
+				case Constant.MODE_UPDATE :
+					service.updateTaskMst(dto);
+					msg += "更新しました。";
+					break;
+			}
+			msg += "taskName:" + dto.getTaskName();
 			flash("success", msg);
-
+			
 			// タスクリストに遷移
 			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
 
 		} else {
-			flash("error", "入力に不備があります。");
-			return badRequest(taskMst.render("CREATE", createTaskMstDtoForm));
+			flash("error", "エラーの内容を確認してください。");
+			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
 		}
 
 	}

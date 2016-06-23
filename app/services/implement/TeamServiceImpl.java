@@ -16,7 +16,7 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService {
 	@Override
 	public void create(EditTeamDto editTeamDto) {
-		Logger.info("TeamServiceImpl#create");
+		Logger.info("TeamServiceImpl#edit");
 		Team team = new Team();
 		team.teamName = editTeamDto.getTeamName();
 

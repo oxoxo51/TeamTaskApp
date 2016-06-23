@@ -2,7 +2,7 @@ package services.implement;
 
 import com.google.inject.Inject;
 import constant.Constant;
-import dto.task.CreateTaskMstDto;
+import dto.task.EditTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
 import models.Team;
@@ -27,49 +27,62 @@ public class TaskServiceImpl implements TaskService {
 	UserService userService;
 
 	@Override
-	public void createTaskMst(CreateTaskMstDto createTaskMstDto) {
+	public void createTaskMst(EditTaskMstDto editTaskMstDto) {
 		Logger.info("TaskServiceImpl#createTaskMst");
 
 		TaskMst taskMst = new TaskMst();
-		taskMst.taskName = createTaskMstDto.getTaskName();
-		taskMst.taskInfo = createTaskMstDto.getTaskInfo();
-		taskMst.repType = createTaskMstDto.getRepType();
-		taskMst.repetition = createTaskMstDto.getRepetition();
+		List<String> errorMessages = new ArrayList<String>();
+		taskMst = editTaskMst(taskMst, editTaskMstDto, errorMessages);
+		if (errorMessages.size() > 0) {
+			// TODO エラーメッセージの返し方
+		} else {
+			taskMst.save();
+		}
+	}
+
+	@Override
+	public void updateTaskMst(EditTaskMstDto editTaskMstDto) {
+		Logger.info("TaskServiceImpl#updateTaskMst");
+
+		TaskMst taskMst = TaskMst.find.byId(editTaskMstDto.getId());
+		List<String> errorMessages = new ArrayList<String>();
+		taskMst = editTaskMst(taskMst, editTaskMstDto, errorMessages);
+		if (errorMessages.size() > 0) {
+			// TODO エラーメッセージの返し方
+		} else {
+			taskMst.update();
+		}
+	}
+
+	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto, List<String> errorMessages) {
+		taskMst.taskName = editTaskMstDto.getTaskName();
+		taskMst.taskInfo = editTaskMstDto.getTaskInfo();
+		taskMst.repType = editTaskMstDto.getRepType();
+		taskMst.repetition = editTaskMstDto.getRepetition();
 
 		// タスク利用チーム
-		String teamName = createTaskMstDto.getTeamName();
-		List<Team> teamList = Team.find.where().eq("teamName", teamName).findList();
-		if (teamList.size() == 0) {
-			// TODO エラー
-			Logger.error("team not found");
-
-			return;
-		} else {
-			taskMst.taskTeam = teamList.get(0);
-		}
+		String teamName = editTaskMstDto.getTeamName();
+		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
+		taskMst.taskTeam = team;
 
 		// 主担当者
 		List<User> user = User.find.where().eq(
-				"userName", createTaskMstDto.getMainUserName())
+				"userName", editTaskMstDto.getMainUserName())
 				.findList();
-		List<String> errorMessages = new ArrayList<String>();
 
+		// TODO 存在チェックはDTOのバリデーションに移動する
 		// 取得できなかった場合エラー
 		if (user.size() == 0) {
-			errorMessages.add("ユーザー：" + createTaskMstDto.getMainUserName() + "は存在しません。");
+			errorMessages.add("ユーザー：" + editTaskMstDto.getMainUserName() + "は存在しません。");
 		} else {
 			// ユーザー名は重複ない前提
 			taskMst.mainUser = user.get(0);
 		}
 
 		// 開始日
-		taskMst.startDate = createTaskMstDto.getStartDate();
+		taskMst.startDate = editTaskMstDto.getStartDate();
 
-		if (errorMessages.size() > 0) {
-			// TODO エラーメッセージの返し方
-		} else {
-			taskMst.save();
-		}
+		return taskMst;
 	}
 
 	/**
@@ -164,57 +177,6 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	/**
-	 * 実施頻度タイプ、実施頻度、タスクトランの日付を元に実施対象フラグをセットする.
-	 * @param repType
-	 * @param repetition
-	 * @param dateStr
-	 * @return 実施対象：1、実施対象外：0
-	 */
-	private String getOperationFlg(String repType, String repetition, String dateStr) {
-		switch(repType) {
-			case Constant.REPTYPE_DAYLY:
-				// 日次の場合は毎日実施対象
-				return Constant.FLAG_ON;
-			case Constant.REPTYPE_WEEKLY:
-				// dateStrの曜日を取得する
-				Locale.setDefault(Locale.US);
-				try {
-					String dow = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "E");
-					for (String rep : repetition.split(",")) {
-						if (rep.equals(dow)) {
-							return Constant.FLAG_ON;
-						}
-					}
-					// 実施頻度の中に一致する曜日が無かった場合はOFF
-					return Constant.FLAG_OFF;
-				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO エラーの扱い
-					return Constant.FLAG_OFF;
-				}
-			case Constant.REPTYPE_MONTHLY:
-				try {
-					// dateStrの日付部分を取得する
-					String d = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "d");
-					for (String rep : repetition.split(",")) {
-						if (rep.equals(d)) {
-							return Constant.FLAG_ON;
-						}
-					}
-					// 実施頻度の中に一致する日付が無かった場合はOFF
-					return Constant.FLAG_OFF;
-				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO エラーの扱い
-					return Constant.FLAG_OFF;
-				}
-			default:
-				// ありえない
-				return Constant.FLAG_OFF;
-		}
-	}
-
-	/**
 	 * IDからタスク名称を取得する.
 	 * @param mstId
 	 * @return
@@ -269,7 +231,6 @@ public class TaskServiceImpl implements TaskService {
 	public List<TaskMst> findTaskMstByTeamName(String teamName) throws Exception {
 		Logger.info("TaskServiceImpl#findTaskMstByTeamName");
 		TeamServiceImpl teamService = new TeamServiceImpl();
-		TaskServiceImpl service = new TaskServiceImpl();
 		List<Team> teamList = teamService.findTeamByName(teamName);
 		if (teamList == null || teamList.size() == 0) {
 			// TODO Exceptionの定義
@@ -277,6 +238,81 @@ public class TaskServiceImpl implements TaskService {
 		} else {
 			Team team = teamList.get(0);
 			return TaskMst.find.where().eq("taskTeam", team).findList();
+		}
+	}
+
+	/**
+	 * タスク名からタスクマスタを取得する.
+	 * @param taskName
+	 * @return
+	 */
+	@Override
+	public TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
+		Logger.info("TaskServiceImpl#findTaskMstByTeamAndTaskName");
+
+		try {
+			List<TaskMst> taskMstList = findTaskMstByTeamName(teamName);
+			for (TaskMst taskMst : taskMstList) {
+				if (taskMst.taskName.equals((taskName))) {
+					return taskMst;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			// 何もしない
+		}
+		// 見つからない場合
+		return null;
+	}
+
+	/**
+	 * 実施頻度タイプ、実施頻度、タスクトランの日付を元に実施対象フラグをセットする.
+	 * @param repType
+	 * @param repetition
+	 * @param dateStr
+	 * @return 実施対象：1、実施対象外：0
+	 */
+	private String getOperationFlg(String repType, String repetition, String dateStr) {
+		switch(repType) {
+			case Constant.REPTYPE_DAYLY:
+				// 日次の場合は毎日実施対象
+				return Constant.FLAG_ON;
+			case Constant.REPTYPE_WEEKLY:
+				// dateStrの曜日を取得する
+				Locale.setDefault(Locale.US);
+				try {
+					String dow = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "E");
+					for (String rep : repetition.split(",")) {
+						if (rep.equals(dow)) {
+							return Constant.FLAG_ON;
+						}
+					}
+					// 実施頻度の中に一致する曜日が無かった場合はOFF
+					return Constant.FLAG_OFF;
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO エラーの扱い
+					return Constant.FLAG_OFF;
+				}
+			case Constant.REPTYPE_MONTHLY:
+				try {
+					// dateStrの日付部分を取得する
+					String d = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "d");
+					for (String rep : repetition.split(",")) {
+						if (rep.equals(d)) {
+							return Constant.FLAG_ON;
+						}
+					}
+					// 実施頻度の中に一致する日付が無かった場合はOFF
+					return Constant.FLAG_OFF;
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO エラーの扱い
+					return Constant.FLAG_OFF;
+				}
+			default:
+				// ありえない
+				return Constant.FLAG_OFF;
 		}
 	}
 

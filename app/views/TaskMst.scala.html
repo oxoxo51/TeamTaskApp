@@ -1,19 +1,25 @@
-@(mode: String, form1: Form[dto.task.CreateTaskMstDto])
+@(mode: String, form1: Form[dto.task.EditTaskMstDto])
 
 @import helper._
+@import constant.Constant
 
 @main("タスク登録・編集") {
 <div class="container">
     <h2 class="bg-info">
-        @{val title = if (mode == "CREATE") {
+        @{val title = if (mode == Constant.MODE_CREATE) {
         "タスク登録"
-        } else if (mode == "UPDATE") {
+        } else if (mode == Constant.MODE_UPDATE) {
         "タスク編集"
         }
         title
         }
     </h2>
-    @form(action = routes.TaskController.create(), 'class -> "form-horizontal") {
+    @form(action = routes.TaskController.edit(mode), 'class -> "form-horizontal") {
+    @(inputText(
+    field = form1("id"),
+    args = 'type -> "hidden",
+    '_label -> ""
+    ))
     @(inputText(
     field = form1("taskName"),
     args = '_label -> "タスク名"

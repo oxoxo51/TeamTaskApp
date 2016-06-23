@@ -1,7 +1,7 @@
 package services;
 
 import com.google.inject.ImplementedBy;
-import dto.task.CreateTaskMstDto;
+import dto.task.EditTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
 import services.implement.TaskServiceImpl;
@@ -15,7 +15,11 @@ import java.util.List;
 @ImplementedBy(TaskServiceImpl.class)
 public interface TaskService {
 
-	void createTaskMst(CreateTaskMstDto createTaskMstDto);
+	void createTaskMst(EditTaskMstDto editTaskMstDto);
+
+	void updateTaskMst(EditTaskMstDto editTaskMstDto);
+
+	TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName);
 
 	List<TaskTrn> findTaskList(long teamId, String dateStr);
 

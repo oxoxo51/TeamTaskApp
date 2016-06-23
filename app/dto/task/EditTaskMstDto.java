@@ -13,7 +13,12 @@ import java.util.List;
 /**
  * Created on 2016/05/24.
  */
-public class CreateTaskMstDto {
+public class EditTaskMstDto {
+
+	/**
+	 * id.
+	 */
+	private Long id;
 
 	/**
 	 * タスク名.
@@ -58,8 +63,16 @@ public class CreateTaskMstDto {
 
 	private List<ValidationError> errors;
 
-	public CreateTaskMstDto() {
+	public EditTaskMstDto() {
 		errors = new ArrayList<ValidationError>();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getTaskName() {
