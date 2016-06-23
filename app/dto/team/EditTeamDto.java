@@ -31,12 +31,6 @@ public class EditTeamDto {
 	@Constraints.Required
 	private String memberListStr;
 
-	/**
-	 * mode.
-	 * @return
-	 */
-	private String mode;
-
 	public Long getId() {
 		return id;
 	}
@@ -59,14 +53,6 @@ public class EditTeamDto {
 
 	public void setMemberListStr(String memberListStr) {
 		this.memberListStr = memberListStr;
-	}
-
-	public String getMode() {
-		return mode;
-	}
-
-	public void setMode(String mode) {
-		this.mode = mode;
 	}
 
 

@@ -44,10 +44,8 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayCreateTeam() {
 		Logger.info("TeamController#displayCreateTeam");
-		EditTeamDto dto = new EditTeamDto();
-		dto.setMode(Constant.MODE_CREATE);
 
-		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).fill(dto);
+		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
 		return ok(team.render(Constant.MODE_CREATE, editTeamDtoForm));
 	}
 
@@ -60,7 +58,6 @@ public class TeamController extends Apps {
 		Logger.info("TeamController#displayTeam");
 
 		EditTeamDto dto = new EditTeamDto();
-		dto.setMode(Constant.MODE_UPDATE);
 
 		String memberListStr = "";
 		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
