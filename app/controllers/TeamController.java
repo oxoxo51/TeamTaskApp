@@ -60,7 +60,7 @@ public class TeamController extends Apps {
 		EditTeamDto dto = new EditTeamDto();
 
 		String memberListStr = "";
-		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
+		Team team = service.findTeamByName(teamName).get(0);
 		dto.setId(team.id);
 		for (User user : team.members) {
 			memberListStr += (user.userName + ",");
