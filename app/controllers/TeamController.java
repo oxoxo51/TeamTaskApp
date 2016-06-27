@@ -89,15 +89,13 @@ public class TeamController extends Apps {
 			switch (mode) {
 				case Constant.MODE_CREATE :
 					service.create(dto);
-					msg += "登録しました。";
+					flashSuccess(Constant.MSG_I003);
 					break;
 				case Constant.MODE_UPDATE :
 					service.update(dto);
-					msg += "更新しました。";
+					flashSuccess(Constant.MSG_I004);
 					break;
 			}
-			msg += " teamName: " + dto.getTeamName();
-			flash("success", msg);
 			// チームリストを表示
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
@@ -111,7 +109,7 @@ public class TeamController extends Apps {
 	 * @return
 	 */
 	private Result getTeamList() {
-		String userName = session().get("userName");
+		String userName = getLoginUserName();
 		List<Team> teams = service.findTeamListByUserName(userName);
 		return ok(teamList.render(userName, teams));
 	}
