@@ -33,6 +33,9 @@ public class Constant {
 	/* message_I006 */
 	public static final String MSG_I006 = CONF_MSG_PREFIX + "I006";
 
+	/* message_I007 */
+	public static final String MSG_I007 = CONF_MSG_PREFIX + "I007";
+
 	/* message_E001 */
 	public static final String MSG_E001 = CONF_MSG_PREFIX + "E001";
 

@@ -1,6 +1,7 @@
 package controllers;
 
 import com.google.inject.Inject;
+import constant.Constant;
 import dto.user.ChangePwdDto;
 import dto.user.CreateUserDto;
 import play.data.Form;
@@ -24,7 +25,7 @@ public class UserController extends Apps {
 	 */
 	public Result displayCreateUser() {
 		Form<CreateUserDto> createUserDtoForm = Form.form(CreateUserDto.class);
-		return ok(user.render("CREATE", createUserDtoForm));
+		return ok(user.render(Constant.MODE_CREATE, createUserDtoForm));
 	}
 
 	/**
@@ -36,15 +37,14 @@ public class UserController extends Apps {
 		if (!createUserDtoForm.hasErrors()) {
 			CreateUserDto dto = createUserDtoForm.get();
 			service.create(dto);
-			String msg = "登録しました。 userName: " + dto.getUserName();
-			flash("success", msg);
+			flashSuccess(Constant.MSG_I003);
 			// ログイン済みの状態にしてチーム一覧に遷移
 			session().clear();
-			session("userName", dto.getUserName());
+			session(Constant.SESS_USER_NAME, dto.getUserName());
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
-			flash("error", "登録できません。エラーの内容を確認してください。");
-			return badRequest(user.render("CREATE", createUserDtoForm));
+			flashError(Constant.MSG_E003);
+			return badRequest(user.render(Constant.MODE_CREATE, createUserDtoForm));
 		}
 	}
 
@@ -55,7 +55,7 @@ public class UserController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayChangePwd() {
 		ChangePwdDto dto = new ChangePwdDto();
-		dto.setUserName(session("userName"));
+		dto.setUserName(getLoginUserName());
 		Form<ChangePwdDto> changePwdDtoForm = Form.form(ChangePwdDto.class).fill(dto);
 		return ok(changePwd.render(changePwdDtoForm));
 	}
@@ -71,11 +71,11 @@ public class UserController extends Apps {
 			ChangePwdDto dto = changePwdDtoForm.get();
 			service.changePwd(dto);
 			// TODO redirectを2重にしているためflashメッセージが表示されない
-			flash("success", "パスワードを変更しました。");
+			flashSuccess(Constant.MSG_I007);
 			// セッションを維持したままルートにリダイレクトする。
 			return redirect(routes.Apps.index());
 		} else {
-			flash("error", "登録できません。エラーの内容を確認してください。");
+			flashError(Constant.MSG_E003);
 			return badRequest(changePwd.render(changePwdDtoForm));
 		}
 	}
