@@ -1,7 +1,7 @@
 package controllers;
 
+import constant.Constant;
 import play.Logger;
-import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -13,14 +13,14 @@ public class Secured extends Security.Authenticator {
 
 	@Override
 	public String getUsername(Http.Context ctx) {
-		Logger.info("Secured#getUsername userName:" + ctx.session().get("userName"));
-		return ctx.session().get("userName");
+		Logger.info("Secured#getUsername userName:" + ctx.session().get(Constant.SESS_USER_NAME));
+		return ctx.session().get(Constant.SESS_USER_NAME);
 	}
 
 	@Override
 	public Result onUnauthorized(Http.Context ctx) {
 		Logger.info("Secured#onUnauthorized");
-		Controller.flash("error", "ログインして下さい。");
+		Apps.flashError(Constant.MSG_E002);
 		return redirect(routes.Apps.index());
 	}
 

@@ -1,11 +1,13 @@
 package services.implement;
 
+import constant.Constant;
+import controllers.Apps;
 import dto.team.EditTeamDto;
 import models.Team;
 import models.User;
 import play.Logger;
-import play.mvc.Controller;
 import services.TeamService;
+import util.ConfigUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public void create(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#edit");
+
 		Team team = new Team();
 		team.teamName = editTeamDto.getTeamName();
 
@@ -27,8 +30,9 @@ public class TeamServiceImpl implements TeamService {
 		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
 
 		// 作成ユーザー:ログインユーザーから設定
+		// TODO ユーザーサービス経由で取得するようにする
 		team.createUser = User.find.where().eq(
-				"userName", Controller.session("userName"))
+				"userName", Apps.getLoginUserName())
 				.findList().get(0);
 
 		if (errorMessages.size() > 0) {
@@ -67,6 +71,7 @@ public class TeamServiceImpl implements TeamService {
 	public List<Team> findTeamListByUserName(String userName) {
 		Logger.info("TeamServiceImpl#findTeamListByUserName");
 		// ユーザー名から該当ユーザーを取得
+		// TODO ユーザーサービス経由で取得
 		List<User> userList = User.find.where().eq("userName", userName).findList();
 		if (userList.size() == 0) {
 			return null;
@@ -96,10 +101,11 @@ public class TeamServiceImpl implements TeamService {
 	private void setMembers(String memberListStr, List<User> members, List<String> errorMessages) {
 		for (String userName : memberListStr.split(",")) {
 			// ユーザー名からユーザーを取得
+			// TODO ユーザーサービス経由で取得
 			List<User> user = User.find.where().eq("userName", userName).findList();
 			// 取得できなかった場合エラー
 			if (user.size() == 0) {
-				errorMessages.add("ユーザー：" + userName + " は存在しません。");
+				errorMessages.add(userName + ConfigUtil.get(Constant.MSG_E005));
 			} else {
 				// ユーザー名は重複ない前提
 				members.add(user.get(0));

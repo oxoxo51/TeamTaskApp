@@ -1,5 +1,6 @@
 package controllers;
 
+import constant.Constant;
 import dto.user.LoginUserDto;
 import play.Logger;
 import play.data.Form;
@@ -7,6 +8,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import util.ConfigUtil;
 import views.html.index;
 
 /**
@@ -37,9 +39,9 @@ public class Apps extends Controller {
 	 */
 	public Result index() {
 		Logger.info("Apps#index");
-		if (session("userName") != null) {
-			if (session("teamName") != null) {
-				return redirect(routes.TaskController.displayTaskList(session("teamName")));
+		if (!getLoginUserName().equals(Constant.USER_TEAM_BLANK)) {
+			if (getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
+				return redirect(routes.TaskController.displayTaskList(session(Constant.SESS_TEAM_NAME)));
 			} else {
 				return redirect(routes.TeamController.displayTeamList());
 			}
@@ -58,11 +60,11 @@ public class Apps extends Controller {
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
 			session().clear();
-			session("userName", loginForm.get().getUserName());
-			flash("success", "ログインしました。userName:" + loginForm.get().getUserName());
+			session(Constant.SESS_USER_NAME, loginForm.get().getUserName());
+			flashSuccess(Constant.MSG_I001);
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
-			flash("error", "ユーザー・パスワードが正しくありません。");
+			flashError(Constant.MSG_E001);
 			return badRequest(index.render(loginForm));
 		}
 
@@ -76,21 +78,19 @@ public class Apps extends Controller {
 	public Result logout() {
 		Logger.info("Apps#logout");
 		session().clear();
-		flash("success", "ログアウトしました。");
+		flashSuccess(Constant.MSG_I002);
 		return redirect(routes.Apps.index());
 	}
 
 	/**
 	 * ログインしているユーザー名を取得する.
+	 * 取得できなかった場合、"---"を返却する.
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getLoginUserName() {
-		if (session("userName") != null) {
-			return session("userName");
-		} else {
-			return "---";
-		}
+		Logger.info("Apps#getLoginUserName: " + session(Constant.SESS_USER_NAME));
+		return session(Constant.SESS_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.SESS_USER_NAME);
 	}
 
 	/**
@@ -100,24 +100,36 @@ public class Apps extends Controller {
 	@Security.Authenticated(Secured.class)
 	public void setSessionTeamName(String teamName) {
 		Logger.info("Apps#setSessionTeamName: " + teamName);
-		session("teamName", teamName);
+		session(Constant.SESS_TEAM_NAME, teamName);
 	}
 
 	/**
 	 * セッションに保持しているチーム名を取得する.
+	 * 取得できなかった場合、"---"を返却する.
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
-		Logger.info("Apps#getSessionTeamName: " + session("teamName"));
-		if (session("teamName") != null) {
-			return session("teamName");
-		} else {
-			return "---";
-		}
+		Logger.info("Apps#getSessionTeamName: " + session(Constant.SESS_TEAM_NAME));
+		return session(Constant.SESS_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.SESS_TEAM_NAME);
 	}
 
+	/**
+	 * flash:successメッセージを表示する。
+	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。
+	 * @param msgId
+	 */
+	public static void flashSuccess(String msgId) {
+		flash(Constant.MSG_SUCCESS, ConfigUtil.get(msgId).orElse(""));
+	}
 
-
+	/**
+	 * flash:errorメッセージを表示する。
+	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。
+	 * @param msgId
+	 */
+	public static void flashError(String msgId) {
+		flash(Constant.MSG_ERROR, ConfigUtil.get(msgId).orElse(""));
+	}
 }
 

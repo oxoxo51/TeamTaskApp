@@ -61,14 +61,7 @@ public class TaskController extends Apps {
 		this.setSessionTeamName(teamName);
 
 		// 利用チームに紐付くタスクリストを表示
-		List<Team> teamList = Team.find.where().eq("teamName", teamName).findList();
-		if (teamList.size() == 0) {
-			// TODO エラーハンドリング
-			List<Team> teams = teamService.findTeamListByUserName(session("userName"));
-			return ok(views.html.teamList.render(session("userName"), teams));
-		}
-		// チーム名は重複しない想定
-		Team team = teamList.get(0);
+		Team team = teamService.findTeamByName(teamName).get(0);
 		// 該当日付のタスクトランを取得し、0件の場合新規作成する
 		List<TaskTrn> taskTrnList = service.findTaskList(team.id, dateStr);
 		if (taskTrnList.size() == 0) {
@@ -126,14 +119,16 @@ public class TaskController extends Apps {
 			// 実施状態
 			if (task.operationUser != null) {
 				// 実施済:実施ユーザーあり
-				key = "1," + task.operationUser.id + "," + task.id;
+				key = Constant.TASK_FINISHED + Constant.COMMA + task.operationUser.id
+						+ Constant.COMMA + task.id;
 			} else if (Constant.FLAG_ON.equals(task.operationFlg)
 					&& (task.operationUser == null)) {
 				// 未実施:実施対象ON、かつ、実施ユーザーなし
-				key = "0," + task.taskMst.mainUser.id+ "," + task.id;
+				key = Constant.TASK_NOT_YET + Constant.COMMA + task.taskMst.mainUser.id
+						+ Constant.COMMA + task.id;
 			} else {
 				// 実施対象外:実施対象OFF、かつ、実施ユーザーなし
-				key = "-1," + task.id;
+				key = Constant.TASK_OTHER + Constant.COMMA + task.id;
 			}
 			taskMap.put(key, task);
 		}
@@ -150,7 +145,7 @@ public class TaskController extends Apps {
 			TaskTrn task = (TaskTrn)entry.getValue();
 			String taskUpdateUrl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr).absoluteURL(request());
 			String htmlStr = "";
-			if ("1".equals(keyArg[0])) {
+			if (Constant.TASK_FINISHED.equals(keyArg[0])) {
 				// 実施済
 				if (!finishMap.containsKey(keyArg[1])) {
 					// 実施者毎のヘッダ作成
@@ -168,7 +163,7 @@ public class TaskController extends Apps {
 						task.taskMst.taskName +
 						"</td></tr>";
 				finishMap.replace(keyArg[1], htmlStr);
-			} else if ("0".equals(keyArg[0])) {
+			} else if (Constant.TASK_NOT_YET.equals(keyArg[0])) {
 				// 未実施
 				if (!notyetMap.containsKey(keyArg[1])) {
 					// 主担当者毎のヘッダ作成
@@ -280,21 +275,19 @@ public class TaskController extends Apps {
 			switch (mode) {
 				case Constant.MODE_CREATE :
 					service.createTaskMst(dto);
-					msg += "登録しました。";
+					flashSuccess(Constant.MSG_I003);
 					break;
 				case Constant.MODE_UPDATE :
 					service.updateTaskMst(dto);
-					msg += "更新しました。";
+					flashSuccess(Constant.MSG_I004);
 					break;
 			}
-			msg += "taskName:" + dto.getTaskName();
-			flash("success", msg);
-			
+
 			// タスクリストに遷移
 			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
 
 		} else {
-			flash("error", "エラーの内容を確認してください。");
+			flashError(Constant.MSG_E003);
 			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
 		}
 
@@ -308,19 +301,19 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
-		int status = 0;
+		int status = Constant.TASK_UPD_NOT_YET;
 		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
 			// タスクリストを再表示
-			if (status == 1) {
-				flash("success", "実施済にしました。");
+			if (status == Constant.TASK_UPD_FINISHED) {
+				flashSuccess(Constant.MSG_I005);
 			} else {
-				flash("success", "未実施に戻しました。");
+				flashSuccess(Constant.MSG_I006);
 			}
-			return redirect(routes.TaskController.displayTaskListWithDate(session("teamName"), dateStr));
+			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		} else {
 			// TODO
-			flash("error", "更新できません。");
-			return redirect(routes.TaskController.displayTaskListWithDate(session("teamName"), dateStr));
+			flashError(Constant.MSG_E004);
+			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		}
 	}
 
