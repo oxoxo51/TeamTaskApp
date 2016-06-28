@@ -104,6 +104,120 @@ public class TaskController extends Apps {
 	}
 
 	/**
+	 * タスクマスタ新規登録画面表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayCreateTaskMst(String teamName) {
+		Logger.info("TaskController#displayCreateTaskMst");
+
+		EditTaskMstDto dto = new EditTaskMstDto();
+		dto.setTeamName(teamName);
+		dto.setStartDate(new Date());
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
+		return ok(taskMst.render(Constant.MODE_CREATE, editTaskMstDtoForm.fill(dto)));
+	}
+
+	/**
+	 * タスクマスタ更新画面表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayUpdateTaskMst(String teamName, String taskName) {
+		Logger.info("TaskController#displayCreateTaskMst");
+
+		EditTaskMstDto dto = new EditTaskMstDto();
+
+		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
+
+		dto.setId(taskMst.id);
+		dto.setMainUserName(taskMst.mainUser.userName);
+		dto.setRepetition(taskMst.repetition);
+		dto.setRepType(taskMst.repType);
+		dto.setStartDate(taskMst.startDate);
+		dto.setTaskInfo(taskMst.taskInfo);
+		dto.setTaskName(taskMst.taskName);
+		dto.setTeamName(taskMst.taskTeam.teamName);
+
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
+		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
+	}
+	/**
+	 * タスクマスタ登録/更新.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result edit(String mode) {
+		Logger.info("TaskController#edit MODE:" + mode);
+
+		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class).bindFromRequest();
+		if (!editTaskMstDtoForm.hasErrors()) {
+			String msg = "";
+			EditTaskMstDto dto = editTaskMstDtoForm.get();
+			switch (mode) {
+				case Constant.MODE_CREATE :
+					service.createTaskMst(dto);
+					flashSuccess(Constant.MSG_I003);
+					break;
+				case Constant.MODE_UPDATE :
+					service.updateTaskMst(dto);
+					flashSuccess(Constant.MSG_I004);
+					break;
+			}
+
+			// タスクリストに遷移
+			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
+
+		} else {
+			flashError(Constant.MSG_E003);
+			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
+		}
+
+	}
+
+	/**
+	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する
+	 * @param taskTrnId
+	 * @param dateStr
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
+		int status = Constant.TASK_UPD_NOT_YET;
+		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
+			// タスクリストを再表示
+			if (status == Constant.TASK_UPD_FINISHED) {
+				flashSuccess(Constant.MSG_I005);
+			} else {
+				flashSuccess(Constant.MSG_I006);
+			}
+			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
+		} else {
+			// TODO
+			flashError(Constant.MSG_E004);
+			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
+		}
+	}
+
+	/**
+	 * タスク参照画面を表示する.
+	 * @param teamName
+	 * @param taskName
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result referTask(String teamName, String taskName) {
+		// TODO
+		return ok(taskRefer.render(teamName, taskName));
+	}
+
+	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
+		TaskServiceImpl service = new TaskServiceImpl();
+		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
+	}
+
+
+	/**
 	 * タスクリスト画面に表示するHTMLを作成する.
 	 * @param taskTrnList
 	 * @param dateStr
@@ -241,119 +355,6 @@ public class TaskController extends Apps {
 				"</td><td>" +
 				"<a href=" + taskReferUrl + ">" + taskName + "</a>" +
 				"</td></tr>";
-	}
-
-	/**
-	 * タスクマスタ新規登録画面表示.
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayCreateTaskMst(String teamName) {
-		Logger.info("TaskController#displayCreateTaskMst");
-
-		EditTaskMstDto dto = new EditTaskMstDto();
-		dto.setTeamName(teamName);
-		dto.setStartDate(new Date());
-		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
-		return ok(taskMst.render(Constant.MODE_CREATE, editTaskMstDtoForm.fill(dto)));
-	}
-
-	/**
-	 * タスクマスタ更新画面表示.
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayUpdateTaskMst(String teamName, String taskName) {
-		Logger.info("TaskController#displayCreateTaskMst");
-
-		EditTaskMstDto dto = new EditTaskMstDto();
-
-		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
-
-		dto.setId(taskMst.id);
-		dto.setMainUserName(taskMst.mainUser.userName);
-		dto.setRepetition(taskMst.repetition);
-		dto.setRepType(taskMst.repType);
-		dto.setStartDate(taskMst.startDate);
-		dto.setTaskInfo(taskMst.taskInfo);
-		dto.setTaskName(taskMst.taskName);
-		dto.setTeamName(taskMst.taskTeam.teamName);
-
-		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
-		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
-	}
-	/**
-	 * タスクマスタ登録/更新.
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result edit(String mode) {
-		Logger.info("TaskController#edit MODE:" + mode);
-
-		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class).bindFromRequest();
-		if (!editTaskMstDtoForm.hasErrors()) {
-			String msg = "";
-			EditTaskMstDto dto = editTaskMstDtoForm.get();
-			switch (mode) {
-				case Constant.MODE_CREATE :
-					service.createTaskMst(dto);
-					flashSuccess(Constant.MSG_I003);
-					break;
-				case Constant.MODE_UPDATE :
-					service.updateTaskMst(dto);
-					flashSuccess(Constant.MSG_I004);
-					break;
-			}
-
-			// タスクリストに遷移
-			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
-
-		} else {
-			flashError(Constant.MSG_E003);
-			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
-		}
-
-	}
-
-	/**
-	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する
-	 * @param taskTrnId
-	 * @param dateStr
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
-		int status = Constant.TASK_UPD_NOT_YET;
-		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
-			// タスクリストを再表示
-			if (status == Constant.TASK_UPD_FINISHED) {
-				flashSuccess(Constant.MSG_I005);
-			} else {
-				flashSuccess(Constant.MSG_I006);
-			}
-			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
-		} else {
-			// TODO
-			flashError(Constant.MSG_E004);
-			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
-		}
-	}
-
-	/**
-	 * タスク参照画面を表示する.
-	 * @param teamName
-	 * @param taskName
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result referTask(String teamName, String taskName) {
-		// TODO
-		return ok(taskRefer.render(teamName, taskName));
-	}
-
-	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
-		TaskServiceImpl service = new TaskServiceImpl();
-		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
 	}
 
 }
