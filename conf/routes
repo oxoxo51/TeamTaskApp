@@ -22,6 +22,7 @@ GET     /:teamName/task/:taskName/edit        controllers.TaskController.display
 POST    /task/edit/:mode                      controllers.TaskController.edit(mode: String)
 GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
+GET     /:teamName/task/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
 
 GET     /task/trn/update/:dateStr/:taskTrnId           controllers.TaskController.updateTaskTrnStatus(taskTrnId: Long, dateStr: String)
 

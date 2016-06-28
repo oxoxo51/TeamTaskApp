@@ -13,9 +13,11 @@ import play.mvc.Result;
 import play.mvc.Security;
 import services.TaskService;
 import services.TeamService;
+import services.implement.TaskServiceImpl;
 import util.DateUtil;
 import views.html.taskList;
 import views.html.taskMst;
+import views.html.taskRefer;
 
 import java.text.ParseException;
 import java.util.*;
@@ -143,7 +145,10 @@ public class TaskController extends Apps {
 			Map.Entry entry = (Map.Entry)i.next();
 			String[] keyArg = ((String)entry.getKey()).split(",");
 			TaskTrn task = (TaskTrn)entry.getValue();
-			String taskUpdateUrl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr).absoluteURL(request());
+			String taskUpdateUrl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr)
+					.absoluteURL(request());
+			String taskReferUrl = routes.TaskController.referTask(getSessionTeamName(), task.taskMst.taskName)
+					.absoluteURL(request());
 			String htmlStr = "";
 			if (Constant.TASK_FINISHED.equals(keyArg[0])) {
 				// 実施済
@@ -157,11 +162,7 @@ public class TaskController extends Apps {
 				} else {
 					htmlStr = finishMap.get(keyArg[1]);
 				}
-				htmlStr += "<tr><td>" +
-						"<a href=" + taskUpdateUrl + ">戻す</a>" +
-						"</td><td>" +
-						task.taskMst.taskName +
-						"</td></tr>";
+				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_NOT_YET);
 				finishMap.replace(keyArg[1], htmlStr);
 			} else if (Constant.TASK_NOT_YET.equals(keyArg[0])) {
 				// 未実施
@@ -175,19 +176,11 @@ public class TaskController extends Apps {
 				} else {
 					htmlStr = notyetMap.get(keyArg[1]);
 				}
-				htmlStr += "<tr><td>" +
-						"<a href=" + taskUpdateUrl + ">実施</a>" +
-						"</td><td>" +
-						task.taskMst.taskName +
-						"</td></tr>";
+				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_FINISHED);
 				notyetMap.replace(keyArg[1], htmlStr);
 			} else {
 				// 対象外
-				htmlStr += "<tr><td>" +
-						"<a href=" + taskUpdateUrl + ">実施</a>" +
-						"</td><td>" +
-						task.taskMst.taskName +
-						"</td></tr>";
+				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_FINISHED);
 				//ユーザー毎にまとめる必要なし
 				otherMap.put(keyArg[1], htmlStr);
 			}
@@ -219,6 +212,35 @@ public class TaskController extends Apps {
 		html += "</tbody>";
 
 		return html;
+	}
+
+	/**
+	 * タスク行のHTMLを返す.
+	 * @param taskUpdateUrl
+	 * @param taskReferUrl
+	 * @param taskName
+	 * @param taskUpdType
+	 * @return
+	 */
+	private String getTaskHtmlLine(String taskUpdateUrl,
+								   String taskReferUrl,
+								   String taskName,
+								   int taskUpdType) {
+		String taskUpdStr = "";
+		switch (taskUpdType) {
+			// 実施済→未実施
+			case Constant.TASK_UPD_NOT_YET :
+				taskUpdStr = "戻す";
+				break;
+			// 未実施→実施済
+			case Constant.TASK_UPD_FINISHED :
+				taskUpdStr = "実施";
+		}
+		return "<tr><td>" +
+				"<a href=" + taskUpdateUrl + ">" + taskUpdStr + "</a>" +
+				"</td><td>" +
+				"<a href=" + taskReferUrl + ">" + taskName + "</a>" +
+				"</td></tr>";
 	}
 
 	/**
@@ -315,6 +337,23 @@ public class TaskController extends Apps {
 			flashError(Constant.MSG_E004);
 			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		}
+	}
+
+	/**
+	 * タスク参照画面を表示する.
+	 * @param teamName
+	 * @param taskName
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result referTask(String teamName, String taskName) {
+		// TODO
+		return ok(taskRefer.render(teamName, taskName));
+	}
+
+	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
+		TaskServiceImpl service = new TaskServiceImpl();
+		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
 	}
 
 }
