@@ -40,7 +40,7 @@ public class Apps extends Controller {
 	public Result index() {
 		Logger.info("Apps#index");
 		if (!getLoginUserName().equals(Constant.USER_TEAM_BLANK)) {
-			if (getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
+			if (!getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
 				return redirect(routes.TaskController.displayTaskList(session(Constant.SESS_TEAM_NAME)));
 			} else {
 				return redirect(routes.TeamController.displayTeamList());
