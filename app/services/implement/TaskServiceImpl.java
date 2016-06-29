@@ -266,6 +266,27 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	/**
+	 * ユーザーのタスク実施回数を返す.
+	 * @param userName
+	 * @param teamName
+	 * @param taskName
+	 * @return
+	 */
+	public int getTaskDoneCount(String userName, String teamName, String taskName) {
+		// 元となるタスクマスタ
+		TaskMst taskMst = TaskMst.find.where().eq("taskTeam", teamName)
+				.eq("taskName", taskName)
+				.findList().get(0);
+		// タスク実施ユーザー
+		User user = User.find.where().eq("userName", userName).findList().get(0);
+		// タスクトランから該当のタスクのうち特定ユーザーが実施したものを抽出
+		List<TaskTrn> taskTrnList = TaskTrn.find.where().eq("taskMst", taskMst)
+				.eq("operationUser", user)
+				.findList();
+		return taskTrnList.size();
+	}
+
+	/**
 	 * 実施頻度タイプ、実施頻度、タスクトランの日付を元に実施対象フラグをセットする.
 	 * @param repType
 	 * @param repetition
