@@ -283,7 +283,7 @@ public class TaskServiceImpl implements TaskService {
 		List<TaskTrn> taskTrnList = TaskTrn.find.where().eq("taskMst", taskMst)
 				.eq("operationUser", user)
 				.findList();
-		return taskTrnList.size();
+		return taskTrnList.size() > 0 ? 0 : taskTrnList.size();
 	}
 
 	/**
