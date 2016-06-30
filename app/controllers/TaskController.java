@@ -14,6 +14,7 @@ import play.mvc.Security;
 import services.TaskService;
 import services.TeamService;
 import services.implement.TaskServiceImpl;
+import services.implement.TeamServiceImpl;
 import util.DateUtil;
 import views.html.taskList;
 import views.html.taskMst;
@@ -212,8 +213,50 @@ public class TaskController extends Apps {
 	}
 
 	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
+		// TODO newするしかないんかのう。。
 		TaskServiceImpl service = new TaskServiceImpl();
 		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
+	}
+
+	/**
+	 * タスク参照画面に表示するユーザーごとのタスク実施回数をHTMLにする.
+	 * @param teamName
+	 * @param taskName
+	 * @return
+	 */
+	public static String editTaskDoneCountHtml(String teamName, String taskName) {
+		Logger.info("TaskController#editTaskDoneCountHtml");
+		// TODO newするしかないんかのう。。
+		TaskServiceImpl service = new TaskServiceImpl();
+		TeamServiceImpl teamService = new TeamServiceImpl();
+
+		String html = "";
+
+		// フォーマット：[ユーザー名] : N回
+		String htmlFormat = "<p>[userName] : NNN 回</p>";
+		Logger.debug(htmlFormat);
+
+		// チームに所属するユーザー
+		List<User> userList = teamService.findUserByTeamName(teamName);
+
+		for (User user : userList) {
+			Integer count = 0;
+			String userName = user.userName;
+			Logger.debug(userName);
+			if ((count = service.getTaskDoneCount(
+					userName, teamName, taskName)) > 0) {
+				String addHtml = htmlFormat;
+				Logger.debug(addHtml);
+				addHtml = addHtml.replace("[userName]", userName)
+								 .replace("NNN", count.toString());
+				html += addHtml;
+				Logger.debug(html);
+			}
+			Logger.debug(count.toString());
+
+		}
+		Logger.debug(html);
+		return html;
 	}
 
 

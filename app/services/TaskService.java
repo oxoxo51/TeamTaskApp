@@ -21,6 +21,8 @@ public interface TaskService {
 
 	TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName);
 
+	List<TaskMst> findTaskMstByTeamName(String teamName) throws Exception;
+
 	List<TaskTrn> findTaskList(long teamId, String dateStr);
 
 	List<TaskTrn> createTaskTrnByTeamId(long teamId, String dateStr);

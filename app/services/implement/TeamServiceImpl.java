@@ -112,4 +112,9 @@ public class TeamServiceImpl implements TeamService {
 			}
 		}
 	}
+
+	public List<User> findUserByTeamName(String teamName) {
+		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
+		return team.members;
+	}
 }

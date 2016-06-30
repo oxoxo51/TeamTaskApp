@@ -228,6 +228,7 @@ public class TaskServiceImpl implements TaskService {
 	 * @param teamName
 	 * @return
 	 */
+	@Override
 	public List<TaskMst> findTaskMstByTeamName(String teamName) throws Exception {
 		Logger.info("TaskServiceImpl#findTaskMstByTeamName");
 		TeamServiceImpl teamService = new TeamServiceImpl();
@@ -272,17 +273,24 @@ public class TaskServiceImpl implements TaskService {
 	 * @param taskName
 	 * @return
 	 */
-	public int getTaskDoneCount(String userName, String teamName, String taskName) {
+	public Integer getTaskDoneCount(String userName, String teamName, String taskName) {
+		Logger.debug("TaskServiceImpl#getTaskDoneCount");
+		TeamServiceImpl teamService = new TeamServiceImpl();
 		// 元となるタスクマスタ
-		TaskMst taskMst = TaskMst.find.where().eq("taskTeam", teamName)
+		Team team = teamService.findTeamByName(teamName).get(0);
+		Logger.debug(team.teamName);
+		TaskMst taskMst = TaskMst.find.where().eq("taskTeam", team)
 				.eq("taskName", taskName)
 				.findList().get(0);
+		Logger.debug(taskMst.taskName);
+
 		// タスク実施ユーザー
 		User user = User.find.where().eq("userName", userName).findList().get(0);
 		// タスクトランから該当のタスクのうち特定ユーザーが実施したものを抽出
 		List<TaskTrn> taskTrnList = TaskTrn.find.where().eq("taskMst", taskMst)
 				.eq("operationUser", user)
 				.findList();
+		Logger.debug(Integer.toString(taskTrnList.size()));
 		return taskTrnList == null ? 0 : taskTrnList.size();
 	}
 
