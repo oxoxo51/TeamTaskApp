@@ -400,4 +400,29 @@ public class TaskController extends Apps {
 				"</td></tr>";
 	}
 
+	public static String getTaskRepetition(String teamName, String taskName) {
+		TaskServiceImpl service = new TaskServiceImpl();
+
+		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
+		String repTypeStr = getRepTypeStr(taskMst.repType);
+
+		return repTypeStr
+				+ ("".equals(taskMst.repetition) ? "" : "/" + taskMst.repetition);
+
+
+	}
+
+	private static String getRepTypeStr(String repType) {
+		switch (repType) {
+			case Constant.REPTYPE_DAYLY :
+				return Constant.REPTYPE_STR_DAYLY;
+			case Constant.REPTYPE_WEEKLY :
+				return Constant.REPTYPE_STR_WEEKLY;
+			case Constant.REPTYPE_MONTHLY :
+				return Constant.REPTYPE_MONTHLY;
+			default :
+				return null;
+		}
+	}
+
 }

@@ -108,6 +108,15 @@ public class Constant {
 	/* 実施タイプ：月次 */
 	public static final String REPTYPE_MONTHLY = "M";
 
+	/* 実施タイプ文字列：日次 */
+	public static final String REPTYPE_STR_DAYLY = "日次";
+
+	/* 実施タイプ文字列：週次 */
+	public static final String REPTYPE_STR_WEEKLY = "週次";
+
+	/* 実施タイプ文字列：月次 */
+	public static final String REPTYPE_STR_MONTHLY = "月次";
+
 	/* 実施頻度：日曜 */
 	public static final String REPETITION_SUN = "Sun";
 

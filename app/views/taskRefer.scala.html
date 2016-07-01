@@ -5,12 +5,28 @@
 @main("タスク内容") {
 <div class="container">
     <h2 class="bg-info">タスク内容</h2>
-    <p>タスク名：@taskName</p>
-    <p>タスク説明：@TaskController.findTaskMstByTeamAndTaskName(teamName,taskName).taskInfo</p>
-    <p>タスク頻度：TODO</p>
-    <p>主担当ユーザー：@TaskController.findTaskMstByTeamAndTaskName(teamName,taskName).mainUser.userName</p>
-    <p>ユーザー毎の実施回数：</p>
-    @Html(TaskController.editTaskDoneCountHtml(teamName, taskName))
+    <table class="table table-sm">
+        <tr>
+            <th>タスク名</th>
+            <td>@taskName</td>
+        </tr>
+        <tr>
+            <th>タスク説明</th>
+            <td>@TaskController.findTaskMstByTeamAndTaskName(teamName,taskName).taskInfo</td>
+        </tr>
+        <tr>
+            <th>タスク頻度</th>
+            <td>@TaskController.getTaskRepetition(teamName, taskName)</td>
+        </tr>
+        <tr>
+            <th>主担当ユーザー</th>
+            <td>@TaskController.findTaskMstByTeamAndTaskName(teamName,taskName).mainUser.userName</td>
+        </tr>
+        <tr>
+            <th>ユーザー毎の実施回数</th>
+            <td>@Html(TaskController.editTaskDoneCountHtml(teamName, taskName))</td>
+        </tr>
+    </table>
     <a href="@routes.TaskController.displayUpdateTaskMst(teamName,taskName)">タスク編集</a>
 </div>
 
