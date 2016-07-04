@@ -13,20 +13,21 @@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
-        <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.min.css"))'>
-        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
+        <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("css/bootstrap.css"))'>
+        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.js"))'></script>
+        <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.js"))'></script>
         <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
     </head>
     <body>
+        <div class="container">
         @* ヘッダー:ユーザー名表示 *@
         @tag.headerUser()
         @* チーム名表示 *@
         @tag.headerTeam()
         @* エラーメッセージ表示 *@
         @tag.flashMessage()
-        <div class="content">
-            @* ページ内コンテンツ出力 *@
-            @content
+        @* ページ内コンテンツ出力 *@
+        @content
         </div>
     </body>
 </html>

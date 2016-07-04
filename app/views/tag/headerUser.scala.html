@@ -1,17 +1,23 @@
 @()
-<ul class="nav nav-inline">
-    <li class="nav-item">
-        <a class="nav-link" href="@routes.Apps.index()">TeamTaskApp</a>
-    </li>
-    @if(!"---".equals(Apps.getLoginUserName())){
-        <li class="nav-item">
-            USER:@{Apps.getLoginUserName()}
-        </li>
-        <li class="nav-item">
-            <a href="@routes.UserController.displayChangePwd()">パスワード変更</a>
-        </li>
-        <li class="nav-item">
-            <a href="@routes.Apps.logout()">LOGOUT</a>
-        </li>
+<div class="row">
+    <div class="col-xs-4 bg-primary">
+        <a class="bg-primary" href="@routes.Apps.index()">TeamTaskApp</a>
+    </div>
+    <div class="col-xs-4 bg-primary">
+        <a>&nbsp;</a>
+    </div>
+    <div class="col-xs-4 bg-primary">
+        @if(!"---".equals(Apps.getLoginUserName())){
+        <div class="dropdown">
+            <a class="bg-primary" data-toggle="dropdown" id="dropdownMenu1">
+                USER:@{Apps.getLoginUserName()}
+                <span class="caret"></span>
+            </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                    <li role="presentation"><a role="menuitem" href="@routes.UserController.displayChangePwd()">パスワード変更</a></li>
+                    <li role="presentation"><a role="menuitem" href="@routes.Apps.logout()">LOGOUT</a></li>
+                </ul>
+        </div>
     }
-</ul>
+    </div>
+</div>
