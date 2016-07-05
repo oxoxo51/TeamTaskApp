@@ -1,20 +1,18 @@
 @(userName: String, teamList: List[Team])
 
 @main("所属チーム一覧") {
-    <div class="container">
-        <p class="bg-primary">チーム一覧</p>
-        <table class="table table-striped table-sm">
-            <tbody>
-            @* 所属チーム数分だけfor文回す *@
-            @for(team <- teamList){
-                <tr>
-                    <td><a href="@{routes.TaskController.displayTaskList(team.teamName)}">@team.teamName</a></td>
-                    <td><a href="@{routes.TeamController.displayUpdateTeam(team.teamName)}">編集</a></td>
-                </tr>
-            }
-            </tbody>
-        </table>
-        @* チーム新規作成へのリンク *@
-        <a href="@routes.TeamController.displayCreateTeam">チーム新規作成</a>
-    </div>
+    <p class="bg-primary">チーム一覧</p>
+    <table class="table table-striped table-sm">
+        <tbody>
+        @* 所属チーム数分だけfor文回す *@
+        @for(team <- teamList){
+            <tr>
+                <td><a href="@{routes.TaskController.displayTaskList(team.teamName)}">@team.teamName</a></td>
+                <td><a href="@{routes.TeamController.displayUpdateTeam(team.teamName)}">編集</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    @* チーム新規作成へのリンク *@
+    <a href="@routes.TeamController.displayCreateTeam">チーム新規作成</a>
 }

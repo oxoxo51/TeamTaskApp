@@ -311,7 +311,7 @@ public class TaskController extends Apps {
 				// 実施済
 				if (!finishMap.containsKey(keyArg[1])) {
 					// 実施者毎のヘッダ作成
-					htmlStr = "<tr class=\"table-warning\"><th colspan=\"2\">実施者："
+					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">実施者："
 							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
@@ -325,7 +325,7 @@ public class TaskController extends Apps {
 				// 未実施
 				if (!notyetMap.containsKey(keyArg[1])) {
 					// 主担当者毎のヘッダ作成
-					htmlStr = "<tr class=\"table-warning\"><th colspan=\"2\">主担当者："
+					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">主担当者："
 							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
@@ -344,7 +344,7 @@ public class TaskController extends Apps {
 			Logger.debug("key:" + keyArg[0] + "," + keyArg[1] + " html:" + htmlStr);
 		}
 		// 未実施
-		html = "<thead><tr class=\"table-danger\"><th colspan=\"2\">未実施</th></tr></thead><tbody>";
+		html = "<thead><tr class=\"danger\"><th colspan=\"2\">未実施</th></tr></thead><tbody>";
 		for (Iterator i = notyetMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
@@ -352,7 +352,7 @@ public class TaskController extends Apps {
 		}
 		html += "</tbody>";
 		// 対象外
-		html += "<thead><tr class=\"table-active\"><th colspan=\"2\">実施不要</th></tr></thead><tbody>";
+		html += "<thead><tr class=\"active\"><th colspan=\"2\">実施不要</th></tr></thead><tbody>";
 		for (Iterator i = otherMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
@@ -360,7 +360,7 @@ public class TaskController extends Apps {
 		}
 		html += "</tbody>";
 		// 実施済
-		html += "<thead><tr class=\"table-success\"><th colspan=\"2\">実施済</th></tr></thead><tbody>";
+		html += "<thead><tr class=\"success\"><th colspan=\"2\">実施済</th></tr></thead><tbody>";
 		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			html += (String) entry.getValue();

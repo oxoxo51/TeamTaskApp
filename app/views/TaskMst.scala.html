@@ -4,7 +4,6 @@
 @import constant.Constant
 
 @main("タスク登録・編集") {
-<div class="container">
     <h2 class="bg-info">
         @{val title = if (mode == Constant.MODE_CREATE) {
         "タスク登録"
@@ -52,6 +51,4 @@
     ))
     <input type="submit">
     }
-</div>
-
 }

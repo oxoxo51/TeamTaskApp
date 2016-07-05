@@ -4,33 +4,30 @@
 @import constant.Constant
 
 @main("チーム登録・編集") {
-    <div class="container">
-        <h2 class="bg-info">
-            @{val title = if (mode == Constant.MODE_CREATE) {
-                "チーム登録"
-                } else if (mode == Constant.MODE_UPDATE) {
-                "チーム編集"
-                }
-                title
+    <h2 class="bg-info">
+        @{val title = if (mode == Constant.MODE_CREATE) {
+            "チーム登録"
+            } else if (mode == Constant.MODE_UPDATE) {
+            "チーム編集"
             }
-        </h2>
-        @form(action = routes.TeamController.edit(mode), 'class -> "form-horizontal") {
-            @(inputText(
-            field = form1("id"),
-            args = 'type -> "hidden",
-                    '_label -> ""
-            ))
-            @(inputText(
-                field = form1("teamName"),
-                args = '_label -> "チーム名"
-            ))
-            @*メンバーの表示方法要検討*@
-            @(inputText(
-                field = form1("memberListStr"),
-                args = '_label -> "メンバー"
-            ))
-            <input type="submit">
+            title
         }
-    </div>
-
+    </h2>
+    @form(action = routes.TeamController.edit(mode), 'class -> "form-horizontal") {
+        @(inputText(
+        field = form1("id"),
+        args = 'type -> "hidden",
+                '_label -> ""
+        ))
+        @(inputText(
+            field = form1("teamName"),
+            args = '_label -> "チーム名"
+        ))
+        @*メンバーの表示方法要検討*@
+        @(inputText(
+            field = form1("memberListStr"),
+            args = '_label -> "メンバー"
+        ))
+        <input type="submit">
+    }
 }

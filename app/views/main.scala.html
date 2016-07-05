@@ -21,13 +21,15 @@
     <body>
         <div class="container">
         @* ヘッダー:ユーザー名表示 *@
-        @tag.headerUser()
+        <div class="row">@tag.headerUser()</div>
         @* チーム名表示 *@
-        @tag.headerTeam()
+        <div class="row">@tag.headerTeam()</div>
         @* エラーメッセージ表示 *@
-        @tag.flashMessage()
+        <div class="row">@tag.flashMessage()</div>
         @* ページ内コンテンツ出力 *@
-        @content
+        <div class="row">
+            <div class="col-xs-12">@content</div>
+        </div>
         </div>
     </body>
 </html>

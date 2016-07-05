@@ -4,22 +4,19 @@
 
 @* ユーザ名/パスワードを入力しログイン *@
 @main("ログイン") {
-    <div class="container">
-        <h2 class="bg-info">ログイン</h2>
-        @form(action = routes.Apps.auth(), 'class -> "form-horizontal") {
-            @(inputText(
-            field = form1("userName"),
-            args = '_label -> "ユーザー名"
-            ))
-            @(inputText(
-            field = form1("password"),
-            args = 'type -> "password",
-                   '_label -> "パスワード"
-            ))
-            <input type="submit">
-        }
+    <h2 class="bg-info">ログイン</h2>
+    @form(action = routes.Apps.auth(), 'class -> "form-horizontal") {
+        @(inputText(
+        field = form1("userName"),
+        args = '_label -> "ユーザー名"
+        ))
+        @(inputText(
+        field = form1("password"),
+        args = 'type -> "password",
+               '_label -> "パスワード"
+        ))
+        <input type="submit">
+    }
 
-        <a href="@routes.UserController.displayCreateUser()">新規登録</a>
-    </div>
-
+    <a href="@routes.UserController.displayCreateUser()">新規登録</a>
 }

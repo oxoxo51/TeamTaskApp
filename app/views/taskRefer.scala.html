@@ -3,7 +3,6 @@
 @import services.implement.TaskServiceImpl
 
 @main("タスク内容") {
-<div class="container">
     <h2 class="bg-info">タスク内容</h2>
     <table class="table table-sm">
         <tr>
@@ -28,6 +27,4 @@
         </tr>
     </table>
     <a href="@routes.TaskController.displayUpdateTaskMst(teamName,taskName)">タスク編集</a>
-</div>
-
 }

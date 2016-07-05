@@ -4,65 +4,40 @@
 @import services.implement.TaskServiceImpl
 
 @main("タスクリスト：" + DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")) {
-    <div class="container">
-        <p class="bg-primary">
-            <a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">昨日 </a>タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")<a href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">明日</a>
-        </p>
-        <table class="table table-sm table-hover">
-        @* 表示イメージ
-            [未実施]
-                [主担当：USER1]
-                    [TASK1]
-                    [TASK2]
-                [主担当：USER2]
-                    [TASK3]
-            [実施対象外]
-                [TASK4]
-            [実施済]
-                [実施者：USER1]
-                    [TASK5]
-                    [TASK6]
-                [実施者：USER2]
-                    [TASK7]
-        *@
-        @* 表示の分類毎にHTMLタグの文字列を作っていき最後にくっつける *@
-            @Html(html)
-@*****
-            <!-- 未実施 -->
-            <tr><th colspan="2">未実施</th></tr>
-            @for(task <- taskList){
-                @if(task.operationUser == null) {
-                    <tr>
-                        <td>
-                            <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">実行</a>
-                        </td>
-                        <td>
-                            @task.taskMst.taskName
-                        </td>
-                    </tr>
-                }
-            }
-            <!-- 実施済 -->
-            <tr><th colspan="2">実施済</th></tr>
-            @for(task <- taskList){
-                @if(task.operationUser != null) {
-                    <tr>
-                        <td>
-                            <a href="@routes.TaskController.updateTaskTrnStatus(task.id,dateStr)">戻す</a>
-                        </td>
-                        <td>
-                            @task.taskMst.taskName
-                        </td>
-                    </tr>
-                }
-            }
-*****@
-        </table>
-        @* タスクマスタ新規作成へのリンク、ほんとはここじゃなくてメニューに持って行きたい *@
-        <a href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
+        <div class="row bg-primary">
+            <div class="col-xs-8">
+                <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
+                タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
+                <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
+            </div>
+            @* タスクマスタ新規作成へのリンク *@
+            <div class="col-xs-4">
+                <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
+            </div>
+        </div>
+        <div class="row">
+            <table class="table table-sm table-hover">
+            @*****
+                表示イメージ
+                [未実施]
+                    [主担当：USER1]
+                        [TASK1]
+                        [TASK2]
+                    [主担当：USER2]
+                        [TASK3]
+                [実施対象外]
+                    [TASK4]
+                [実施済]
+                    [実施者：USER1]
+                        [TASK5]
+                        [TASK6]
+                    [実施者：USER2]
+                        [TASK7]
+            *****@
+            @* 表示の分類毎にHTMLタグの文字列を作っていき最後にくっつける *@
+                @Html(html)
 
-    </div>
-
-
+            </table>
+        </div>
 }
 
