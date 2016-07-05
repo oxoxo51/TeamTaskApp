@@ -21,4 +21,6 @@ public interface UserService {
 	List<User> findUserByName(String userName);
 
 	void changePwd(ChangePwdDto changePwdDto);
+
+	User findUserById(Long id);
 }

@@ -13,6 +13,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import services.TaskService;
 import services.TeamService;
+import services.UserService;
 import services.implement.TaskServiceImpl;
 import services.implement.TeamServiceImpl;
 import util.DateUtil;
@@ -20,7 +21,6 @@ import views.html.taskList;
 import views.html.taskMst;
 import views.html.taskRefer;
 
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -31,6 +31,8 @@ public class TaskController extends Apps {
 	TaskService service;
 	@Inject
 	TeamService teamService;
+	@Inject
+	UserService userService;
 
 	/**
 	 * タスクリスト画面表示（日付指定なし）.
@@ -71,31 +73,27 @@ public class TaskController extends Apps {
 			taskTrnList = service.createTaskTrnByTeamId(team.id, dateStr);
 		} else {
 			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
-			List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
-			for (TaskMst taskMst : taskMstList) {
-				// トラン未作成フラグ
-				boolean noTrnFlg = true;
-				for (TaskTrn taskTrn : taskTrnList) {
-					if (taskMst.id == taskTrn.taskMst.id) {
-						// 作成済みならfor文を抜ける
-						noTrnFlg = false;
-						break;
+			try {
+				List<TaskMst> taskMstList = service.findTaskMstByTeamName(team.teamName); // throws Exception
+				for (TaskMst taskMst : taskMstList) {
+					// トラン未作成フラグ
+					boolean noTrnFlg = true;
+					for (TaskTrn taskTrn : taskTrnList) {
+						if (taskMst.id == taskTrn.taskMst.id) {
+							// 作成済みならfor文を抜ける
+							noTrnFlg = false;
+							break;
+						}
+					}
+					if (noTrnFlg) {
+						taskTrnList.add(service.createTaskTrn(taskMst, dateStr)); // throws ParseException
 					}
 				}
-				if (noTrnFlg) {
-					try {
-						taskTrnList.add(service.createTaskTrn(taskMst, dateStr));
-					} catch (ParseException e) {
-						e.printStackTrace();
-						// TODO エラーの扱い
-					}
-				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO エラーの扱い
 			}
-		}
-		// TODO DEBUG
-		for (TaskTrn task : taskTrnList) {
-			Logger.info("taskName:" + task.taskMst.taskName
-						+ "taskMstId:" + task.taskMst.id);
+
 		}
 
 		String html = this.editTaskListHtml(taskTrnList, dateStr);
@@ -312,7 +310,7 @@ public class TaskController extends Apps {
 				if (!finishMap.containsKey(keyArg[1])) {
 					// 実施者毎のヘッダ作成
 					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">実施者："
-							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
+							+ (userService.findUserById(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
 					finishMap.put(keyArg[1], htmlStr);
@@ -326,7 +324,7 @@ public class TaskController extends Apps {
 				if (!notyetMap.containsKey(keyArg[1])) {
 					// 主担当者毎のヘッダ作成
 					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">主担当者："
-							+ (User.find.byId(Long.parseLong(keyArg[1]))).userName
+							+ (userService.findUserById(Long.parseLong(keyArg[1]))).userName
 							+ "</th></tr>";
 					// 一度MAPに入れる
 					notyetMap.put(keyArg[1], htmlStr);

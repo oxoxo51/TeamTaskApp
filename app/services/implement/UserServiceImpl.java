@@ -42,4 +42,9 @@ public class UserServiceImpl implements UserService {
 		user.update();
 	}
 
+	@Override
+	public User findUserById(Long id) {
+		return User.find.byId(id);
+	}
+
 }
