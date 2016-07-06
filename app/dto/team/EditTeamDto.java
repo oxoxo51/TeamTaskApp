@@ -1,10 +1,12 @@
 package dto.team;
 
+import constant.Constant;
 import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TeamServiceImpl;
 import services.implement.UserServiceImpl;
+import util.MsgUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,9 +70,13 @@ public class EditTeamDto {
 		List<ValidationError> errors = new ArrayList<>();
 
 		// 入力のタスク名称と登録済み別タスクの名称が重複したらエラー
-		if((service.findTeamByName(teamName).size() != 0)
+		if ((service.findTeamByName(teamName).size() != 0)
 				&& (id == null || service.findTeamByName(teamName).get(0).id != id)) {
-			errors.add(new ValidationError("teamName", "チーム名:" + teamName + " は既に使用されています。"));
+			errors.add(MsgUtil.getValidationError(
+					Constant.ITEM_TEAM_NAME,
+					Constant.MSG_E006,
+					Constant.ITEM_NAME_TEAM_NAME,
+					teamName));
 		}
 
 		for (String userName : memberListStr.split(",")) {
@@ -78,7 +84,10 @@ public class EditTeamDto {
 			List<User> user = userService.findUserByName(userName);
 			// 取得できなかった場合エラー
 			if (user.size() == 0) {
-				errors.add(new ValidationError("memberListStr", "ユーザー：" + userName + " は存在しません。"));
+				errors.add(MsgUtil.getValidationError(
+						Constant.ITEM_MEMBER_LIST_STR,
+						Constant.MSG_E005,
+						userName));
 			}
 		}
 		return errors.isEmpty() ? null : errors;

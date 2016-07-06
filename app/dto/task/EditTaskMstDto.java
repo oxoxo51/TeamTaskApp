@@ -160,7 +160,11 @@ public class EditTaskMstDto {
 				// 入力のタスク名称と登録済み別タスクの名称が重複したらエラー
 				if (taskMst.taskName.equals(taskName)
 						&& (id == null || taskMst.id != id)) {
-					errors.add(MsgUtil.getValidationError(Constant.ITEM_TASK_NAME, Constant.MSG_E006, taskName));
+					errors.add(MsgUtil.getValidationError(
+							Constant.ITEM_TASK_NAME,
+							Constant.MSG_E006,
+							Constant.ITEM_NAME_TASK_NAME,
+							taskName));
 					break;
 				}
 			}

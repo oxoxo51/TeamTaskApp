@@ -90,6 +90,14 @@ public class Constant {
 	/* 項目：repetition */
 	public static final String ITEM_REPETITION = "repetition";
 
+	/* 項目：memberListStr */
+	public static final String ITEM_MEMBER_LIST_STR = "memberListStr";
+	/* 項目名：タスク名 */
+	public static final String ITEM_NAME_TASK_NAME = "タスク名";
+
+	/* 項目名：チーム名 */
+	public static final String ITEM_NAME_TEAM_NAME = "チーム名";
+
 	/* ユーザー／チームのプランク表示 */
 	public static final String USER_TEAM_BLANK = "---";
 
