@@ -78,7 +78,7 @@ public class ChangePwdDto {
 		UserServiceImpl service = new UserServiceImpl();
 		List<ValidationError> errors = new ArrayList<>();
 
-		List<User> userList = User.find.where().eq("userName", userName).findList();
+		List<User> userList = service.findUserByName(userName);
 		String password = userList.get(0).password;
 		// 現パスワードチェック
 		if (!password.equals(passwordAsIs)) {
