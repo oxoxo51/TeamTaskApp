@@ -51,17 +51,44 @@ public class Constant {
 	/* message_E005 */
 	public static final String MSG_E005 = CONF_MSG_PREFIX + "E005";
 
+	/* message_E006 */
+	public static final String MSG_E006 = CONF_MSG_PREFIX + "E006";
+
+	/* message_E007 */
+	public static final String MSG_E007 = CONF_MSG_PREFIX + "E007";
+
+	/* message_E008 */
+	public static final String MSG_E008 = CONF_MSG_PREFIX + "E008";
+
+	/* message_E009 */
+	public static final String MSG_E009 = CONF_MSG_PREFIX + "E009";
+
+	/* message_E010 */
+	public static final String MSG_E010 = CONF_MSG_PREFIX + "E010";
+
+	/* message_E011 */
+	public static final String MSG_E011 = CONF_MSG_PREFIX + "E011";
+
 	/* メッセージのタイプ：成功 */
 	public static final String MSG_SUCCESS = "success";
 
 	/* メッセージのタイプ：エラー */
 	public static final String MSG_ERROR = "error";
 
-	/* セッション保存項目：userName */
-	public static final String SESS_USER_NAME = "userName";
+	/* 項目：userName */
+	public static final String ITEM_USER_NAME = "userName";
 
-	/* セッション保存項目：teamName */
-	public static final String SESS_TEAM_NAME = "teamName";
+	/* 項目：teamName */
+	public static final String ITEM_TEAM_NAME = "teamName";
+
+	/* 項目：taskName */
+	public static final String ITEM_TASK_NAME = "taskName";
+
+	/* 項目：repType */
+	public static final String ITEM_REP_TYPE = "repType";
+
+	/* 項目：repetition */
+	public static final String ITEM_REPETITION = "repetition";
 
 	/* ユーザー／チームのプランク表示 */
 	public static final String USER_TEAM_BLANK = "---";
@@ -116,6 +143,12 @@ public class Constant {
 
 	/* 実施タイプ文字列：月次 */
 	public static final String REPTYPE_STR_MONTHLY = "月次";
+
+	/* 実施頻度：週次：エラーメッセージ用 */
+	public static final String REP_WEEKLY_MSG_STR = "曜日(Sun~Sat)";
+
+	/* 実施頻度：月次：エラーメッセージ用 */
+	public static final String REP_MONTHLY_MSG_STR = "日付(1~31)";
 
 	/* 実施頻度：日曜 */
 	public static final String REPETITION_SUN = "Sun";

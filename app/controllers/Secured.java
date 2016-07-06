@@ -13,8 +13,8 @@ public class Secured extends Security.Authenticator {
 
 	@Override
 	public String getUsername(Http.Context ctx) {
-		Logger.info("Secured#getUsername userName:" + ctx.session().get(Constant.SESS_USER_NAME));
-		return ctx.session().get(Constant.SESS_USER_NAME);
+		Logger.info("Secured#getUsername userName:" + ctx.session().get(Constant.ITEM_USER_NAME));
+		return ctx.session().get(Constant.ITEM_USER_NAME);
 	}
 
 	@Override

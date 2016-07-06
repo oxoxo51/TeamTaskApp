@@ -5,6 +5,7 @@ import models.TaskMst;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TaskServiceImpl;
+import util.MsgUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -146,6 +147,7 @@ public class EditTaskMstDto {
 			// 実施頻度タイプと実施頻度の相関チェック
 			checkRepTypeAndRepetition();
 		}
+
 		return errors.isEmpty() ? null : errors;
 	}
 
@@ -158,7 +160,7 @@ public class EditTaskMstDto {
 				// 入力のタスク名称と登録済み別タスクの名称が重複したらエラー
 				if (taskMst.taskName.equals(taskName)
 						&& (id == null || taskMst.id != id)) {
-					errors.add(new ValidationError("taskName", "タスク：" + taskName + " は既に登録されています。"));
+					errors.add(MsgUtil.getValidationError(Constant.ITEM_TASK_NAME, Constant.MSG_E006, taskName));
 					break;
 				}
 			}
@@ -166,7 +168,7 @@ public class EditTaskMstDto {
 			// TODO エラー：チーム見つからないエラーを想定。Exceptionの定義
 			e.printStackTrace();
 			// 発生しない想定のエラー
-			errors.add(new ValidationError("teamName", "チームが見つかりません。"));
+			errors.add(MsgUtil.getValidationError(Constant.ITEM_TEAM_NAME, Constant.MSG_E007));
 		}
 	}
 
@@ -179,7 +181,7 @@ public class EditTaskMstDto {
 		if ((!Constant.REPTYPE_DAYLY.equals(repType))
 			&& (!Constant.REPTYPE_WEEKLY.equals(repType))
 			&& (!Constant.REPTYPE_MONTHLY.equals(repType))) {
-			errors.add(new ValidationError("repType", "実施頻度タイプは D,W,M のいずれかを指定してください。"));
+			errors.add(MsgUtil.getValidationError(Constant.ITEM_REP_TYPE, Constant.MSG_E008));
 			return false;
 		}
 		return true;
@@ -195,42 +197,53 @@ public class EditTaskMstDto {
 		switch (repType) {
 			case Constant.REPTYPE_DAYLY:
 				if (!(repetition == null || "".equals(repetition))) {
-					errors.add(new ValidationError("repetition", "実施頻度タイプが D の場合、実施頻度は指定できません。"));
+					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E009));
 				}
 				break;
 			case Constant.REPTYPE_WEEKLY:
 				if (repetition == null || "".equals(repetition)) {
-					errors.add(new ValidationError("repetition", "実施頻度を入力してください。"));
+					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E010));
 				} else {
 					String[] repStrAry = repetition.split(",");
 					for (String repStr : repStrAry) {
 						if (!Constant.SET_REPETITION.contains(repStr)) {
-							errors.add(new ValidationError("repetition", "実施頻度タイプが W の場合、実施頻度："
-										+ repStr + " は指定できません。"));
+							errors.add(MsgUtil.
+									getValidationError(Constant.ITEM_REPETITION,
+													   Constant.MSG_E011,
+													   Constant.REPTYPE_WEEKLY,
+													   Constant.REP_WEEKLY_MSG_STR));
+							// エラーの重複を防ぐため1つ目でfor文を抜ける
+							break;
 						}
 					}
 				}
 				break;
 			case Constant.REPTYPE_MONTHLY:
 				if (repetition == null || "".equals(repetition)) {
-					errors.add(new ValidationError("repetition", "実施頻度を入力してください。"));
+					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E010));
 				} else {
 					String[] repStrAry = repetition.split(",");
-					for (String repStr : repStrAry) {
-						try {
+					try {
+						for (String repStr : repStrAry) {
 							int date = Integer.parseInt(repStr);
 							if (date < 1 || date > 31) {
-								errors.add(new ValidationError("repetition",
-										"実施頻度タイプが M の場合、実施頻度は1~31を指定してください。"));
+								errors.add(MsgUtil.
+										getValidationError(Constant.ITEM_REPETITION,
+														   Constant.MSG_E011,
+														   Constant.REPTYPE_MONTHLY,
+														   Constant.REP_MONTHLY_MSG_STR));
+								// エラーの重複を防ぐため1つ目でfor文を抜ける
+								break;
 							}
-						} catch (Exception e) {
-							errors.add(new ValidationError("repetition",
-									"実施頻度タイプが M の場合、実施頻度は1~31を指定してください。"));
 						}
+					} catch (Exception e) {
+						errors.add(MsgUtil.
+								getValidationError(Constant.ITEM_REPETITION,
+										Constant.MSG_E011,
+										Constant.REPTYPE_MONTHLY,
+										Constant.REP_MONTHLY_MSG_STR));
 					}
 				}
 		}
 	}
-
-
 }

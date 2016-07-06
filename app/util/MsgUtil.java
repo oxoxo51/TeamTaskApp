@@ -15,7 +15,7 @@ public class MsgUtil {
 	 * @return
 	 */
 	public static ValidationError getValidationError(String itemName, String msgId, String... msgParam) {
-		return new ValidationError(itemName, makeMsgStr(itemName, msgId));
+		return new ValidationError(itemName, makeMsgStr(msgId, msgParam));
 	}
 
 	/**
@@ -28,7 +28,7 @@ public class MsgUtil {
 		String msgStr = ConfigUtil.get(msgId).orElse("");
 		int i = 1;
 		for (String paramStr : msgParam) {
-			msgStr.replace("#" + i, paramStr);
+			msgStr = msgStr.replace("#" + i, paramStr);
 			i++;
 		}
 		return msgStr;

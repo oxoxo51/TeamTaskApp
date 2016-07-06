@@ -41,7 +41,7 @@ public class Apps extends Controller {
 		Logger.info("Apps#index");
 		if (!getLoginUserName().equals(Constant.USER_TEAM_BLANK)) {
 			if (!getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
-				return redirect(routes.TaskController.displayTaskList(session(Constant.SESS_TEAM_NAME)));
+				return redirect(routes.TaskController.displayTaskList(session(Constant.ITEM_TEAM_NAME)));
 			} else {
 				return redirect(routes.TeamController.displayTeamList());
 			}
@@ -60,7 +60,7 @@ public class Apps extends Controller {
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
 			session().clear();
-			session(Constant.SESS_USER_NAME, loginForm.get().getUserName());
+			session(Constant.ITEM_USER_NAME, loginForm.get().getUserName());
 			flashSuccess(Constant.MSG_I001);
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
@@ -89,8 +89,8 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getLoginUserName() {
-		Logger.info("Apps#getLoginUserName: " + session(Constant.SESS_USER_NAME));
-		return session(Constant.SESS_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.SESS_USER_NAME);
+		Logger.info("Apps#getLoginUserName: " + session(Constant.ITEM_USER_NAME));
+		return session(Constant.ITEM_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_USER_NAME);
 	}
 
 	/**
@@ -100,7 +100,7 @@ public class Apps extends Controller {
 	@Security.Authenticated(Secured.class)
 	public void setSessionTeamName(String teamName) {
 		Logger.info("Apps#setSessionTeamName: " + teamName);
-		session(Constant.SESS_TEAM_NAME, teamName);
+		session(Constant.ITEM_TEAM_NAME, teamName);
 	}
 
 	/**
@@ -110,8 +110,8 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
-		Logger.info("Apps#getSessionTeamName: " + session(Constant.SESS_TEAM_NAME));
-		return session(Constant.SESS_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.SESS_TEAM_NAME);
+		Logger.info("Apps#getSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		return session(Constant.ITEM_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_TEAM_NAME);
 	}
 
 	/**

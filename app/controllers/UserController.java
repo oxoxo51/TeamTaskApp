@@ -40,7 +40,7 @@ public class UserController extends Apps {
 			flashSuccess(Constant.MSG_I003);
 			// ログイン済みの状態にしてチーム一覧に遷移
 			session().clear();
-			session(Constant.SESS_USER_NAME, dto.getUserName());
+			session(Constant.ITEM_USER_NAME, dto.getUserName());
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			flashError(Constant.MSG_E003);
