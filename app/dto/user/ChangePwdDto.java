@@ -1,9 +1,11 @@
 package dto.user;
 
+import constant.Constant;
 import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.UserServiceImpl;
+import util.MsgUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,11 +84,11 @@ public class ChangePwdDto {
 		String password = userList.get(0).password;
 		// 現パスワードチェック
 		if (!password.equals(passwordAsIs)) {
-			errors.add(new ValidationError("passwordAsIs", "パスワードが正しくありません。"));
+			errors.add(MsgUtil.getValidationError(Constant.ITEM_PASSWORD_AS_IS, Constant.MSG_E012));
 		}
 		// 新パスワード-新パスワード確認用一致チェック
 		if (!passwordToBe.equals(passwordToBeConfirm)) {
-			errors.add(new ValidationError("password", "新パスワードと新パスワード（確認）が一致しません。"));
+			errors.add(MsgUtil.getValidationError(Constant.ITEM_PASSWORD_TO_BE, Constant.MSG_E013));
 		}
 
 		return errors.isEmpty() ? null : errors;

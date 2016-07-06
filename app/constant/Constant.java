@@ -69,6 +69,12 @@ public class Constant {
 	/* message_E011 */
 	public static final String MSG_E011 = CONF_MSG_PREFIX + "E011";
 
+	/* message_E012 */
+	public static final String MSG_E012 = CONF_MSG_PREFIX + "E012";
+
+	/* message_E013 */
+	public static final String MSG_E013 = CONF_MSG_PREFIX + "E013";
+
 	/* メッセージのタイプ：成功 */
 	public static final String MSG_SUCCESS = "success";
 
@@ -92,6 +98,13 @@ public class Constant {
 
 	/* 項目：memberListStr */
 	public static final String ITEM_MEMBER_LIST_STR = "memberListStr";
+
+	/* 項目：passwordAsIs */
+	public static final String ITEM_PASSWORD_AS_IS = "passwordAsIs";
+
+	/* 項目：passwordToBe */
+	public static final String ITEM_PASSWORD_TO_BE = "passwordToBe";
+
 	/* 項目名：タスク名 */
 	public static final String ITEM_NAME_TASK_NAME = "タスク名";
 
