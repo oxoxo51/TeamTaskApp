@@ -4,6 +4,7 @@ import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TeamServiceImpl;
+import services.implement.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,7 @@ public class EditTeamDto {
 	 */
 	public List<ValidationError> validate() {
 		TeamServiceImpl service = new TeamServiceImpl();
+		UserServiceImpl userService = new UserServiceImpl();
 
 		List<ValidationError> errors = new ArrayList<>();
 
@@ -73,7 +75,7 @@ public class EditTeamDto {
 
 		for (String userName : memberListStr.split(",")) {
 			// ユーザー名からユーザーを取得
-			List<User> user = User.find.where().eq("userName", userName).findList();
+			List<User> user = userService.findUserByName(userName);
 			// 取得できなかった場合エラー
 			if (user.size() == 0) {
 				errors.add(new ValidationError("memberListStr", "ユーザー：" + userName + " は存在しません。"));
