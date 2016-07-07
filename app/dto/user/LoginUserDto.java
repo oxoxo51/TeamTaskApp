@@ -50,7 +50,8 @@ public class LoginUserDto {
 		UserServiceImpl service = new UserServiceImpl();
 
 		if(service.findUser(userName, password) == null || service.findUser(userName, password).size() == 0) {
-			errors.add(new ValidationError("userName", "ユーザー名、パスワードが正しくありません。"));
+			// validationErrorを空で設定し、エラーはflashメッセージで設定
+			errors.add(new ValidationError("",""));
 		}
 
 		return errors.isEmpty() ? null : errors;

@@ -88,7 +88,11 @@ public class ChangePwdDto {
 		}
 		// 新パスワード-新パスワード確認用一致チェック
 		if (!passwordToBe.equals(passwordToBeConfirm)) {
-			errors.add(MsgUtil.getValidationError(Constant.ITEM_PASSWORD_TO_BE, Constant.MSG_E013));
+			errors.add(MsgUtil.getValidationError(
+					Constant.ITEM_PASSWORD_TO_BE,
+					Constant.MSG_E013,
+					Constant.ITEM_NAME_PASSWORD,
+					Constant.ITEM_NAME_PASS_CONF));
 		}
 
 		return errors.isEmpty() ? null : errors;

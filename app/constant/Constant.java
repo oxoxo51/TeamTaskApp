@@ -99,17 +99,35 @@ public class Constant {
 	/* 項目：memberListStr */
 	public static final String ITEM_MEMBER_LIST_STR = "memberListStr";
 
+	/* 項目：password */
+	public static final String ITEM_PASSWORD = "password";
+
 	/* 項目：passwordAsIs */
 	public static final String ITEM_PASSWORD_AS_IS = "passwordAsIs";
 
 	/* 項目：passwordToBe */
 	public static final String ITEM_PASSWORD_TO_BE = "passwordToBe";
 
+	/* 項目名：ユーザー名 */
+	public static final String ITEM_NAME_USER_NAME = "ユーザー名";
+
 	/* 項目名：タスク名 */
 	public static final String ITEM_NAME_TASK_NAME = "タスク名";
 
 	/* 項目名：チーム名 */
 	public static final String ITEM_NAME_TEAM_NAME = "チーム名";
+
+	/* 項目名：パスワード */
+	public static final String ITEM_NAME_PASSWORD = "パスワード";
+
+	/* 項目名：パスワード(確認用) */
+	public static final String ITEM_NAME_PASS_CONF = "パスワード(確認)";
+
+	/* 項目名：新パスワード */
+	public static final String ITEM_NAME_PASS_TO_BE = "新パスワード";
+
+	/* 項目名：新パスワード(確認用) */
+	public static final String ITEM_NAME_PASS_TO_BE_CONF = "新パスワード(確認)";
 
 	/* ユーザー／チームのプランク表示 */
 	public static final String USER_TEAM_BLANK = "---";

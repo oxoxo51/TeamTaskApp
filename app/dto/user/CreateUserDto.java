@@ -1,8 +1,10 @@
 package dto.user;
 
+import constant.Constant;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.UserServiceImpl;
+import util.MsgUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,11 +66,19 @@ public class CreateUserDto {
 		List<ValidationError> errors = new ArrayList<>();
 
 		if(service.findUserByName(userName) != null && service.findUserByName(userName).size() != 0) {
-			errors.add(new ValidationError("userName", "ユーザー名:" + userName + " は既に使用されています。"));
+			errors.add(MsgUtil.getValidationError(
+					Constant.ITEM_USER_NAME,
+					Constant.MSG_E006,
+					Constant.ITEM_NAME_USER_NAME,
+					userName));
 		}
 
 		if (!password.equals(passwordConfirm)) {
-			errors.add(new ValidationError("password", "パスワードとパスワード（確認）が一致しません。"));
+			errors.add(MsgUtil.getValidationError(
+					Constant.ITEM_PASSWORD,
+					Constant.MSG_E013,
+					Constant.ITEM_NAME_PASSWORD,
+					Constant.ITEM_NAME_PASS_CONF));
 		}
 
 		return errors.isEmpty() ? null : errors;
