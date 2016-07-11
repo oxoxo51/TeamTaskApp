@@ -117,4 +117,8 @@ public class TeamServiceImpl implements TeamService {
 		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
 		return team.members;
 	}
+
+	public Team findTeamById(Long teamId) {
+		return Team.find.byId(teamId);
+	}
 }

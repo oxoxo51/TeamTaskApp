@@ -55,6 +55,9 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto, List<String> errorMessages) {
+		TeamServiceImpl teamService = new TeamServiceImpl();
+		UserServiceImpl userService = new UserServiceImpl();
+
 		taskMst.taskName = editTaskMstDto.getTaskName();
 		taskMst.taskInfo = editTaskMstDto.getTaskInfo();
 		taskMst.repType = editTaskMstDto.getRepType();
@@ -62,13 +65,11 @@ public class TaskServiceImpl implements TaskService {
 
 		// タスク利用チーム
 		String teamName = editTaskMstDto.getTeamName();
-		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
+		Team team = teamService.findTeamByName(teamName).get(0);
 		taskMst.taskTeam = team;
 
 		// 主担当者
-		List<User> user = User.find.where().eq(
-				"userName", editTaskMstDto.getMainUserName())
-				.findList();
+		List<User> user = userService.findUserByName(editTaskMstDto.getMainUserName());
 
 		// TODO 存在チェックはDTOのバリデーションに移動する
 		// 取得できなかった場合エラー
@@ -94,9 +95,12 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public List<TaskTrn> findTaskList(long teamId, String dateStr) {
 		Logger.info("TaskServiceImpl#findTaskList");
+
+		TeamServiceImpl teamService = new TeamServiceImpl();
+
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
 		// 1.チームからタスクマスタの一覧を取得する
-		Team team = Team.find.byId(teamId);
+		Team team = teamService.findTeamById(teamId);
 		if (team == null) {
 			// TODO エラー
 			return null;
@@ -133,9 +137,12 @@ public class TaskServiceImpl implements TaskService {
 	@Override
 	public List<TaskTrn> createTaskTrnByTeamId(long teamId, String dateStr) {
 		Logger.info("TaskServiceImpl#createTaskTrn");
+
+		TeamServiceImpl teamService = new TeamServiceImpl();
+
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
 		// 1.チームからタスクマスタの一覧を取得する
-		Team team = Team.find.byId(teamId);
+		Team team = teamService.findTeamById(teamId);
 		if (team == null) {
 			// TODO エラー
 			return null;
@@ -275,7 +282,10 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	public Integer getTaskDoneCount(String userName, String teamName, String taskName) {
 		Logger.debug("TaskServiceImpl#getTaskDoneCount");
+
 		TeamServiceImpl teamService = new TeamServiceImpl();
+		UserServiceImpl userService = new UserServiceImpl();
+
 		// 元となるタスクマスタ
 		Team team = teamService.findTeamByName(teamName).get(0);
 		Logger.debug(team.teamName);
@@ -285,7 +295,7 @@ public class TaskServiceImpl implements TaskService {
 		Logger.debug(taskMst.taskName);
 
 		// タスク実施ユーザー
-		User user = User.find.where().eq("userName", userName).findList().get(0);
+		User user = userService.findUserByName(userName).get(0);
 		// タスクトランから該当のタスクのうち特定ユーザーが実施したものを抽出
 		List<TaskTrn> taskTrnList = TaskTrn.find.where().eq("taskMst", taskMst)
 				.eq("operationUser", user)
