@@ -7,6 +7,7 @@ import models.Team;
 import models.User;
 import play.Logger;
 import services.TeamService;
+import services.UserService;
 import util.ConfigUtil;
 
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ public class TeamServiceImpl implements TeamService {
 	public void create(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#edit");
 
+		UserServiceImpl userService = new UserServiceImpl();
+
 		Team team = new Team();
 		team.teamName = editTeamDto.getTeamName();
 
@@ -30,10 +33,7 @@ public class TeamServiceImpl implements TeamService {
 		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
 
 		// 作成ユーザー:ログインユーザーから設定
-		// TODO ユーザーサービス経由で取得するようにする
-		team.createUser = User.find.where().eq(
-				"userName", Apps.getLoginUserName())
-				.findList().get(0);
+		team.createUser = userService.findUserByName(Apps.getLoginUserName()).get(0);
 
 		if (errorMessages.size() > 0) {
 			// TODO エラーメッセージの返し方
@@ -70,15 +70,15 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<Team> findTeamListByUserName(String userName) {
 		Logger.info("TeamServiceImpl#findTeamListByUserName");
+
+		UserServiceImpl userService = new UserServiceImpl();
+
 		// ユーザー名から該当ユーザーを取得
-		// TODO ユーザーサービス経由で取得
-		List<User> userList = User.find.where().eq("userName", userName).findList();
-		if (userList.size() == 0) {
-			return null;
-		} else {
-			// ユーザーの所属チームを取得
-			return Team.find.where().eq("members", userList.get(0)).setOrderBy("teamName").findList();
-		}
+		User user = userService.findUserByName(userName).get(0);
+
+		// ユーザーの所属チームを取得
+		return Team.find.where().eq("members", user).setOrderBy("teamName").findList();
+
 	}
 
 	/**
@@ -99,10 +99,12 @@ public class TeamServiceImpl implements TeamService {
 	 * @param errorMessages
 	 */
 	private void setMembers(String memberListStr, List<User> members, List<String> errorMessages) {
+
+		UserService userService = new UserServiceImpl();
+
 		for (String userName : memberListStr.split(",")) {
 			// ユーザー名からユーザーを取得
-			// TODO ユーザーサービス経由で取得
-			List<User> user = User.find.where().eq("userName", userName).findList();
+			List<User> user = userService.findUserByName(userName);
 			// 取得できなかった場合エラー
 			if (user.size() == 0) {
 				errorMessages.add(userName + ConfigUtil.get(Constant.MSG_E005));
