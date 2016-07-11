@@ -26,35 +26,40 @@ public class TaskServiceImpl implements TaskService {
 	@Inject
 	UserService userService;
 
+	/**
+	 * タスクマスタ新規登録.
+	 * @param editTaskMstDto
+	 */
 	@Override
 	public void createTaskMst(EditTaskMstDto editTaskMstDto) {
 		Logger.info("TaskServiceImpl#createTaskMst");
 
 		TaskMst taskMst = new TaskMst();
-		List<String> errorMessages = new ArrayList<String>();
-		taskMst = editTaskMst(taskMst, editTaskMstDto, errorMessages);
-		if (errorMessages.size() > 0) {
-			// TODO エラーメッセージの返し方
-		} else {
-			taskMst.save();
-		}
+		taskMst = editTaskMst(taskMst, editTaskMstDto);
+
+		taskMst.save();
 	}
 
+	/**
+	 * タスクマスタ更新.
+	 * @param editTaskMstDto
+	 */
 	@Override
 	public void updateTaskMst(EditTaskMstDto editTaskMstDto) {
 		Logger.info("TaskServiceImpl#updateTaskMst");
 
 		TaskMst taskMst = TaskMst.find.byId(editTaskMstDto.getId());
-		List<String> errorMessages = new ArrayList<String>();
-		taskMst = editTaskMst(taskMst, editTaskMstDto, errorMessages);
-		if (errorMessages.size() > 0) {
-			// TODO エラーメッセージの返し方
-		} else {
-			taskMst.update();
-		}
+		taskMst = editTaskMst(taskMst, editTaskMstDto);
+		taskMst.update();
 	}
 
-	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto, List<String> errorMessages) {
+	/**
+	 * タスクマスタ登録・更新共通処理.
+	 * @param taskMst
+	 * @param editTaskMstDto
+	 * @return
+	 */
+	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto) {
 		TeamServiceImpl teamService = new TeamServiceImpl();
 		UserServiceImpl userService = new UserServiceImpl();
 
@@ -68,17 +73,8 @@ public class TaskServiceImpl implements TaskService {
 		Team team = teamService.findTeamByName(teamName).get(0);
 		taskMst.taskTeam = team;
 
-		// 主担当者
-		List<User> user = userService.findUserByName(editTaskMstDto.getMainUserName());
-
-		// TODO 存在チェックはDTOのバリデーションに移動する
-		// 取得できなかった場合エラー
-		if (user.size() == 0) {
-			errorMessages.add("ユーザー：" + editTaskMstDto.getMainUserName() + "は存在しません。");
-		} else {
-			// ユーザー名は重複ない前提
-			taskMst.mainUser = user.get(0);
-		}
+		// 主担当者：存在チェックはDTOで実施済の想定
+		taskMst.mainUser = userService.findUserByName(editTaskMstDto.getMainUserName()).get(0);
 
 		// 開始日
 		taskMst.startDate = editTaskMstDto.getStartDate();
@@ -207,6 +203,7 @@ public class TaskServiceImpl implements TaskService {
 	public int updateTaskTrnStatus(long taskTrnId) {
 		TaskTrn trn = TaskTrn.find.byId(taskTrnId);
 		if (trn == null) {
+			// エラー
 			return -1;
 		} else {
 			if (trn.operationUser == null) {
@@ -214,7 +211,7 @@ public class TaskServiceImpl implements TaskService {
 				// 実施ユーザーの取得
 				List<User> userList = userService.findUserByName(Http.Context.current().session().get("userName"));
 				if (userList == null || userList.get(0) == null) {
-					// TODO エラー
+					// エラー
 					return -1;
 				} else {
 					trn.operationUser = userList.get(0);

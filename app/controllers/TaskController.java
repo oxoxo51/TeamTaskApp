@@ -192,7 +192,7 @@ public class TaskController extends Apps {
 			}
 			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		} else {
-			// TODO
+			// エラー
 			flashError(Constant.MSG_E004);
 			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		}
@@ -206,12 +206,10 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result referTask(String teamName, String taskName) {
-		// TODO
 		return ok(taskRefer.render(teamName, taskName));
 	}
 
 	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
-		// TODO newするしかないんかのう。。
 		TaskServiceImpl service = new TaskServiceImpl();
 		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
 	}
@@ -224,7 +222,7 @@ public class TaskController extends Apps {
 	 */
 	public static String editTaskDoneCountHtml(String teamName, String taskName) {
 		Logger.info("TaskController#editTaskDoneCountHtml");
-		// TODO newするしかないんかのう。。
+
 		TaskServiceImpl service = new TaskServiceImpl();
 		TeamServiceImpl teamService = new TeamServiceImpl();
 
@@ -232,7 +230,6 @@ public class TaskController extends Apps {
 
 		// フォーマット：[ユーザー名] : N回
 		String htmlFormat = "<p>[userName] : NNN 回</p>";
-		Logger.debug(htmlFormat);
 
 		// チームに所属するユーザー
 		List<User> userList = teamService.findUserByTeamName(teamName);
@@ -240,20 +237,15 @@ public class TaskController extends Apps {
 		for (User user : userList) {
 			Integer count = 0;
 			String userName = user.userName;
-			Logger.debug(userName);
 			if ((count = service.getTaskDoneCount(
 					userName, teamName, taskName)) > 0) {
 				String addHtml = htmlFormat;
-				Logger.debug(addHtml);
 				addHtml = addHtml.replace("[userName]", userName)
 								 .replace("NNN", count.toString());
 				html += addHtml;
-				Logger.debug(html);
 			}
-			Logger.debug(count.toString());
 
 		}
-		Logger.debug(html);
 		return html;
 	}
 
@@ -339,14 +331,12 @@ public class TaskController extends Apps {
 				//ユーザー毎にまとめる必要なし
 				otherMap.put(keyArg[1], htmlStr);
 			}
-			Logger.debug("key:" + keyArg[0] + "," + keyArg[1] + " html:" + htmlStr);
 		}
 		// 未実施
 		html = "<thead><tr class=\"danger\"><th colspan=\"2\">未実施</th></tr></thead><tbody>";
 		for (Iterator i = notyetMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
-			Logger.debug("html:" + html);
 		}
 		html += "</tbody>";
 		// 対象外
@@ -354,7 +344,6 @@ public class TaskController extends Apps {
 		for (Iterator i = otherMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry)i.next();
 			html += (String)entry.getValue();
-			Logger.debug("html:" + html);
 		}
 		html += "</tbody>";
 		// 実施済
@@ -362,7 +351,6 @@ public class TaskController extends Apps {
 		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
 			Map.Entry entry = (Map.Entry) i.next();
 			html += (String) entry.getValue();
-			Logger.debug("html:" + html);
 		}
 		html += "</tbody>";
 
