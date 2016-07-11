@@ -2,9 +2,11 @@ package dto.task;
 
 import constant.Constant;
 import models.TaskMst;
+import models.User;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TaskServiceImpl;
+import services.implement.UserServiceImpl;
 import util.MsgUtil;
 
 import java.util.ArrayList;
@@ -148,6 +150,9 @@ public class EditTaskMstDto {
 			checkRepTypeAndRepetition();
 		}
 
+		// 主担当ユーザーの存在チェック
+		checkRegistryMainUSer();
+
 		return errors.isEmpty() ? null : errors;
 	}
 
@@ -248,6 +253,22 @@ public class EditTaskMstDto {
 										Constant.REP_MONTHLY_MSG_STR));
 					}
 				}
+		}
+	}
+
+	/**
+	 * 主担当ユーザーの存在チェック.
+	 */
+	private void checkRegistryMainUSer() {
+		UserServiceImpl userService = new UserServiceImpl();
+
+		List<User> userList = userService.findUserByName(mainUserName);
+		if (userList == null || userList.size() == 0) {
+			errors.add(MsgUtil.getValidationError(
+					Constant.ITEM_MAIN_USER_NAME,
+					Constant.MSG_E005,
+					mainUserName
+			));
 		}
 	}
 }

@@ -108,6 +108,9 @@ public class Constant {
 	/* 項目：passwordToBe */
 	public static final String ITEM_PASSWORD_TO_BE = "passwordToBe";
 
+	/* 項目：mainUserName */
+	public static final String ITEM_MAIN_USER_NAME = "mainUserName";
+
 	/* 項目名：ユーザー名 */
 	public static final String ITEM_NAME_USER_NAME = "ユーザー名";
 
