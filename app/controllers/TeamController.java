@@ -99,7 +99,7 @@ public class TeamController extends Apps {
 					// エラー返却時の処理
 					if (errorMessages != null && errorMessages.size() > 0) {
 						for (String error : errorMessages) {
-							flashError(error);
+							flash("error", error);
 						}
 						return badRequest(team.render(mode, editTeamDtoForm));
 					}
@@ -109,7 +109,7 @@ public class TeamController extends Apps {
 			// チームリストを表示
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
-			flash("error", "エラーの内容を確認してください。");
+			flashError(Constant.MSG_E003);
 			return badRequest(team.render(mode, editTeamDtoForm));
 		}
 	}
