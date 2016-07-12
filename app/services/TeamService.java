@@ -13,8 +13,8 @@ import java.util.List;
 @ImplementedBy(TeamServiceImpl.class)
 public interface TeamService {
 
-	void create(EditTeamDto editTeamDto);
-	void update(EditTeamDto editTeamDto);
+	List<String> create(EditTeamDto editTeamDto);
+	List<String> update(EditTeamDto editTeamDto);
 	List<Team> findTeamListByUserName(String userName);
 	List<Team> findTeamByName(String teamName);
 }

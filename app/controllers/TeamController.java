@@ -13,6 +13,7 @@ import services.TeamService;
 import views.html.team;
 import views.html.teamList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -82,6 +83,8 @@ public class TeamController extends Apps {
 	public Result edit(String mode) {
 		Logger.info("TeamController#edit MODE:" + mode);
 
+		List<String> errorMessages = new ArrayList<String>();
+
 		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class).bindFromRequest();
 		if (!editTeamDtoForm.hasErrors()) {
 			String msg ="";
@@ -92,7 +95,14 @@ public class TeamController extends Apps {
 					flashSuccess(Constant.MSG_I003);
 					break;
 				case Constant.MODE_UPDATE :
-					service.update(dto);
+					errorMessages = service.update(dto);
+					// エラー返却時の処理
+					if (errorMessages != null && errorMessages.size() > 0) {
+						for (String error : errorMessages) {
+							flashError(error);
+						}
+						return badRequest(team.render(mode, editTeamDtoForm));
+					}
 					flashSuccess(Constant.MSG_I004);
 					break;
 			}

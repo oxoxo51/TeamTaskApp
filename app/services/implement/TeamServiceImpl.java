@@ -8,7 +8,7 @@ import models.User;
 import play.Logger;
 import services.TeamService;
 import services.UserService;
-import util.ConfigUtil;
+import util.MsgUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +17,14 @@ import java.util.List;
  * Created on 2016/05/10.
  */
 public class TeamServiceImpl implements TeamService {
+
+	/**
+	 * チーム新規作成.
+	 * @param editTeamDto
+	 * @return
+	 */
 	@Override
-	public void create(EditTeamDto editTeamDto) {
+	public List<String> create(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#edit");
 
 		UserServiceImpl userService = new UserServiceImpl();
@@ -28,38 +34,39 @@ public class TeamServiceImpl implements TeamService {
 
 		// チームメンバー
 		// DTOのLISTからユーザーを取得
-		// TODO ユーザー名から再度ユーザーを取得して登録ってすごく冗長。。。
 		List<String> errorMessages = new ArrayList<String>();
 		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
 
 		// 作成ユーザー:ログインユーザーから設定
 		team.createUser = userService.findUserByName(Apps.getLoginUserName()).get(0);
 
-		if (errorMessages.size() > 0) {
-			// TODO エラーメッセージの返し方
-		} else {
+		if (errorMessages.size() == 0) {
 			team.save();
 		}
+		return errorMessages;
 	}
 
+	/**
+	 * チーム更新.
+	 * @param editTeamDto
+	 * @return
+	 */
 	@Override
-	public void update(EditTeamDto editTeamDto) {
+	public List<String> update(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#update");
 		Team team = Team.find.byId(editTeamDto.getId());
 		team.teamName = editTeamDto.getTeamName();
+		List<String> errorMessages = new ArrayList<String>();
 
 		// チームメンバー
 		// 一度クリアした上でDTOからセット
-		// TODO ユーザー名から再度ユーザーを取得して登録ってすごく冗長。。
-		List<String> errorMessages = new ArrayList<String>();
 		team.members.clear();
 		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
 
-		if (errorMessages.size() > 0) {
-			// TODO エラーメッセージの返し方
-		} else {
+		if (errorMessages.size() == 0) {
 			team.update();
 		}
+		return errorMessages;
 	}
 
 	/**
@@ -107,7 +114,7 @@ public class TeamServiceImpl implements TeamService {
 			List<User> user = userService.findUserByName(userName);
 			// 取得できなかった場合エラー
 			if (user.size() == 0) {
-				errorMessages.add(userName + ConfigUtil.get(Constant.MSG_E005));
+				errorMessages.add(MsgUtil.makeMsgStr(Constant.MSG_E005, userName));
 			} else {
 				// ユーザー名は重複ない前提
 				members.add(user.get(0));
