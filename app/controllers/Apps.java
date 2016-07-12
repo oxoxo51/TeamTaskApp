@@ -8,7 +8,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
-import util.ConfigUtil;
+import util.MsgUtil;
 import views.html.index;
 
 /**
@@ -119,8 +119,8 @@ public class Apps extends Controller {
 	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。
 	 * @param msgId
 	 */
-	public static void flashSuccess(String msgId) {
-		flash(Constant.MSG_SUCCESS, ConfigUtil.get(msgId).orElse(""));
+	public static void flashSuccess(String msgId, String... msgParam) {
+		flash(Constant.MSG_SUCCESS, MsgUtil.makeMsgStr(msgId, msgParam));
 	}
 
 	/**
@@ -128,8 +128,8 @@ public class Apps extends Controller {
 	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。
 	 * @param msgId
 	 */
-	public static void flashError(String msgId) {
-		flash(Constant.MSG_ERROR, ConfigUtil.get(msgId).orElse(""));
+	public static void flashError(String msgId, String... msgParam) {
+		flash(Constant.MSG_ERROR, MsgUtil.makeMsgStr(msgId, msgParam));
 	}
 }
 
