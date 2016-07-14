@@ -1,12 +1,12 @@
-@()
+@(teamName: String)
 <div class="col-xs-4 bg-warning">
-    TEAM:@{Apps.getSessionTeamName}
+    TEAM:@teamName
 </div>
 <div class="col-xs-4 bg-warning">
     <span>&nbsp;</span>
 </div>
 <div class="col-xs-4 bg-warning">
-    @if(!"---".equals(Apps.getLoginUserName())){
+    @if(!"---".equals(teamName)){
         <a class="nav-link" href="@routes.TeamController.displayTeamList">チーム選択</a>
     } else {
         <span>&nbsp;</span>

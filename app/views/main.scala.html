@@ -21,9 +21,9 @@
     <body>
         <div class="container">
         @* ヘッダー:ユーザー名表示 *@
-        <div class="row">@tag.headerUser()</div>
+        <div class="row">@tag.headerUser(Apps.getLoginUserName)</div>
         @* チーム名表示 *@
-        <div class="row">@tag.headerTeam()</div>
+        <div class="row">@tag.headerTeam(Apps.getSessionTeamName)</div>
         @* エラーメッセージ表示 *@
         <div class="row">@tag.flashMessage()</div>
         @* ページ内コンテンツ出力 *@

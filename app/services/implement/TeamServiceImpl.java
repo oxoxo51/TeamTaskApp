@@ -54,6 +54,7 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<String> update(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#update");
+
 		Team team = Team.find.byId(editTeamDto.getId());
 		team.teamName = editTeamDto.getTeamName();
 		List<String> errorMessages = new ArrayList<String>();
@@ -123,11 +124,15 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	public List<User> findUserByTeamName(String teamName) {
+		Logger.info("TeamServiceImpl#findUserByTeamName");
+
 		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
 		return team.members;
 	}
 
 	public Team findTeamById(Long teamId) {
+		Logger.info("TeamServiceImpl#findTeamById");
+
 		return Team.find.byId(teamId);
 	}
 }
