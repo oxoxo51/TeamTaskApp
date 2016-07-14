@@ -32,4 +32,6 @@ public interface TaskService {
 	String getTaskMstName(long mstId);
 
 	int updateTaskTrnStatus(long taskTrnId);
+
+	TaskMst getTaskMstByTaskTrnId(Long taskTrnId);
 }

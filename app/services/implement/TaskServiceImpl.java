@@ -271,6 +271,16 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	/**
+	 * タスクトランIDからタスクマスタを取得する.
+	 * @param taskTrnId
+	 * @return
+	 */
+	@Override
+	public TaskMst getTaskMstByTaskTrnId(Long taskTrnId) {
+		return TaskTrn.find.byId(taskTrnId).taskMst;
+	}
+
+	/**
 	 * ユーザーのタスク実施回数を返す.
 	 * @param userName
 	 * @param teamName

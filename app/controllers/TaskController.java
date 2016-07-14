@@ -186,9 +186,9 @@ public class TaskController extends Apps {
 		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
 			// タスクリストを再表示
 			if (status == Constant.TASK_UPD_FINISHED) {
-				flashSuccess(Constant.MSG_I005);
+				flashSuccess(Constant.MSG_I005, service.getTaskMstByTaskTrnId(taskTrnId).taskName);
 			} else {
-				flashSuccess(Constant.MSG_I006);
+				flashSuccess(Constant.MSG_I006, service.getTaskMstByTaskTrnId(taskTrnId).taskName);
 			}
 			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
 		} else {
