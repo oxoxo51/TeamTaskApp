@@ -65,7 +65,7 @@ public class Apps extends Controller {
 			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			flashError(Constant.MSG_E001);
-			return badRequest(index.render(loginForm));
+			return redirect(routes.Apps.index());
 		}
 
 	}
