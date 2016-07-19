@@ -123,7 +123,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTaskMst(String teamName, String taskName) {
-		Logger.info("TaskController#displayCreateTaskMst");
+		Logger.info("TaskController#displayUpdateTaskMst");
 
 		EditTaskMstDto dto = new EditTaskMstDto();
 
@@ -131,13 +131,24 @@ public class TaskController extends Apps {
 
 		dto.setId(taskMst.id);
 		dto.setMainUserName(taskMst.mainUser.userName);
-		dto.setRepetition(taskMst.repetition);
+		List<String> repetition = new ArrayList<String>();
+		for (String repStr : taskMst.repetition.split(",")) {
+			repetition.add(repStr);
+		}
+		dto.setRepetition(repetition);
 		dto.setRepType(taskMst.repType);
 		dto.setStartDate(taskMst.startDate);
 		dto.setTaskInfo(taskMst.taskInfo);
 		dto.setTaskName(taskMst.taskName);
 		dto.setTeamName(taskMst.taskTeam.teamName);
 
+/*		Logger.info("*** taskMst.repetition:" + taskMst.repetition);
+		Logger.info("*** taskMst.repetition.split:" + Arrays.toString(taskMst.repetition.split(",")));
+		Logger.info("*** dto.getRepetition:" + Arrays.toString(dto.getRepetition()));
+		for(String str : dto.getRepetition()) {
+			Logger.info(str);
+		}
+*/
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
 		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
 	}

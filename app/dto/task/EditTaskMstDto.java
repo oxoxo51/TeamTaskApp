@@ -43,7 +43,7 @@ public class EditTaskMstDto {
 	/**
 	 * 実施頻度.
 	 */
-	private String repetition;
+	private List<String> repetition;
 
 	/**
 	 * 主担当ユーザー名.
@@ -102,11 +102,11 @@ public class EditTaskMstDto {
 		this.repType = repType;
 	}
 
-	public String getRepetition() {
+	public List<String> getRepetition() {
 		return repetition;
 	}
 
-	public void setRepetition(String repetition) {
+	public void setRepetition(List<String> repetition) {
 		this.repetition = repetition;
 	}
 
@@ -205,16 +205,15 @@ public class EditTaskMstDto {
 	private void checkRepTypeAndRepetition() {
 		switch (repType) {
 			case Constant.REPTYPE_DAYLY:
-				if (!(repetition == null || "".equals(repetition))) {
+				if (!(repetition == null || repetition.size() == 0)) {
 					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E009));
 				}
 				break;
 			case Constant.REPTYPE_WEEKLY:
-				if (repetition == null || "".equals(repetition)) {
+				if (repetition == null || repetition.size() == 0) {
 					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E010));
 				} else {
-					String[] repStrAry = repetition.split(",");
-					for (String repStr : repStrAry) {
+					for (String repStr : repetition) {
 						if (!Constant.SET_REPETITION.contains(repStr)) {
 							errors.add(MsgUtil.
 									getValidationError(Constant.ITEM_REPETITION,
@@ -228,12 +227,11 @@ public class EditTaskMstDto {
 				}
 				break;
 			case Constant.REPTYPE_MONTHLY:
-				if (repetition == null || "".equals(repetition)) {
+				if (repetition == null || repetition.size() == 0) {
 					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E010));
 				} else {
-					String[] repStrAry = repetition.split(",");
 					try {
-						for (String repStr : repStrAry) {
+						for (String repStr : repetition) {
 							int date = Integer.parseInt(repStr);
 							if (date < 1 || date > 31) {
 								errors.add(MsgUtil.

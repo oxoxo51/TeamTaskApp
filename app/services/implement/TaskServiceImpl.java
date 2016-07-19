@@ -66,7 +66,17 @@ public class TaskServiceImpl implements TaskService {
 		taskMst.taskName = editTaskMstDto.getTaskName();
 		taskMst.taskInfo = editTaskMstDto.getTaskInfo();
 		taskMst.repType = editTaskMstDto.getRepType();
-		taskMst.repetition = editTaskMstDto.getRepetition();
+		String repetition = "";
+		if (editTaskMstDto.getRepetition() != null) {
+			for (String repStr : editTaskMstDto.getRepetition()) {
+				if (repetition.length() > 0) {
+					repetition += ",";
+				}
+				repetition += repStr;
+			}
+		}
+
+		taskMst.repetition = repetition;
 
 		// タスク利用チーム
 		String teamName = editTaskMstDto.getTeamName();
