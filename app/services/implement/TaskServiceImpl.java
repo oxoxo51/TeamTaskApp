@@ -119,7 +119,7 @@ public class TaskServiceImpl implements TaskService {
 				for (TaskMst taskMst : taskMstList) {
 					Logger.debug("taskMst.taskName: " + taskMst.taskName);
 					List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
-							.where().eq("taskDate", DateUtil.getDate(dateStr, "yyyyMMdd")).findList();
+							.where().eq("taskDate", DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)).findList();
 					for (TaskTrn task : taskTrn) {
 						Logger.debug("taskTrn.taskName, date: "
 								+ task.taskMst.taskName + ", " + task.taskDate);
@@ -160,7 +160,7 @@ public class TaskServiceImpl implements TaskService {
 				// 2.タスクマスタの一覧を元に、該当日付のタスクトランを作成する
 				// ただし、タスクトランを作成する日付がタスクマスタの開始日以降の場合のみとする
 				for (TaskMst taskMst : taskMstList) {
-					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, "yyyyMMdd")) <= 0) {
+					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) <= 0) {
 						taskTrnList.add(createTaskTrn(taskMst, dateStr));
 					}
 				}
@@ -182,7 +182,7 @@ public class TaskServiceImpl implements TaskService {
 	public TaskTrn createTaskTrn(TaskMst taskMst, String dateStr) throws ParseException {
 		TaskTrn taskTrn = new TaskTrn();
 		taskTrn.taskMst = taskMst;
-		taskTrn.taskDate = DateUtil.getDate(dateStr, "yyyyMMdd");
+		taskTrn.taskDate = DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd);
 		taskTrn.operationFlg = getOperationFlg(taskMst.repType, taskMst.repetition, dateStr);
 
 		taskTrn.save();

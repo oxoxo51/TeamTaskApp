@@ -135,6 +135,9 @@ public class Constant {
 	/* ユーザー／チームのプランク表示 */
 	public static final String USER_TEAM_BLANK = "---";
 
+	/* フォーマット：yyyyMMdd */
+	public static final String DATE_FORMAT_yMd = "yyyyMMdd";
+
 	/* mode:CREATE */
 	public static final String MODE_CREATE = "CREATE";
 

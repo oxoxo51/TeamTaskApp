@@ -25,7 +25,7 @@
         @* チーム名表示 *@
         <div class="row">@tag.headerTeam(Apps.getSessionTeamName)</div>
         @* エラーメッセージ表示 *@
-        <div class="row">@tag.flashMessage()</div>
+        <div id="flash_msg" class="row">@tag.flashMessage()</div>
         @* ページ内コンテンツ出力 *@
         <div class="row">
             <div class="col-xs-12">@content</div>

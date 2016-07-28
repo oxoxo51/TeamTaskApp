@@ -4,16 +4,12 @@ import com.google.inject.Inject;
 import constant.Constant;
 import dto.task.EditTaskMstDto;
 import models.TaskMst;
-import models.TaskTrn;
-import models.Team;
 import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
 import services.TaskService;
-import services.TeamService;
-import services.UserService;
 import services.implement.TaskServiceImpl;
 import services.implement.TeamServiceImpl;
 import util.DateUtil;
@@ -21,7 +17,9 @@ import views.html.taskList;
 import views.html.taskMst;
 import views.html.taskRefer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created on 2016/05/25.
@@ -29,10 +27,6 @@ import java.util.*;
 public class TaskController extends Apps {
 	@Inject
 	TaskService service;
-	@Inject
-	TeamService teamService;
-	@Inject
-	UserService userService;
 
 	/**
 	 * タスクリスト画面表示（日付指定なし）.
@@ -44,7 +38,7 @@ public class TaskController extends Apps {
 	public Result displayTaskList(String teamName) {
 		Logger.info("TaskController#displayTaskList teamName:" +teamName);
 
-		String dateStr = DateUtil.getDateStr(new Date(), "yyyyMMdd");
+		String dateStr = DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd);
 
 		// 本日のタスクリストを表示する.
 		return displayTaskListWithDate(teamName, dateStr);
@@ -62,43 +56,7 @@ public class TaskController extends Apps {
 		Logger.info("TaskController#displayTaskListWithDate teamName:" + teamName +
 					" dateStr:" + dateStr);
 
-		// セッションにチーム名を保持する
-		this.setSessionTeamName(teamName);
-
-		// 利用チームに紐付くタスクリストを表示
-		Team team = teamService.findTeamByName(teamName).get(0);
-		// 該当日付のタスクトランを取得し、0件の場合新規作成する
-		List<TaskTrn> taskTrnList = service.findTaskList(team.id, dateStr);
-		if (taskTrnList.size() == 0) {
-			taskTrnList = service.createTaskTrnByTeamId(team.id, dateStr);
-		} else {
-			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
-			try {
-				List<TaskMst> taskMstList = service.findTaskMstByTeamName(team.teamName); // throws Exception
-				for (TaskMst taskMst : taskMstList) {
-					// トラン未作成フラグ
-					boolean noTrnFlg = true;
-					for (TaskTrn taskTrn : taskTrnList) {
-						if (taskMst.id == taskTrn.taskMst.id) {
-							// 作成済みならfor文を抜ける
-							noTrnFlg = false;
-							break;
-						}
-					}
-					if (noTrnFlg) {
-						taskTrnList.add(service.createTaskTrn(taskMst, dateStr)); // throws ParseException
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO エラーの扱い
-			}
-
-		}
-
-		String html = this.editTaskListHtml(taskTrnList, dateStr);
-
-		return ok(taskList.render(html, dateStr, teamName));
+		return ok(taskList.render(dateStr, teamName));
 
 	}
 
@@ -142,13 +100,6 @@ public class TaskController extends Apps {
 		dto.setTaskName(taskMst.taskName);
 		dto.setTeamName(taskMst.taskTeam.teamName);
 
-/*		Logger.info("*** taskMst.repetition:" + taskMst.repetition);
-		Logger.info("*** taskMst.repetition.split:" + Arrays.toString(taskMst.repetition.split(",")));
-		Logger.info("*** dto.getRepetition:" + Arrays.toString(dto.getRepetition()));
-		for(String str : dto.getRepetition()) {
-			Logger.info(str);
-		}
-*/
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
 		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
 	}
@@ -260,143 +211,6 @@ public class TaskController extends Apps {
 		return html;
 	}
 
-
-	/**
-	 * タスクリスト画面に表示するHTMLを作成する.
-	 * @param taskTrnList
-	 * @param dateStr
-	 * @return
-	 */
-	private String editTaskListHtml(List<TaskTrn> taskTrnList, String dateStr) {
-		String html = "";
-		// タスクリストをキーとタスクトランのマップに置き換える
-		// キー：実施状態(未実施：0,実施済：1,実施対象外：-1)
-		// 		担当者or実施者のユーザーID
-		// キーはカンマ区切りのStringとする
-		Map<String, TaskTrn> taskMap = new HashMap<String, TaskTrn>();
-		for (TaskTrn task : taskTrnList) {
-			String key = "";
-			// 実施状態
-			if (task.operationUser != null) {
-				// 実施済:実施ユーザーあり
-				key = Constant.TASK_FINISHED + Constant.COMMA + task.operationUser.id
-						+ Constant.COMMA + task.id;
-			} else if (Constant.FLAG_ON.equals(task.operationFlg)
-					&& (task.operationUser == null)) {
-				// 未実施:実施対象ON、かつ、実施ユーザーなし
-				key = Constant.TASK_NOT_YET + Constant.COMMA + task.taskMst.mainUser.id
-						+ Constant.COMMA + task.id;
-			} else {
-				// 実施対象外:実施対象OFF、かつ、実施ユーザーなし
-				key = Constant.TASK_OTHER + Constant.COMMA + task.id;
-			}
-			taskMap.put(key, task);
-		}
-
-		// 実施済、未実施、対象外それぞれString配列のMAPでHTMLを作成する
-		Map<String, String> finishMap = new HashMap<String, String>(); // 実施済
-		Map<String, String> notyetMap = new HashMap<String, String>(); // 未実施
-		Map<String, String> otherMap = new HashMap<String, String>(); // 対象外
-
-		// キーの状態毎にHTMLを作成する.
-		for (Iterator i = taskMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry)i.next();
-			String[] keyArg = ((String)entry.getKey()).split(",");
-			TaskTrn task = (TaskTrn)entry.getValue();
-			String taskUpdateUrl = routes.TaskController.updateTaskTrnStatus(task.id,dateStr)
-					.absoluteURL(request());
-			String taskReferUrl = routes.TaskController.referTask(getSessionTeamName(), task.taskMst.taskName)
-					.absoluteURL(request());
-			String htmlStr = "";
-			if (Constant.TASK_FINISHED.equals(keyArg[0])) {
-				// 実施済
-				if (!finishMap.containsKey(keyArg[1])) {
-					// 実施者毎のヘッダ作成
-					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">実施者："
-							+ (userService.findUserById(Long.parseLong(keyArg[1]))).userName
-							+ "</th></tr>";
-					// 一度MAPに入れる
-					finishMap.put(keyArg[1], htmlStr);
-				} else {
-					htmlStr = finishMap.get(keyArg[1]);
-				}
-				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_NOT_YET);
-				finishMap.replace(keyArg[1], htmlStr);
-			} else if (Constant.TASK_NOT_YET.equals(keyArg[0])) {
-				// 未実施
-				if (!notyetMap.containsKey(keyArg[1])) {
-					// 主担当者毎のヘッダ作成
-					htmlStr = "<tr class=\"warning\"><th colspan=\"2\">主担当者："
-							+ (userService.findUserById(Long.parseLong(keyArg[1]))).userName
-							+ "</th></tr>";
-					// 一度MAPに入れる
-					notyetMap.put(keyArg[1], htmlStr);
-				} else {
-					htmlStr = notyetMap.get(keyArg[1]);
-				}
-				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_FINISHED);
-				notyetMap.replace(keyArg[1], htmlStr);
-			} else {
-				// 対象外
-				htmlStr += getTaskHtmlLine(taskUpdateUrl, taskReferUrl, task.taskMst.taskName, Constant.TASK_UPD_FINISHED);
-				//ユーザー毎にまとめる必要なし
-				otherMap.put(keyArg[1], htmlStr);
-			}
-		}
-		// 未実施
-		html = "<thead><tr class=\"danger\"><th colspan=\"2\">未実施</th></tr></thead><tbody>";
-		for (Iterator i = notyetMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry)i.next();
-			html += (String)entry.getValue();
-		}
-		html += "</tbody>";
-		// 対象外
-		html += "<thead><tr class=\"active\"><th colspan=\"2\">実施不要</th></tr></thead><tbody>";
-		for (Iterator i = otherMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry)i.next();
-			html += (String)entry.getValue();
-		}
-		html += "</tbody>";
-		// 実施済
-		html += "<thead><tr class=\"success\"><th colspan=\"2\">実施済</th></tr></thead><tbody>";
-		for (Iterator i = finishMap.entrySet().iterator(); i.hasNext();) {
-			Map.Entry entry = (Map.Entry) i.next();
-			html += (String) entry.getValue();
-		}
-		html += "</tbody>";
-
-		return html;
-	}
-
-	/**
-	 * タスク行のHTMLを返す.
-	 * @param taskUpdateUrl
-	 * @param taskReferUrl
-	 * @param taskName
-	 * @param taskUpdType
-	 * @return
-	 */
-	private String getTaskHtmlLine(String taskUpdateUrl,
-								   String taskReferUrl,
-								   String taskName,
-								   int taskUpdType) {
-		String taskUpdStr = "";
-		switch (taskUpdType) {
-			// 実施済→未実施
-			case Constant.TASK_UPD_NOT_YET :
-				taskUpdStr = "戻す";
-				break;
-			// 未実施→実施済
-			case Constant.TASK_UPD_FINISHED :
-				taskUpdStr = "実施";
-		}
-		return "<tr><td>" +
-				"<a href=" + taskUpdateUrl + ">" + taskUpdStr + "</a>" +
-				"</td><td>" +
-				"<a href=" + taskReferUrl + ">" + taskName + "</a>" +
-				"</td></tr>";
-	}
-
 	public static String getTaskRepetition(String teamName, String taskName) {
 		TaskServiceImpl service = new TaskServiceImpl();
 
@@ -405,8 +219,6 @@ public class TaskController extends Apps {
 
 		return repTypeStr
 				+ ("".equals(taskMst.repetition) ? "" : "/" + taskMst.repetition);
-
-
 	}
 
 	private static String getRepTypeStr(String repType) {
