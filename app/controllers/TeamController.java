@@ -10,6 +10,7 @@ import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
 import services.TeamService;
+import services.implement.TeamServiceImpl;
 import views.html.team;
 import views.html.teamList;
 
@@ -35,7 +36,7 @@ public class TeamController extends Apps {
 		session().remove("teamName");
 
 		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
-		return getTeamList();
+		return ok(teamList.render(getLoginUserName(), getTeamList()));
 	}
 
 	/**
@@ -118,10 +119,9 @@ public class TeamController extends Apps {
 	 * セッションのログインユーザーに紐付くチームリストを返却する.
 	 * @return
 	 */
-	private Result getTeamList() {
-		String userName = getLoginUserName();
-		List<Team> teams = service.findTeamListByUserName(userName);
-		return ok(teamList.render(userName, teams));
+	public static List<Team> getTeamList() {
+		TeamServiceImpl teamService = new TeamServiceImpl();
+		return teamService.findTeamListByUserName(getLoginUserName());
 	}
 
 }

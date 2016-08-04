@@ -41,7 +41,7 @@ public class TaskController extends Apps {
 		String dateStr = DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd);
 
 		// 本日のタスクリストを表示する.
-		return displayTaskListWithDate(teamName, dateStr);
+		return redirect(routes.TaskController.displayTaskListWithDate(teamName, dateStr));
 	}
 
 	/**
@@ -56,7 +56,23 @@ public class TaskController extends Apps {
 		Logger.info("TaskController#displayTaskListWithDate teamName:" + teamName +
 					" dateStr:" + dateStr);
 
+		// セッションにチーム名を保持
+		this.setSessionTeamName(teamName);
+
 		return ok(taskList.render(dateStr, teamName));
+
+	}
+
+	/**
+	 * タスクリスト画面表示（全件）.
+	 * ログインユーザーが所属するチームの未実施タスクを全て表示する.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayAllTaskList() {
+		Logger.info("TaskController#displayAllTaskList");
+
+		return ok(taskList.render("", ""));
 
 	}
 
@@ -134,30 +150,6 @@ public class TaskController extends Apps {
 			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
 		}
 
-	}
-
-	/**
-	 * 指定されたタスクトランを実施済み←→未実施にステータス変更する
-	 * @param taskTrnId
-	 * @param dateStr
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result updateTaskTrnStatus(long taskTrnId, String dateStr) {
-		int status = Constant.TASK_UPD_NOT_YET;
-		if ((status = service.updateTaskTrnStatus(taskTrnId)) != -1) {
-			// タスクリストを再表示
-			if (status == Constant.TASK_UPD_FINISHED) {
-				flashSuccess(Constant.MSG_I005, service.getTaskMstByTaskTrnId(taskTrnId).taskName);
-			} else {
-				flashSuccess(Constant.MSG_I006, service.getTaskMstByTaskTrnId(taskTrnId).taskName);
-			}
-			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
-		} else {
-			// エラー
-			flashError(Constant.MSG_E004);
-			return redirect(routes.TaskController.displayTaskListWithDate(getSessionTeamName(), dateStr));
-		}
 	}
 
 	/**

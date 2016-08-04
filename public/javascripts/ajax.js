@@ -53,7 +53,7 @@ function sendJson(id, dateStr){
             // 実施済、未実施、対象外それぞれString配列のMAPでHTMLを作成する
             for (var key in taskMap) {
                 var keyArg = key.split(",");
-                var taskReferURL = "../../" + taskMap[key].taskName + "/refer";
+                var taskReferURL = "../" + taskMap[key].taskName + "/refer";
                 var htmlStr = "";
                 if ("1" === keyArg[0]) {
                     // 実施済
@@ -126,6 +126,52 @@ function sendJson(id, dateStr){
         "json"
     );
 }
+function sendJsonTop(id){
+    var jsondata = {
+        'id': id
+    };
+    $.post("/ajax_task_top",
+        jsondata,
+        function(result){
+            var res = "";
+            var taskMap = new Array();
+            var taskTrn = result.taskTrn;
+            var dateStr = result.dateStr;
+
+            // flashメッセージのセット
+            if (result.msg !== "") {
+                if (result.msgStatus === "success") {
+                    $('#flash_msg').html(
+                        "<div class='col-xs-12 success alert alert-success alert-dismissable'>"
+                            + "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>"
+                            + "<strong>" + result.msg + "</strong>"
+                        + "</div>"
+                    )
+                } else if (result.msgStatus === "error") {
+                    $('#flash_msg').html(
+                        "<div class='col-xs-12 success alert alert-danger alert-dismissable'>"
+                            + "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>"
+                            + "<strong>" + result.msg + "</strong>"
+                        + "</div>"
+                    )
+                }
+            }
+            // ヘッダ：（ボタン）/日付/チーム名/タスク名/担当者
+            res = "<tr class='warning'><th/><th>日付</th><th>チーム名</th><th>タスク名</th><th>主担当者</th></tr>";
+            for (var i in taskTrn) {
+                res += getTaskHtmlLineTop(
+                    taskTrn[i].taskTrnId,
+                    taskTrn[i].dateStr,
+                    taskTrn[i].teamName,
+                    taskTrn[i].taskName,
+                    taskTrn[i].mainUserName
+                    );
+            }
+            $('#ajax_list').html(res);
+        },
+        "json"
+    );
+}
 
 function getTaskHtmlLine(taskName, status, taskTrnId, dateStr, taskReferURL) {
     var taskUpdStr = "";
@@ -150,9 +196,28 @@ function getTaskHtmlLine(taskName, status, taskTrnId, dateStr, taskReferURL) {
             + "</td></tr>";
 }
 
+function getTaskHtmlLineTop(taskTrnId, dateStr, teamName, taskName, mainUserName) {
+    return "<tr><td>"
+            + createJsonButtonTop(taskTrnId)
+            + "</td><td>"
+            + dateStr
+            + "</td><td>"
+            + teamName
+            + "</td><td>"
+            + "<a href='../../" + teamName + "/task/" + taskName + "/refer'>" + taskName + "</a>"
+            + "</td><td>"
+            + mainUserName
+            + "</td></tr>";
+}
+
 function createJsonButton(taskTrnId, dateStr, taskUpdStr) {
     return "<button class='json_button' onclick='sendJson("
             + taskTrnId + "," + dateStr + ")'>" + taskUpdStr + "</button>";
+}
+
+function createJsonButtonTop(taskTrnId) {
+    return "<button class='json_button' onclick='sendJsonTop("
+            + taskTrnId + ")'>" + "実施" + "</button>";
 }
 
 /* 配列をキーでソートする. sortDef=1:昇順/-1:降順 */

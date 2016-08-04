@@ -1,28 +1,45 @@
 @(dateStr: String, teamName: String)
 
 @import util.DateUtil
-@import services.implement.TaskServiceImpl
 
-@main("タスクリスト：" + DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")) {
+@main("タスクリスト") {
         <script src="@routes.Assets.versioned("javascripts/ajax.js")" type="text/javascript"></script>
-        <script type="text/javascript">
-            $(function(){
-                // 画面起動時用に-1を指定
-                sendJson("-1", @dateStr);
-            });
-        </script>
+        @if(dateStr == "") {
+            @* ログイン直後の画面表示 *@
+            <script type="text/javascript">
+                $(function(){
+                    // 画面起動時用に-1を指定
+                    sendJsonTop("-1");
+                });
+            </script>
+        } else {
+            @* チーム・日付別 *@
+            <script type="text/javascript">
+                $(function(){
+                    // 画面起動時用に-1を指定
+                    sendJson("-1", @dateStr);
+                });
+            </script>
+        }
 
         <div class="row bg-primary">
             <div class="col-xs-8">
-                <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
-                タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
-                <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
+                @if(dateStr == "") {
+                    未実施タスクリスト
+                } else {
+                    <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
+                    タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
+                    <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
+                }
             </div>
-
-            @* タスクマスタ新規作成へのリンク *@
-            <div class="col-xs-4">
-                <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
-            </div>
+            @if(dateStr == "") {
+                <div class="col-xs-4 bg-primary"></div>
+            } else {
+                @* タスクマスタ新規作成へのリンク *@
+                <div class="col-xs-4">
+                    <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
+                </div>
+            }
         </div>
         <div class="row">
             <table id="ajax_list" class="table table-sm table-hover">

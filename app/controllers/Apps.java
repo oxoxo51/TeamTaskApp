@@ -43,7 +43,7 @@ public class Apps extends Controller {
 			if (!getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
 				return redirect(routes.TaskController.displayTaskList(session(Constant.ITEM_TEAM_NAME)));
 			} else {
-				return redirect(routes.TeamController.displayTeamList());
+				return redirect(routes.TaskController.displayAllTaskList());
 			}
 		} else {
 			Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class);
@@ -111,9 +111,20 @@ public class Apps extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
 		Logger.info("Apps#getSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		Logger.info("teamName:" + session(Constant.ITEM_TEAM_NAME));
 		return session(Constant.ITEM_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_TEAM_NAME);
 	}
 
+	/**
+	 * セッションに保持しているチーム名をクリアする.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result clearSessionTeamName() {
+		Logger.info("Apps#clearSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		session().remove(Constant.ITEM_TEAM_NAME);
+		return redirect(routes.Apps.index());
+	}
 	/**
 	 * flash:successメッセージを表示する。
 	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。

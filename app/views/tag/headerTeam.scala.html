@@ -1,14 +1,38 @@
 @(teamName: String)
+
+@import controllers.TeamController
+@import models.Team
+@import scala.collection.convert.WrapAsScala._
+
+@if(!"---".equals(Apps.getLoginUserName)){
 <div class="col-xs-4 bg-warning">
-    TEAM:@teamName
+    <div class="dropdown">
+        <a data-toggle="dropdown" id="teamDropdownMenu">
+            TEAM:@teamName
+            <div class="caret"></div>
+        </a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="teamDropdownMenu">
+            <li role="presentation"><a role="menuitem" href="@routes.Apps.clearSessionTeamName()">全チーム表示</a></li>
+            @{
+                var htmlStr = ""
+                for(team <- TeamController.getTeamList){
+                    htmlStr += ("<li role='presentation'><a role='menuitem' href='"
+                                    + routes.TaskController.displayTaskList(team.teamName)
+                                    + "'>" + team.teamName + "</a></li>")
+                }
+                Html(htmlStr)
+            }
+        </ul>
+    </div>
 </div>
 <div class="col-xs-4 bg-warning">
     <span>&nbsp;</span>
 </div>
 <div class="col-xs-4 bg-warning">
-    @if(!"---".equals(teamName)){
+    @if("---".equals(teamName)){
         <a class="nav-link" href="@routes.TeamController.displayTeamList">チーム選択</a>
-    } else {
-        <span>&nbsp;</span>
+    }else{
+        <a class="nav-link" href="@routes.Apps.clearSessionTeamName">チーム選択解除</a>
     }
 </div>
+}

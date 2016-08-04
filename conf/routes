@@ -6,6 +6,7 @@
 GET     /                           controllers.Apps.index
 POST    /login                      controllers.Apps.auth
 GET     /logout                     controllers.Apps.logout
+GET     /team/clear                 controllers.Apps.clearSessionTeamName
 
 GET     /user/new                   controllers.UserController.displayCreateUser
 POST    /user/create                controllers.UserController.create
@@ -22,12 +23,14 @@ GET     /:teamName/task/:taskName/edit        controllers.TaskController.display
 POST    /task/edit/:mode                      controllers.TaskController.edit(mode: String)
 GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
+GET     /task/list                            controllers.TaskController.displayAllTaskList
 GET     /:teamName/task/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
 
 #GET     /task/trn/update/:dateStr/:taskTrnId           controllers.TaskController.updateTaskTrnStatus(taskTrnId: Long, dateStr: String)
 
 # ajax
-POST    /ajax_task                            controllers.ajax.AjaxController.updTaskStatAndGetTaskList()
+POST    /ajax_task                            controllers.ajax.AjaxController.updTaskStatAndGetTaskListByTeamAndDate()
+POST    /ajax_task_top                        controllers.ajax.AjaxController.updTaskStatAndGetTaskListByUser()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
