@@ -1,14 +1,31 @@
 @(userName: String, teamList: List[Team])
 
 @main("所属チーム一覧") {
-    <p class="bg-primary">チーム一覧</p>
+    <div class="row bg-primary"><div class="col-xs-12">チーム一覧</div></div>
     <table class="table table-striped table-sm">
         <tbody>
+            <tr>
+                <th></th>
+                <th>チーム名</th>
+                <th>メンバー</th>
+            </tr>
         @* 所属チーム数分だけfor文回す *@
         @for(team <- teamList){
             <tr>
-                <td><a href="@{routes.TaskController.displayTaskList(team.teamName)}">@team.teamName</a></td>
                 <td><a href="@{routes.TeamController.displayUpdateTeam(team.teamName)}">編集</a></td>
+                <td>@team.teamName</td>
+                <td>
+                    @{
+                        var users = ""
+                        for(user <- team.members){
+                            if (users != ""){
+                                users += ",<br>"
+                            }
+                            users += user.userName
+                        }
+                        Html(users)
+                    }
+                </td>
             </tr>
         }
         </tbody>

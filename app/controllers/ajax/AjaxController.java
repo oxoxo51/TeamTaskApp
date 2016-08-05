@@ -178,7 +178,7 @@ public class AjaxController extends Apps {
 			}
 		}
 
-		// TODO ソート
+		// TODO ソート(1.日付, 2.チーム名, 3.タスク名)
 
 		for (TaskTrn t : taskTrnList) {
 			ObjectNode element = Json.newObject();
