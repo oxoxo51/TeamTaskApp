@@ -14,7 +14,6 @@
             <tr>
                 <td><a href="@{routes.TeamController.displayUpdateTeam(team.teamName)}">編集</a></td>
                 <td>@team.teamName</td>
-                <td>
                     @{
                         var users = ""
                         for(user <- team.members){

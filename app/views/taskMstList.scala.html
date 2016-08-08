@@ -1,0 +1,62 @@
+@(userName: String, teamName: String)
+
+@import services.implement.TaskServiceImpl
+@import services.implement.TeamServiceImpl
+
+@main("タスク一覧") {
+    <div class="row bg-primary">
+        <div class="col-xs-12">タスク一覧</div>
+    </div>
+    <table class="table table-striped table-sm">
+        <tbody>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>タスク名</th>
+                <th>チーム</th>
+            </tr>
+        @* チーム未選択の場合、所属チーム数分だけfor文回す *@
+        @{
+            var htmlStr = ""
+            if(teamName == ""){
+                var teamService:TeamServiceImpl = new TeamServiceImpl()
+                var teamList:List[Team] = teamService.findTeamListByUserName(userName)
+                for(team <- teamList){
+                    // 所属チームのタスクマスタを取得
+                    var taskService:TaskServiceImpl = new TaskServiceImpl()
+                    var taskMstList:List[TaskMst] = taskService.findTaskMstByTeamName(team.teamName)
+                    for(taskMst <- taskMstList){
+                        htmlStr +=(
+                            "<tr>"
+                            + "<td><a href='" + routes.TaskController.displayUpdateTaskMst(team.teamName,taskMst.taskName)
+                            + "'>編集</a></td>"
+                            + "<td><a href='" + routes.TaskController.referTask(team.teamName,taskMst.taskName)
+                            + "'>参照</a></td>"
+                            + "<td>" + taskMst.taskName + "</td>"
+                            + "<td>" + team.teamName + "</td>"
+                            + "</tr>"
+                        )
+                    }
+                }
+            }else{
+                var taskService:TaskServiceImpl = new TaskServiceImpl()
+                var taskMstList:List[TaskMst] = taskService.findTaskMstByTeamName(teamName)
+                for(taskMst <- taskMstList){
+                    htmlStr +=(
+                        "<tr>"
+                        + "<td><a href='" + routes.TaskController.displayUpdateTaskMst(teamName, taskMst.taskName)
+                        + "'>編集</a></td>"
+                        + "<td><a href='" + routes.TaskController.referTask(teamName,taskMst.taskName)
+                        + "'>参照</a></td>"
+                        + "<td>" + taskMst.taskName + "</td>"
+                        + "<td>" + teamName + "</td>"
+                        +"</tr>"
+                    )
+                }
+            }
+            Html(htmlStr)
+        }
+        </tbody>
+    </table>
+    @* TODO １タスク新規作成へのリンク *@
+}

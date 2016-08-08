@@ -18,6 +18,7 @@ import services.implement.TeamServiceImpl;
 import util.DateUtil;
 import views.html.taskList;
 import views.html.taskMst;
+import views.html.taskMstList;
 import views.html.taskRefer;
 
 import java.util.ArrayList;
@@ -153,6 +154,21 @@ public class TaskController extends Apps {
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
 		return ok(views.html.taskMst.render(Constant.MODE_UPDATE, editTaskMstDtoForm.fill(dto)));
 	}
+
+	/**
+	 * タスクマスタ一覧画面表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTaskMstList() {
+		Logger.info("TaskController#displayTaskMstList");
+
+		String userName = session("userName");
+		String teamName = (session("teamName") == null ? "" : session("teamName"));
+
+		return ok(taskMstList.render(userName, teamName));
+	}
+
 	/**
 	 * タスクマスタ登録/更新.
 	 * @return

@@ -25,8 +25,7 @@ GET     /:teamName/task/list/:dateStr         controllers.TaskController.display
 GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
 GET     /task/list                            controllers.TaskController.displayAllTaskList
 GET     /:teamName/task/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
-
-#GET     /task/trn/update/:dateStr/:taskTrnId           controllers.TaskController.updateTaskTrnStatus(taskTrnId: Long, dateStr: String)
+GET     /task/master/list                     controllers.TaskController.displayTaskMstList
 
 # ajax
 POST    /ajax_task                            controllers.ajax.AjaxController.updTaskStatAndGetTaskListByTeamAndDate()
