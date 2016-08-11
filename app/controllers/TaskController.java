@@ -40,7 +40,7 @@ public class TaskController extends Apps {
 	 * @param teamName
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
+/*	@Security.Authenticated(Secured.class)
 	public Result displayTaskList(String teamName) {
 		Logger.info("TaskController#displayTaskList teamName:" +teamName);
 
@@ -49,21 +49,26 @@ public class TaskController extends Apps {
 		// 本日のタスクリストを表示する.
 		return redirect(routes.TaskController.displayTaskListWithDate(teamName, dateStr));
 	}
-
+*/
 	/**
 	 * タスクリスト画面表示（日付指定あり）.
 	 * 渡された日付と利用チームを元に、タスクリストを表示する.
-	 * @param teamName
 	 * @param dateStr
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result displayTaskListWithDate(String teamName, String dateStr) {
-		Logger.info("TaskController#displayTaskListWithDate teamName:" + teamName +
-					" dateStr:" + dateStr);
+	public Result displayTaskListWithDate(String dateStr) {
+		Logger.info("TaskController#displayTaskListWithDate"
+					+ " dateStr:" + dateStr);
+		setSessionUrl(routes.TaskController.displayTaskListWithDate(dateStr).url());
 
-		// セッションにチーム名を保持する
-		this.setSessionTeamName(teamName);
+		// セッションのチーム名を取得する
+		String teamName = getSessionTeamName();
+
+		// チーム未選択の場合、全件表示にリダイレクトする
+		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
+			return redirect(routes.TaskController.displayTaskList());
+		}
 
 		// 利用チームに紐付くタスクリストを表示
 		Team team = teamService.findTeamByName(teamName).get(0);
@@ -99,16 +104,20 @@ public class TaskController extends Apps {
 	}
 
 	/**
-	 * タスクリスト画面表示（全件）.
-	 * ログインユーザーが所属するチームの未実施タスクを全て表示する.
+	 * タスクリスト画面表示.
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result displayAllTaskList() {
-		Logger.info("TaskController#displayAllTaskList");
-
-		return ok(taskList.render("", ""));
-
+	public Result displayTaskList() {
+		Logger.info("TaskController#displayTaskList");
+		setSessionUrl(routes.TaskController.displayTaskList().url());
+		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
+			return ok(taskList.render("", ""));
+		} else {
+			return redirect(
+					routes.TaskController.displayTaskListWithDate(
+							DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd)));
+		}
 	}
 
 	/**
@@ -116,11 +125,18 @@ public class TaskController extends Apps {
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result displayCreateTaskMst(String teamName) {
+	public Result displayCreateTaskMst() {
 		Logger.info("TaskController#displayCreateTaskMst");
+		setSessionUrl(routes.TaskController.displayCreateTaskMst().url());
 
 		EditTaskMstDto dto = new EditTaskMstDto();
-		dto.setTeamName(teamName);
+
+		String teamName = getSessionTeamName();
+		if (Constant.USER_TEAM_BLANK.equals(teamName)) {
+			dto.setTeamName("");
+		} else {
+			dto.setTeamName(teamName);
+		}
 		dto.setStartDate(new Date());
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class);
 		return ok(taskMst.render(Constant.MODE_CREATE, editTaskMstDtoForm.fill(dto)));
@@ -191,9 +207,8 @@ public class TaskController extends Apps {
 					flashSuccess(Constant.MSG_I004);
 					break;
 			}
-
 			// タスクリストに遷移
-			return redirect(routes.TaskController.displayTaskList(dto.getTeamName()));
+			return redirect(routes.TaskController.displayTaskList());
 
 		} else {
 			flashError(Constant.MSG_E003);

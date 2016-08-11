@@ -17,13 +17,13 @@ GET     /team/new                   controllers.TeamController.displayCreateTeam
 GET     /team/:teamName/edit        controllers.TeamController.displayUpdateTeam(teamName: String)
 POST    /team/edit/:mode            controllers.TeamController.edit(mode: String)
 GET     /team/list                  controllers.TeamController.displayTeamList
+GET     /team/:teamName/change      controllers.TeamController.changeTeam(teamName: String)
 
-GET     /:teamName/task/new                   controllers.TaskController.displayCreateTaskMst(teamName: String)
-GET     /:teamName/task/:taskName/edit        controllers.TaskController.displayUpdateTaskMst(teamName: String, taskName: String)
+GET     /task/new                             controllers.TaskController.displayCreateTaskMst()
+GET     /task/:teamName/:taskName/edit        controllers.TaskController.displayUpdateTaskMst(teamName: String, taskName: String)
 POST    /task/edit/:mode                      controllers.TaskController.edit(mode: String)
-GET     /:teamName/task/list/:dateStr         controllers.TaskController.displayTaskListWithDate(teamName: String, dateStr: String)
-GET     /:teamName/task/list                  controllers.TaskController.displayTaskList(teamName: String)
-GET     /task/list                            controllers.TaskController.displayAllTaskList
+GET     /task/list/:dateStr                   controllers.TaskController.displayTaskListWithDate(dateStr: String)
+GET     /task/list                            controllers.TaskController.displayTaskList
 GET     /:teamName/task/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
 GET     /task/master/list                     controllers.TaskController.displayTaskMstList
 

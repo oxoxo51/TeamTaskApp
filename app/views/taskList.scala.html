@@ -27,9 +27,9 @@
                 @if(dateStr == "") {
                     未実施タスクリスト
                 } else {
-                    <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
+                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
                     タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
-                    <a class="bg-primary" href="/@teamName/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
+                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
                 }
             </div>
             @if(dateStr == "") {
@@ -37,7 +37,7 @@
             } else {
                 @* タスクマスタ新規作成へのリンク *@
                 <div class="col-xs-4">
-                    <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst(teamName)">タスク新規作成</a>
+                    <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst">タスク新規作成</a>
                 </div>
             }
         </div>

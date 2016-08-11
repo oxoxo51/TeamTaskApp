@@ -35,16 +35,13 @@ public class Apps extends Controller {
 	 * ①ログイン済みかつチーム選択済み：該当チームのタスクリスト
 	 * ②ログイン済みかつチーム未選択：該当ユーザーのチームリスト
 	 * ③未ログイン：ログイン画面
+	 * ①、②は遷移先で分岐
 	 * @return
 	 */
 	public Result index() {
 		Logger.info("Apps#index");
 		if (!getLoginUserName().equals(Constant.USER_TEAM_BLANK)) {
-			if (!getSessionTeamName().equals(Constant.USER_TEAM_BLANK)) {
-				return redirect(routes.TaskController.displayTaskList(session(Constant.ITEM_TEAM_NAME)));
-			} else {
-				return redirect(routes.TaskController.displayAllTaskList());
-			}
+			return redirect(routes.TaskController.displayTaskList());
 		} else {
 			Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class);
 			return ok(index.render(loginForm));
@@ -62,12 +59,10 @@ public class Apps extends Controller {
 			session().clear();
 			session(Constant.ITEM_USER_NAME, loginForm.get().getUserName());
 			flashSuccess(Constant.MSG_I001);
-			return redirect(routes.TeamController.displayTeamList());
 		} else {
 			flashError(Constant.MSG_E001);
-			return redirect(routes.Apps.index());
 		}
-
+		return redirect(routes.Apps.index());
 	}
 
 	/**
@@ -125,6 +120,18 @@ public class Apps extends Controller {
 		session().remove(Constant.ITEM_TEAM_NAME);
 		return redirect(routes.Apps.index());
 	}
+
+	/**
+	 * セッションにURLを保持する.
+	 * @param url
+	 */
+	@Security.Authenticated(Secured.class)
+	public void setSessionUrl(String url) {
+		Logger.info("Apps#setSessionUrl: " + url);
+		session().remove(Constant.ITEM_URL);
+		session(Constant.ITEM_URL, url);
+	}
+
 	/**
 	 * flash:successメッセージを表示する。
 	 * 引数に渡されたメッセージ定数を元にメッセージを取得し設定する。

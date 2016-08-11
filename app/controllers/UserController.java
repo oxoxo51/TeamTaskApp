@@ -54,6 +54,7 @@ public class UserController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayChangePwd() {
+		setSessionUrl(routes.UserController.displayChangePwd().url());
 		ChangePwdDto dto = new ChangePwdDto();
 		dto.setUserName(getLoginUserName());
 		Form<ChangePwdDto> changePwdDtoForm = Form.form(ChangePwdDto.class).fill(dto);

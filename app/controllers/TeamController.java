@@ -31,6 +31,7 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayTeamList() {
 		Logger.info("TeamController#displayTeamList");
+		setSessionUrl(routes.TeamController.displayTeamList().url());
 
 		// セッションのチームをクリアする
 		session().remove("teamName");
@@ -46,6 +47,7 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayCreateTeam() {
 		Logger.info("TeamController#displayCreateTeam");
+		setSessionUrl(routes.TeamController.displayCreateTeam().url());
 
 		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
 		return ok(team.render(Constant.MODE_CREATE, editTeamDtoForm));
@@ -58,6 +60,7 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTeam(String teamName) {
 		Logger.info("TeamController#displayTeam");
+		setSessionTeamName(routes.TeamController.displayUpdateTeam(teamName).url());
 
 		EditTeamDto dto = new EditTeamDto();
 
@@ -113,6 +116,24 @@ public class TeamController extends Apps {
 			flashError(Constant.MSG_E003);
 			return badRequest(team.render(mode, editTeamDtoForm));
 		}
+	}
+
+	/**
+	 * チームの選択状態を変更する.
+	 * @param teamName
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result changeTeam(String teamName) {
+		Logger.info("TeamController#changeTeam");
+
+		if (Constant.USER_TEAM_BLANK.equals(teamName)) {
+			clearSessionTeamName();
+		} else {
+			setSessionTeamName(teamName);
+		}
+		return redirect(session(Constant.ITEM_URL));
+
 	}
 
 	/**

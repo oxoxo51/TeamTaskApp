@@ -87,6 +87,9 @@ public class Constant {
 	/* 項目：teamName */
 	public static final String ITEM_TEAM_NAME = "teamName";
 
+	/* 項目：URL */
+	public static final String ITEM_URL = "url";
+
 	/* 項目：taskName */
 	public static final String ITEM_TASK_NAME = "taskName";
 

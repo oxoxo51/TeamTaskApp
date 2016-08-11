@@ -92,12 +92,12 @@
     field = form1("mainUserName"),
     args = '_label -> "主担当ユーザー"
     ))
+    @* TODO チーム指定時、および更新時はreadOnlyにする *@
     @(inputText(
     field = form1("teamName"),
-    args = '_label -> "タスク所有チーム",
-            'readonly -> true
-
+    args = '_label -> "タスク所有チーム"
     ))
+
     @(inputDate(
     field = form1("startDate"),
     args = '_label -> "開始日"

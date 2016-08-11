@@ -15,12 +15,12 @@
             <div class="caret"></div>
         </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="teamDropdownMenu">
-            <li role="presentation"><a role="menuitem" href="@routes.Apps.clearSessionTeamName()">全チーム表示</a></li>
+            <li role="presentation"><a role="menuitem" href="@routes.TeamController.changeTeam("---")">全チーム表示</a></li>
             @{
             var htmlStr = ""
             for(team <- TeamController.getTeamList){
             htmlStr += ("<li role='presentation'><a role='menuitem' href='"
-                                    + routes.TaskController.displayTaskList(team.teamName)
+                                    + routes.TeamController.changeTeam(team.teamName)
                                     + "'>" + team.teamName + "</a></li>")
             }
             Html(htmlStr)
