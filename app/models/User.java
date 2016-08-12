@@ -5,6 +5,7 @@ import com.avaje.ebean.Model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,6 +37,11 @@ public class User extends Model {
 	 */
 	@ManyToMany
 	public List<Team> teams;
+
+	/**
+	 * 最終ログイン日時.
+	 */
+	public Date lastLoginDate;
 
 	/**
 	 * Finder.

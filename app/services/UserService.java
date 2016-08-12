@@ -23,4 +23,6 @@ public interface UserService {
 	void changePwd(ChangePwdDto changePwdDto);
 
 	User findUserById(Long id);
+
+	void updateLastLoginDate(String userName);
 }

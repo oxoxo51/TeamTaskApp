@@ -38,6 +38,7 @@ create table user (
   id                            bigint not null,
   user_name                     varchar(255),
   password                      varchar(255),
+  last_login_date               timestamp,
   constraint pk_user primary key (id)
 );
 create sequence user_seq;

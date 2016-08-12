@@ -1,5 +1,6 @@
 package controllers;
 
+import com.google.inject.Inject;
 import constant.Constant;
 import dto.user.LoginUserDto;
 import play.Logger;
@@ -8,6 +9,7 @@ import play.mvc.Call;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
+import services.UserService;
 import util.MsgUtil;
 import views.html.index;
 
@@ -15,6 +17,10 @@ import views.html.index;
  * Created on 2016/05/08.
  */
 public class Apps extends Controller {
+
+	@Inject
+	UserService userService;
+
 
 	/**
 	 * エラー発生時のflashメッセージ表示用.
@@ -56,13 +62,21 @@ public class Apps extends Controller {
 		Logger.info("Apps#auth");
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
-			session().clear();
-			session(Constant.ITEM_USER_NAME, loginForm.get().getUserName());
+			login(loginForm.get().getUserName());
 			flashSuccess(Constant.MSG_I001);
 		} else {
 			flashError(Constant.MSG_E001);
 		}
 		return redirect(routes.Apps.index());
+	}
+
+	/**
+	 * ログインに伴うデータセットを行う.
+	 */
+	public void login(String userName) {
+		session().clear();
+		session(Constant.ITEM_USER_NAME, userName);
+		userService.updateLastLoginDate(userName);
 	}
 
 	/**

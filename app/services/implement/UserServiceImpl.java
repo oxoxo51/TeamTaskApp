@@ -6,6 +6,7 @@ import models.User;
 import play.Logger;
 import services.UserService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,6 +46,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User findUserById(Long id) {
 		return User.find.byId(id);
+	}
+
+	@Override
+	public void updateLastLoginDate(String userName) {
+		User user = findUserByName(userName).get(0);
+		user.lastLoginDate = new Date();
+		user.update();
 	}
 
 }
