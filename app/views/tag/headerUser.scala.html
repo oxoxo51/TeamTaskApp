@@ -1,4 +1,5 @@
 @(userName: String)
+@import constant.Constant
 <div class="col-xs-4 bg-info">
     <a href="@routes.Apps.index()">TeamTaskApp</a>
 </div>
@@ -6,7 +7,7 @@
     <span>&nbsp;</span>
 </div>
 <div class="col-xs-4 bg-info">
-    @if(!"---".equals(userName)){
+    @if(!Constant.USER_TEAM_BLANK.equals(userName)){
     <div class="dropdown">
         <a data-toggle="dropdown" id="dropdownMenu1">
             USER:@userName

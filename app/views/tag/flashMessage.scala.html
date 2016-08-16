@@ -1,13 +1,15 @@
 @()
-@if(flash.containsKey("success")) {
+@import constant.Constant
+
+@if(flash.containsKey(Constant.MSG_SUCCESS)) {
 <div class="col-xs-12 success alert alert-success alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@flash.get("success")</strong>
+    <strong>@flash.get(Constant.MSG_SUCCESS)</strong>
 </div>
 }
-@if(flash.containsKey("error")) {
+@if(flash.containsKey(Constant.MSG_ERROR)) {
 <div class="col-xs-12 success alert alert-danger alert-dismissable">
     <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-    <strong>@flash.get("error")</strong>
+    <strong>@flash.get(Constant.MSG_ERROR)</strong>
 </div>
 }

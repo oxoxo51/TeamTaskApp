@@ -3,8 +3,9 @@
 @import controllers.TeamController
 @import models.Team
 @import scala.collection.convert.WrapAsScala._
+@import constant.Constant
 
-@if(!"---".equals(Apps.getLoginUserName)){
+@if(!Constant.USER_TEAM_BLANK.equals(Apps.getLoginUserName)){
 <div class="col-xs-8 bg-warning">
     <span>&nbsp;</span>
 </div>
@@ -15,7 +16,7 @@
             <div class="caret"></div>
         </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="teamDropdownMenu">
-            <li role="presentation"><a role="menuitem" href="@routes.TeamController.changeTeam("---")">全チーム表示</a></li>
+            <li role="presentation"><a role="menuitem" href="@routes.TeamController.changeTeam(Constant.USER_TEAM_BLANK)">全チーム表示</a></li>
             @{
             var htmlStr = ""
             for(team <- TeamController.getTeamList){
