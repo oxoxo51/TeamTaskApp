@@ -95,30 +95,8 @@ public class Apps extends Controller {
 		session().clear();
 		session(Constant.ITEM_USER_NAME, userName);
 
-		// ログインユーザの所属チーム、最終ログイン日付を取得
-		List<Team> teamList = teService.findTeamListByUserName(userName);
-		Date lastLoginDate = uService.findUserByName(userName).get(0).lastLoginDate;
-		try {
-			Date today = DateUtil.getDateWithoutTime(new Date());
-			if (lastLoginDate != null
-					&& today != DateUtil.getDateWithoutTime(lastLoginDate)) {
-				// タスクトラン作成日付:最終ログイン日付の翌日から
-				Date taskDate = DateUtil.getDateWithoutTime(
-						DateUtil.getThatDate(lastLoginDate, 1));
-				// 当日分まで繰り返し作成
-				while (taskDate.compareTo(today) < 1) {
-					for (Team team : teamList) {
-						this.createTaskTrn(
-								team.teamName,
-								DateUtil.getDateStr(taskDate, Constant.DATE_FORMAT_yMd));
-					}
-					taskDate = DateUtil.getThatDate(taskDate, 1);
-				}
-			}
-		} catch (ParseException e) {
-			// TODO エラーハンドリング
-			e.printStackTrace();
-		}
+		// 最終ログインから当日までのタスクトランを作成する
+		chkAndCreateTaskTrn(userName);
 
 		// 最終ログイン日付更新
 		uService.updateLastLoginDate(userName);
@@ -219,8 +197,42 @@ public class Apps extends Controller {
 	}
 
 	/**
+	 * ログインユーザの最終ログイン日付を確認し、最終ログインから当日までの
+	 * タスクトランを作成する.
+	 * @param userName
+	 */
+	protected void chkAndCreateTaskTrn(String userName) {
+		Logger.info("Apps#chkAndCreateTaskTrn " + userName);
+
+		// ログインユーザの所属チーム、最終ログイン日付を取得
+		List<Team> teamList = teService.findTeamListByUserName(userName);
+		Date lastLoginDate = uService.findUserByName(userName).get(0).lastLoginDate;
+		try {
+			Date today = DateUtil.getDateWithoutTime(new Date());
+			if (lastLoginDate != null
+					&& today != DateUtil.getDateWithoutTime(lastLoginDate)) {
+				// タスクトラン作成日付:最終ログイン日付の翌日から
+				Date taskDate = DateUtil.getDateWithoutTime(
+						DateUtil.getThatDate(lastLoginDate, 1));
+				// 当日分まで繰り返し作成
+				while (taskDate.compareTo(today) < 1) {
+					for (Team team : teamList) {
+						this.createTaskTrn(
+								team.teamName,
+								DateUtil.getDateStr(taskDate, Constant.DATE_FORMAT_yMd));
+					}
+					taskDate = DateUtil.getThatDate(taskDate, 1);
+				}
+			}
+		} catch (ParseException e) {
+			// TODO エラーハンドリング
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
 	 * 指定されたチーム・日付のタスクトランをタスクマスタを元に作成する.
-	 *
 	 * @param teamName
 	 * @param dateStr
 	 */
