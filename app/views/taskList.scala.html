@@ -27,9 +27,9 @@
                 @if(dateStr == "") {
                     未実施タスクリスト
                 } else {
-                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", -1)">＜</a>
+                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, "yyyyMMdd", -1)">＜</a>
                     タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
-                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDate(dateStr, "yyyyMMdd", 1)">＞</a>
+                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, "yyyyMMdd", 1)">＞</a>
                 }
             </div>
             @if(dateStr == "") {

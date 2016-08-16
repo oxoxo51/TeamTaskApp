@@ -4,15 +4,12 @@ import com.google.inject.Inject;
 import constant.Constant;
 import dto.task.EditTaskMstDto;
 import models.TaskMst;
-import models.TaskTrn;
-import models.Team;
 import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
 import services.TaskService;
-import services.TeamService;
 import services.implement.TaskServiceImpl;
 import services.implement.TeamServiceImpl;
 import util.DateUtil;
@@ -31,8 +28,6 @@ import java.util.List;
 public class TaskController extends Apps {
 	@Inject
 	TaskService service;
-	@Inject
-	TeamService teamService;
 
 	/**
 	 * タスクリスト画面表示（日付指定なし）.
@@ -69,38 +64,10 @@ public class TaskController extends Apps {
 		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
 			return redirect(routes.TaskController.displayTaskList());
 		}
+		// 未作成のタスクトラン作成
+		super.createTaskTrn(teamName, dateStr);
 
-		// 利用チームに紐付くタスクリストを表示
-		Team team = teamService.findTeamByName(teamName).get(0);
-		// 該当日付のタスクトランを取得し、0件の場合新規作成する
-		List<TaskTrn> taskTrnList = service.findTaskList(team.id, dateStr);
-		if (taskTrnList.size() == 0) {
-			service.createTaskTrnByTeamId(team.id, dateStr);
-		} else {
-			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
-			try {
-				List<TaskMst> taskMstList = service.findTaskMstByTeamName(team.teamName); // throws Exception
-				for (TaskMst taskMst : taskMstList) {
-					// トラン未作成フラグ
-					boolean noTrnFlg = true;
-					for (TaskTrn taskTrn : taskTrnList) {
-						if (taskMst.id == taskTrn.taskMst.id) {
-							// 作成済みならfor文を抜ける
-							noTrnFlg = false;
-							break;
-						}
-					}
-					if (noTrnFlg) {
-						service.createTaskTrn(taskMst, dateStr); // throws ParseException
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO エラーの扱い
-			}
-		}
 		return ok(taskList.render(dateStr, teamName));
-
 	}
 
 	/**

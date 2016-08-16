@@ -1,5 +1,7 @@
 package util;
 
+import constant.Constant;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,12 +54,37 @@ public class DateUtil {
 	/**
 	 * String型の日付文字列のN日後を元と同じ形式で返却する.
 	 */
-	public static String getThatDate(String dateStr, String format, int N) throws ParseException {
+	public static String getThatDateStr(String dateStr, String format, int N) throws ParseException {
 		DateFormat df = new SimpleDateFormat(format);
 		Calendar cal = Calendar.getInstance();
 		Date date = df.parse(dateStr);
 		cal.setTime(date);
 		cal.add(Calendar.DATE, N);
 		return df.format(cal.getTime());
+	}
+
+	/**
+	 * Dateを年月日部分のみのDateにして返却する.
+	 * @param date
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Date getDateWithoutTime(Date date) throws ParseException {
+		// yyyyMMdd形式にparseして再度Dateに戻す
+		// TODO もっと良いやり方あるはず
+		return getDate(getDateStr(date, Constant.DATE_FORMAT_yMd), Constant.DATE_FORMAT_yMd);
+	}
+
+	/**
+	 * Date型の日付のN日後を返却する.
+	 * @param date
+	 * @param N
+	 * @return
+	 */
+	public static Date getThatDate(Date date, int N) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, N);
+		return cal.getTime();
 	}
 }
