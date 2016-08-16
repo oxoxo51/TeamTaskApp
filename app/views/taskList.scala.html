@@ -32,14 +32,10 @@
                     <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, "yyyyMMdd", 1)">＞</a>
                 }
             </div>
-            @if(dateStr == "") {
-                <div class="col-xs-4 bg-primary"></div>
-            } else {
-                @* タスクマスタ新規作成へのリンク *@
-                <div class="col-xs-4">
-                    <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst">タスク新規作成</a>
-                </div>
-            }
+            @* タスクマスタ新規作成へのリンク *@
+            <div class="col-xs-4">
+                <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst">タスク新規作成</a>
+            </div>
         </div>
         <div class="row">
             <table id="ajax_list" class="table table-sm table-hover">

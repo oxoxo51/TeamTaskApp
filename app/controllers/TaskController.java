@@ -30,22 +30,6 @@ public class TaskController extends Apps {
 	TaskService service;
 
 	/**
-	 * タスクリスト画面表示（日付指定なし）.
-	 * 渡された利用チームの実行当日のタスクリストを表示する.
-	 * @param teamName
-	 * @return
-	 */
-/*	@Security.Authenticated(Secured.class)
-	public Result displayTaskList(String teamName) {
-		Logger.info("TaskController#displayTaskList teamName:" +teamName);
-
-		String dateStr = DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd);
-
-		// 本日のタスクリストを表示する.
-		return redirect(routes.TaskController.displayTaskListWithDate(teamName, dateStr));
-	}
-*/
-	/**
 	 * タスクリスト画面表示（日付指定あり）.
 	 * 渡された日付と利用チームを元に、タスクリストを表示する.
 	 * @param dateStr
