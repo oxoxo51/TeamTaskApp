@@ -14,6 +14,9 @@
             <div class="caret"></div>
         </a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+            <li role="presentation"><a role="menuitem" href="@routes.TeamController.displayTeamList()">チーム一覧</a></li>
+            <li role="presentation"><a role="menuitem" href="@routes.TaskController.displayTaskMstList()">タスク一覧</a></li>
+            <li class="divider"></li>
             <li role="presentation"><a role="menuitem" href="@routes.UserController.displayChangePwd()">パスワード変更</a></li>
             <li role="presentation"><a role="menuitem" href="@routes.Apps.logout()">LOGOUT</a></li>
         </ul>
