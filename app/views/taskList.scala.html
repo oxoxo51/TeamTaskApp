@@ -1,62 +1,63 @@
 @(dateStr: String, teamName: String)
 
 @import util.DateUtil
+@import constant.Constant
 
 @main("タスクリスト") {
-        <script src="@routes.Assets.versioned("javascripts/ajax.js")" type="text/javascript"></script>
-        @if(dateStr == "") {
-            @* ログイン直後の画面表示 *@
-            <script type="text/javascript">
-                $(function(){
-                    // 画面起動時用に-1を指定
-                    sendJsonTop("-1");
-                });
-            </script>
-        } else {
-            @* チーム・日付別 *@
-            <script type="text/javascript">
-                $(function(){
-                    // 画面起動時用に-1を指定
-                    sendJson("-1", @dateStr);
-                });
-            </script>
-        }
+    <script src="@routes.Assets.versioned("javascripts/ajax.js")" type="text/javascript"></script>
+    @if(dateStr == "") {
+        @* ログイン直後の画面表示 *@
+        <script type="text/javascript">
+            $(function(){
+                // 画面起動時用に-1を指定
+                sendJsonTop("-1");
+            });
+        </script>
+    } else {
+        @* チーム・日付別 *@
+        <script type="text/javascript">
+            $(function(){
+                // 画面起動時用に-1を指定
+                sendJson("-1", @dateStr);
+            });
+        </script>
+    }
 
-        <div class="row bg-primary">
-            <div class="col-xs-8">
-                @if(dateStr == "") {
-                    未実施タスクリスト
-                } else {
-                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, "yyyyMMdd", -1)">＜</a>
-                    タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
-                    <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, "yyyyMMdd", 1)">＞</a>
-                }
-            </div>
-            @* タスクマスタ新規作成へのリンク *@
-            <div class="col-xs-4">
-                <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst">タスク新規作成</a>
-            </div>
+    <div class="row bg-primary">
+        <div class="col-xs-8">
+            @if(dateStr == "") {
+                未実施タスクリスト
+            } else {
+                <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, Constant.DATE_FORMAT_yMd, -1)">＜</a>
+                タスクリスト：@DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "yyyy/MM/dd(E)")
+                <a class="bg-primary" href="/task/list/@DateUtil.getThatDateStr(dateStr, Constant.DATE_FORMAT_yMd, 1)">＞</a>
+            }
         </div>
-        <div class="row">
-            <table id="ajax_list" class="table table-sm table-hover">
-            @*****
-                表示イメージ
-                [未実施]
-                    [主担当：USER1]
-                        [TASK1]
-                        [TASK2]
-                    [主担当：USER2]
-                        [TASK3]
-                [実施対象外]
-                    [TASK4]
-                [実施済]
-                    [実施者：USER1]
-                        [TASK5]
-                        [TASK6]
-                    [実施者：USER2]
-                        [TASK7]
-            *****@
-            </table>
+        @* タスクマスタ新規作成へのリンク *@
+        <div class="col-xs-4">
+            <a class="bg-primary" href="@routes.TaskController.displayCreateTaskMst">タスク新規作成</a>
         </div>
+    </div>
+    <div class="row">
+        <table id="ajax_list" class="table table-sm table-hover">
+        @*****
+            表示イメージ
+            [未実施]
+                [主担当：USER1]
+                    [TASK1]
+                    [TASK2]
+                [主担当：USER2]
+                    [TASK3]
+            [実施対象外]
+                [TASK4]
+            [実施済]
+                [実施者：USER1]
+                    [TASK5]
+                    [TASK6]
+                [実施者：USER2]
+                    [TASK7]
+        *****@
+        </table>
+    </div>
 }
 
