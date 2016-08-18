@@ -185,8 +185,7 @@ public class AjaxController extends Apps {
 			element.put("taskTrnId", t.id);
 			element.put("taskName", t.taskMst.taskName);
 			element.put("teamName", t.taskMst.taskTeam.teamName);
-			// TODO フォーマットの定数化
-			element.put("dateStr", DateUtil.getDateStr(t.taskDate, "yyyy/MM/dd"));
+			element.put("dateStr", DateUtil.getDateStr(t.taskDate, Constant.DATE_FORMAT_yMd_SLASH));
 			element.put("mainUserName", t.taskMst.mainUser.userName);
 			arr.add(element);
 		}

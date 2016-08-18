@@ -141,6 +141,9 @@ public class Constant {
 	/* フォーマット：yyyyMMdd */
 	public static final String DATE_FORMAT_yMd = "yyyyMMdd";
 
+	/* フォーマット：yyyy/MM/dd */
+	public static final String DATE_FORMAT_yMd_SLASH = "yyyy/MM/dd";
+
 	/* mode:CREATE */
 	public static final String MODE_CREATE = "CREATE";
 
