@@ -6,6 +6,7 @@ import dto.user.LoginUserDto;
 import models.TaskMst;
 import models.TaskTrn;
 import models.Team;
+import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Call;
@@ -79,7 +80,11 @@ public class Apps extends Controller {
 		Logger.info("Apps#auth");
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
-			login(loginForm.get().getUserName());
+			login(
+					uService.findUserByName(
+							loginForm.get().getUserName()
+					).get(0)
+			);
 			flashSuccess(Constant.MSG_I001);
 		} else {
 			flashError(Constant.MSG_E001);
@@ -90,16 +95,16 @@ public class Apps extends Controller {
 	/**
 	 * ログインに伴うデータセットを行う.
 	 */
-	public void login(String userName) {
+	protected void login(User user) {
 		Logger.info("Apps#login");
 		session().clear();
-		session(Constant.ITEM_USER_NAME, userName);
+		session(Constant.ITEM_USER_NAME, user.userName);
 
 		// 最終ログインから当日までのタスクトランを作成する
-		chkAndCreateTaskTrn(userName);
+		chkAndCreateTaskTrn(user);
 
 		// 最終ログイン日付更新
-		uService.updateLastLoginDate(userName);
+		uService.updateLastLoginDate(user);
 
 	}
 
@@ -126,6 +131,13 @@ public class Apps extends Controller {
 	public static String getLoginUserName() {
 		Logger.info("Apps#getLoginUserName: " + session(Constant.ITEM_USER_NAME));
 		return session(Constant.ITEM_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_USER_NAME);
+	}
+
+	@Security.Authenticated(Secured.class)
+	public  User getLoginUser() {
+		Logger.info("Apps#getLoginUser");
+		return uService.findUserByName(getLoginUserName()).get(0);
+
 	}
 
 	/**
@@ -199,14 +211,14 @@ public class Apps extends Controller {
 	/**
 	 * ログインユーザの最終ログイン日付を確認し、最終ログインから当日までの
 	 * タスクトランを作成する.
-	 * @param userName
+	 * @param user
 	 */
-	protected void chkAndCreateTaskTrn(String userName) {
-		Logger.info("Apps#chkAndCreateTaskTrn " + userName);
+	protected void chkAndCreateTaskTrn(User user) {
+		Logger.info("Apps#chkAndCreateTaskTrn " + user.userName);
 
 		// ログインユーザの所属チーム、最終ログイン日付を取得
-		List<Team> teamList = teService.findTeamListByUserName(userName);
-		Date lastLoginDate = uService.findUserByName(userName).get(0).lastLoginDate;
+		List<Team> teamList = teService.findTeamListByUserName(user.userName);
+		Date lastLoginDate = user.lastLoginDate;
 		try {
 			Date today = DateUtil.getDateWithoutTime(new Date());
 			if (lastLoginDate != null

@@ -14,7 +14,7 @@ import java.util.List;
 @ImplementedBy(UserServiceImpl.class)
 public interface UserService {
 
-	void create(CreateUserDto createUserDto);
+	User create(CreateUserDto createUserDto);
 
 	List<User> findUser(String userName, String password);
 
@@ -24,5 +24,5 @@ public interface UserService {
 
 	User findUserById(Long id);
 
-	void updateLastLoginDate(String userName);
+	void updateLastLoginDate(User user);
 }

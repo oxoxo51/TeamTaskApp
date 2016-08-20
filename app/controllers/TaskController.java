@@ -63,7 +63,7 @@ public class TaskController extends Apps {
 		Logger.info("TaskController#displayTaskList");
 		setSessionUrl(routes.TaskController.displayTaskList().url());
 		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
-			super.chkAndCreateTaskTrn(getLoginUserName());
+			super.chkAndCreateTaskTrn(super.getLoginUser());
 			return ok(taskList.render("", ""));
 		} else {
 			return redirect(

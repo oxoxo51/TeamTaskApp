@@ -15,12 +15,14 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
 	@Override
-	public void create(CreateUserDto createUserDto) {
+	public User create(CreateUserDto createUserDto) {
 		Logger.info("UserServiceImpl#edit");
 		User user = new User();
 		user.userName = createUserDto.getUserName();
 		user.password = createUserDto.getPassword();
 		user.save();
+		// 再取得して返却する(id含めたmodelを渡すため)
+		return User.find.where().eq("userName", createUserDto.getUserName()).findList().get(0);
 	}
 
 	@Override
@@ -49,8 +51,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateLastLoginDate(String userName) {
-		User user = findUserByName(userName).get(0);
+	public void updateLastLoginDate(User user) {
 		user.lastLoginDate = new Date();
 		user.update();
 	}
