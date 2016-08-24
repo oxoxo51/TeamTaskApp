@@ -31,11 +31,11 @@ import java.util.List;
 public class Apps extends Controller {
 
 	@Inject
-	UserService uService;
+	public UserService uService;
 	@Inject
-	TeamService teService;
+	public TeamService teService;
 	@Inject
-	TaskService taService;
+	public TaskService taService;
 
 
 	/**

@@ -1,6 +1,5 @@
 package controllers;
 
-import com.google.inject.Inject;
 import constant.Constant;
 import dto.team.EditTeamDto;
 import models.Team;
@@ -9,7 +8,6 @@ import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
-import services.TeamService;
 import services.implement.TeamServiceImpl;
 import views.html.team;
 import views.html.teamList;
@@ -21,8 +19,6 @@ import java.util.List;
  * Created on 2016/05/10.
  */
 public class TeamController extends Apps {
-	@Inject
-	TeamService service;
 
 	/**
 	 * チームリスト表示.
@@ -62,7 +58,7 @@ public class TeamController extends Apps {
 		EditTeamDto dto = new EditTeamDto();
 
 		String memberListStr = "";
-		Team team = service.findTeamByName(teamName).get(0);
+		Team team = teService.findTeamByName(teamName).get(0);
 		dto.setId(team.id);
 		for (User user : team.members) {
 			memberListStr += (user.userName + ",");
@@ -92,11 +88,11 @@ public class TeamController extends Apps {
 			EditTeamDto dto = editTeamDtoForm.get();
 			switch (mode) {
 				case Constant.MODE_CREATE :
-					service.create(dto);
+					teService.create(dto);
 					flashSuccess(Constant.MSG_I003);
 					break;
 				case Constant.MODE_UPDATE :
-					errorMessages = service.update(dto);
+					errorMessages = teService.update(dto);
 					// エラー返却時の処理
 					if (errorMessages != null && errorMessages.size() > 0) {
 						for (String error : errorMessages) {

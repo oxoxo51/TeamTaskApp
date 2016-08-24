@@ -1,6 +1,5 @@
 package controllers;
 
-import com.google.inject.Inject;
 import constant.Constant;
 import dto.user.ChangePwdDto;
 import dto.user.CreateUserDto;
@@ -8,7 +7,6 @@ import models.User;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
-import services.UserService;
 import views.html.changePwd;
 import views.html.user;
 
@@ -16,9 +14,6 @@ import views.html.user;
  * Created on 2016/05/08.
  */
 public class UserController extends Apps {
-
-	@Inject
-	UserService service;
 
 	/**
 	 * ユーザー新規登録画面表示.
@@ -37,7 +32,7 @@ public class UserController extends Apps {
 		Form<CreateUserDto> createUserDtoForm = Form.form(CreateUserDto.class).bindFromRequest();
 		if (!createUserDtoForm.hasErrors()) {
 			CreateUserDto dto = createUserDtoForm.get();
-			User user = service.create(dto);
+			User user = uService.create(dto);
 			flashSuccess(Constant.MSG_I003);
 			// ログイン済みの状態にしてチーム一覧に遷移
 			super.login(user);
@@ -70,7 +65,7 @@ public class UserController extends Apps {
 		Form<ChangePwdDto> changePwdDtoForm = Form.form(ChangePwdDto.class).bindFromRequest();
 		if (!changePwdDtoForm.hasErrors()) {
 			ChangePwdDto dto = changePwdDtoForm.get();
-			service.changePwd(dto);
+			uService.changePwd(dto);
 			// TODO redirectを2重にしているためflashメッセージが表示されない
 			flashSuccess(Constant.MSG_I007);
 			// セッションを維持したままルートにリダイレクトする。

@@ -2,7 +2,6 @@ package controllers.ajax;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.inject.Inject;
 import constant.Constant;
 import controllers.Apps;
 import models.TaskMst;
@@ -11,9 +10,6 @@ import models.Team;
 import models.User;
 import play.libs.Json;
 import play.mvc.Result;
-import services.TaskService;
-import services.TeamService;
-import services.UserService;
 import util.DateUtil;
 import util.MsgUtil;
 
@@ -27,12 +23,6 @@ import java.util.List;
  * Created on 16/07/22.
  */
 public class AjaxController extends Apps {
-	@Inject
-	TaskService taskService;
-	@Inject
-	TeamService teamService;
-	@Inject
-	UserService userService;
 
 	/**
 	 * jsonのタスクトランIDを元にタスク状態を更新し、更新後のタスクリストを返却する.
@@ -69,21 +59,21 @@ public class AjaxController extends Apps {
 		if (id != -1) {
 			int status;
 			// 初期表示時以外
-			if ((status = taskService.updateTaskTrnStatus(id)) == Constant.TASK_UPD_FINISHED) {
+			if ((status = taService.updateTaskTrnStatus(id)) == Constant.TASK_UPD_FINISHED) {
 				// →実施済
-				msg = MsgUtil.makeMsgStr(Constant.MSG_I005, taskService.getTaskMstByTaskTrnId(id).taskName);
+				msg = MsgUtil.makeMsgStr(Constant.MSG_I005, taService.getTaskMstByTaskTrnId(id).taskName);
 			} else if (status == Constant.TASK_UPD_NOT_YET){
-				msg = MsgUtil.makeMsgStr(Constant.MSG_I006, taskService.getTaskMstByTaskTrnId(id).taskName);
+				msg = MsgUtil.makeMsgStr(Constant.MSG_I006, taService.getTaskMstByTaskTrnId(id).taskName);
 			} else {
 				msg = MsgUtil.makeMsgStr(Constant.MSG_E004);
 				msgStatus = Constant.MSG_ERROR;
 			}
 		}
 
-		Team team = teamService.findTeamByName(session(Constant.ITEM_TEAM_NAME)).get(0);
+		Team team = teService.findTeamByName(session(Constant.ITEM_TEAM_NAME)).get(0);
 
 		// タスクリスト抽出（レスポンスのjson作成）
-		List<TaskTrn> taskTrnList = taskService.findTaskList(team.id, dateStr);
+		List<TaskTrn> taskTrnList = taService.findTaskList(team.id, dateStr);
 		// ArrayNodeに変換
 		for (TaskTrn task : taskTrnList) {
 			ObjectNode element = Json.newObject();
@@ -126,7 +116,7 @@ public class AjaxController extends Apps {
 	 */
 	public Result updTaskStatAndGetTaskListByUser() {
 		Long id = Long.parseLong(request().body().asFormUrlEncoded().get("id")[0]);
-		User user = userService.findUserByName(session("userName")).get(0);
+		User user = uService.findUserByName(session("userName")).get(0);
 
 		ObjectNode result = Json.newObject();
 		ArrayNode arr = result.arrayNode();
@@ -140,11 +130,11 @@ public class AjaxController extends Apps {
 		if (id != -1) {
 			int status;
 			// 初期表示時以外
-			if ((status = taskService.updateTaskTrnStatus(id)) == Constant.TASK_UPD_FINISHED) {
+			if ((status = taService.updateTaskTrnStatus(id)) == Constant.TASK_UPD_FINISHED) {
 				// →実施済
-				msg = MsgUtil.makeMsgStr(Constant.MSG_I005, taskService.getTaskMstByTaskTrnId(id).taskName);
+				msg = MsgUtil.makeMsgStr(Constant.MSG_I005, taService.getTaskMstByTaskTrnId(id).taskName);
 			} else if (status == Constant.TASK_UPD_NOT_YET){
-				msg = MsgUtil.makeMsgStr(Constant.MSG_I006, taskService.getTaskMstByTaskTrnId(id).taskName);
+				msg = MsgUtil.makeMsgStr(Constant.MSG_I006, taService.getTaskMstByTaskTrnId(id).taskName);
 			} else {
 				msg = MsgUtil.makeMsgStr(Constant.MSG_E004);
 				msgStatus = Constant.MSG_ERROR;
@@ -157,7 +147,7 @@ public class AjaxController extends Apps {
 		for (Team team : teamList) {
 			try {
 				// TODO try~catchちゃんとやる
-				List<TaskMst> taskMstList = taskService.findTaskMstByTeamName(team.teamName);
+				List<TaskMst> taskMstList = taService.findTaskMstByTeamName(team.teamName);
 				for (TaskMst taskMst : taskMstList) {
 					// TODO 一旦Modelから直接取得
 					// タスクトランを抽出してリストに詰める:日付でソートし、今日以前で最も古い1件ずつを取得
