@@ -26,19 +26,15 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<String> create(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#edit");
-
+		List<String> errorMessages = new ArrayList<String>();
 		UserServiceImpl userService = new UserServiceImpl();
 
 		Team team = new Team();
-		team.teamName = editTeamDto.getTeamName();
-
-		// チームメンバー
-		// DTOのLISTからユーザーを取得
-		List<String> errorMessages = new ArrayList<String>();
-		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
-
 		// 作成ユーザー:ログインユーザーから設定
 		team.createUser = userService.findUserByName(Apps.getLoginUserName()).get(0);
+		// 登録・更新共通処理
+		team = editTeam(team, editTeamDto, errorMessages);
+		// チームメンバー
 
 		if (errorMessages.size() == 0) {
 			team.save();
@@ -54,15 +50,14 @@ public class TeamServiceImpl implements TeamService {
 	@Override
 	public List<String> update(EditTeamDto editTeamDto) {
 		Logger.info("TeamServiceImpl#update");
-
-		Team team = Team.find.byId(editTeamDto.getId());
-		team.teamName = editTeamDto.getTeamName();
 		List<String> errorMessages = new ArrayList<String>();
 
-		// チームメンバー
-		// 一度クリアした上でDTOからセット
+		Team team = Team.find.byId(editTeamDto.getId());
+		// チームメンバー：一度クリアした上でDTOからセット
 		team.members.clear();
-		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
+
+		// 登録・更新共通処理
+		team = editTeam(team, editTeamDto, errorMessages);
 
 		if (errorMessages.size() == 0) {
 			team.update();
@@ -70,19 +65,22 @@ public class TeamServiceImpl implements TeamService {
 		return errorMessages;
 	}
 
+	private Team editTeam(Team team, EditTeamDto editTeamDto, List<String> errorMessages) {
+		team.teamName = editTeamDto.getTeamName();
+		// DTOのLISTからユーザーを取得
+		setMembers(editTeamDto.getMemberListStr(), team.members, errorMessages);
+
+		return team;
+	}
+
 	/**
-	 * ユーザーが所属するチームをユーザー名から取得する.
-	 * @param userName
+	 * ユーザーが所属するチームをユーザーから取得する.
+	 * @param user
 	 * @return
 	 */
 	@Override
-	public List<Team> findTeamListByUserName(String userName) {
+	public List<Team> findTeamListByUser(User user) {
 		Logger.info("TeamServiceImpl#findTeamListByUserName");
-
-		UserServiceImpl userService = new UserServiceImpl();
-
-		// ユーザー名から該当ユーザーを取得
-		User user = userService.findUserByName(userName).get(0);
 
 		// ユーザーの所属チームを取得
 		return Team.find.where().eq("members", user).setOrderBy("teamName").findList();

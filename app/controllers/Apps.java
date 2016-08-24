@@ -16,6 +16,7 @@ import play.mvc.Security;
 import services.TaskService;
 import services.TeamService;
 import services.UserService;
+import services.implement.UserServiceImpl;
 import util.DateUtil;
 import util.MsgUtil;
 import views.html.index;
@@ -134,10 +135,11 @@ public class Apps extends Controller {
 	}
 
 	@Security.Authenticated(Secured.class)
-	public  User getLoginUser() {
+	protected static User getLoginUser() {
 		Logger.info("Apps#getLoginUser");
-		return uService.findUserByName(getLoginUserName()).get(0);
 
+		UserServiceImpl userService = new UserServiceImpl();
+		return userService.findUserByName(getLoginUserName()).get(0);
 	}
 
 	/**
@@ -160,7 +162,6 @@ public class Apps extends Controller {
 	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
 		Logger.info("Apps#getSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
-		Logger.info("teamName:" + session(Constant.ITEM_TEAM_NAME));
 		return session(Constant.ITEM_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_TEAM_NAME);
 	}
 
@@ -217,7 +218,7 @@ public class Apps extends Controller {
 		Logger.info("Apps#chkAndCreateTaskTrn " + user.userName);
 
 		// ログインユーザの所属チーム、最終ログイン日付を取得
-		List<Team> teamList = teService.findTeamListByUserName(user.userName);
+		List<Team> teamList = teService.findTeamListByUser(user);
 		Date lastLoginDate = user.lastLoginDate;
 		try {
 			Date today = DateUtil.getDateWithoutTime(new Date());

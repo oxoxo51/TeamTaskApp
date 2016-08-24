@@ -33,9 +33,6 @@ public class TeamController extends Apps {
 		Logger.info("TeamController#displayTeamList");
 		setSessionUrl(routes.TeamController.displayTeamList().url());
 
-		// セッションのチームをクリアする
-		session().remove("teamName");
-
 		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
 		return ok(teamList.render(getLoginUserName(), getTeamList()));
 	}
@@ -60,7 +57,7 @@ public class TeamController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTeam(String teamName) {
 		Logger.info("TeamController#displayTeam");
-		setSessionTeamName(routes.TeamController.displayUpdateTeam(teamName).url());
+		setSessionUrl(routes.TeamController.displayUpdateTeam(teamName).url());
 
 		EditTeamDto dto = new EditTeamDto();
 
@@ -140,9 +137,12 @@ public class TeamController extends Apps {
 	 * セッションのログインユーザーに紐付くチームリストを返却する.
 	 * @return
 	 */
+	@Security.Authenticated(Secured.class)
 	public static List<Team> getTeamList() {
+		Logger.info("TeamController#getTeamList");
+
 		TeamServiceImpl teamService = new TeamServiceImpl();
-		return teamService.findTeamListByUserName(getLoginUserName());
+		return teamService.findTeamListByUser(getLoginUser());
 	}
 
 }

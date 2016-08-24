@@ -3,6 +3,7 @@ package services;
 import com.google.inject.ImplementedBy;
 import dto.team.EditTeamDto;
 import models.Team;
+import models.User;
 import services.implement.TeamServiceImpl;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface TeamService {
 
 	List<String> create(EditTeamDto editTeamDto);
 	List<String> update(EditTeamDto editTeamDto);
-	List<Team> findTeamListByUserName(String userName);
+	List<Team> findTeamListByUser(User user);
 	List<Team> findTeamByName(String teamName);
 }

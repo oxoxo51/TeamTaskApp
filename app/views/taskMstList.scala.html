@@ -1,7 +1,7 @@
 @(userName: String, teamName: String)
 
 @import services.implement.TaskServiceImpl
-@import services.implement.TeamServiceImpl
+@import controllers.TeamController
 
 @main("タスク一覧") {
     <div class="row bg-primary">
@@ -19,8 +19,7 @@
         @{
             var htmlStr = ""
             if(teamName == ""){
-                var teamService:TeamServiceImpl = new TeamServiceImpl()
-                var teamList:List[Team] = teamService.findTeamListByUserName(userName)
+                var teamList:List[Team] = TeamController.getTeamList
                 for(team <- teamList){
                     // 所属チームのタスクマスタを取得
                     var taskService:TaskServiceImpl = new TaskServiceImpl()
