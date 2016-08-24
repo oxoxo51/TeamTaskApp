@@ -53,7 +53,7 @@ function sendJson(id, dateStr){
             // 実施済、未実施、対象外それぞれString配列のMAPでHTMLを作成する
             for (var key in taskMap) {
                 var keyArg = key.split(",");
-                var taskReferURL = "../" + taskMap[key].taskName + "/refer";
+                var taskReferURL = "../" + taskMap[key].teamName + "/" + taskMap[key].taskName + "/refer";
                 var htmlStr = "";
                 if ("1" === keyArg[0]) {
                     // 実施済
@@ -204,7 +204,7 @@ function getTaskHtmlLineTop(taskTrnId, dateStr, teamName, taskName, mainUserName
             + "</td><td>"
             + teamName
             + "</td><td>"
-            + "<a href='../../" + teamName + "/task/" + taskName + "/refer'>" + taskName + "</a>"
+            + "<a href='../../task/" + teamName + "/" + taskName + "/refer'>" + taskName + "</a>"
             + "</td><td>"
             + mainUserName
             + "</td></tr>";

@@ -1,15 +1,14 @@
 package controllers;
 
-import com.google.inject.Inject;
 import constant.Constant;
 import dto.task.EditTaskMstDto;
 import models.TaskMst;
+import models.Team;
 import models.User;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
-import services.TaskService;
 import services.implement.TaskServiceImpl;
 import services.implement.TeamServiceImpl;
 import util.DateUtil;
@@ -26,8 +25,6 @@ import java.util.List;
  * Created on 2016/05/25.
  */
 public class TaskController extends Apps {
-	@Inject
-	TaskService service;
 
 	/**
 	 * タスクリスト画面表示（日付指定あり）.
@@ -41,17 +38,17 @@ public class TaskController extends Apps {
 					+ " dateStr:" + dateStr);
 		setSessionUrl(routes.TaskController.displayTaskListWithDate(dateStr).url());
 
-		// セッションのチーム名を取得する
-		String teamName = getSessionTeamName();
-
 		// チーム未選択の場合、全件表示にリダイレクトする
 		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
 			return redirect(routes.TaskController.displayTaskList());
 		}
-		// 未作成のタスクトラン作成
-		super.createTaskTrn(teamName, dateStr);
+		// セッションのチームを取得する
+		Team team = teService.findTeamByName(getSessionTeamName()).get(0);
 
-		return ok(taskList.render(dateStr, teamName));
+		// 未作成のタスクトラン作成
+		super.createTaskTrn(team, dateStr);
+
+		return ok(taskList.render(dateStr, team.teamName));
 	}
 
 	/**
@@ -104,7 +101,7 @@ public class TaskController extends Apps {
 
 		EditTaskMstDto dto = new EditTaskMstDto();
 
-		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
+		TaskMst taskMst = taService.findTaskMstByTeamAndTaskName(teamName, taskName);
 
 		dto.setId(taskMst.id);
 		dto.setMainUserName(taskMst.mainUser.userName);
@@ -151,11 +148,11 @@ public class TaskController extends Apps {
 			EditTaskMstDto dto = editTaskMstDtoForm.get();
 			switch (mode) {
 				case Constant.MODE_CREATE :
-					service.createTaskMst(dto);
+					taService.createTaskMst(dto);
 					flashSuccess(Constant.MSG_I003);
 					break;
 				case Constant.MODE_UPDATE :
-					service.updateTaskMst(dto);
+					taService.updateTaskMst(dto);
 					flashSuccess(Constant.MSG_I004);
 					break;
 			}

@@ -231,7 +231,7 @@ public class Apps extends Controller {
 				while (taskDate.compareTo(today) < 1) {
 					for (Team team : teamList) {
 						this.createTaskTrn(
-								team.teamName,
+								team,
 								DateUtil.getDateStr(taskDate, Constant.DATE_FORMAT_yMd));
 					}
 					taskDate = DateUtil.getThatDate(taskDate, 1);
@@ -246,14 +246,13 @@ public class Apps extends Controller {
 
 	/**
 	 * 指定されたチーム・日付のタスクトランをタスクマスタを元に作成する.
-	 * @param teamName
+	 * @param team
 	 * @param dateStr
 	 */
-	public void createTaskTrn(String teamName, String dateStr) {
-		Logger.info("Apps#createTaskTrn " + teamName + dateStr);
+	protected void createTaskTrn(Team team, String dateStr) {
+		Logger.info("Apps#createTaskTrn " + team.teamName + dateStr);
 
 		// 利用チームに紐付くタスクリストを取得
-		Team team = teService.findTeamByName(teamName).get(0);
 		// 該当日付のタスクトランを取得し、0件の場合新規作成する
 		List<TaskTrn> taskTrnList = taService.findTaskList(team.id, dateStr);
 		if (taskTrnList.size() == 0) {

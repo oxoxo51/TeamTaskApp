@@ -92,6 +92,7 @@ public class AjaxController extends Apps {
 			element.put("mainUserName", task.taskMst.mainUser.userName);
 			element.put("operationUserName", task.operationUser == null ? "" : task.operationUser.userName);
 			element.put("operationFlg", task.operationFlg);
+			element.put("teamName", task.taskMst.taskTeam.teamName);
 			arr.add(element);
 		}
 		result.putArray("taskTrn").addAll(arr);
