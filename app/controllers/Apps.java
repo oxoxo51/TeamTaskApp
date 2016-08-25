@@ -94,6 +94,31 @@ public class Apps extends Controller {
 	}
 
 	/**
+	 * ログアウト試行時のAction.
+	 *
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result logout() {
+		Logger.info("Apps#logout");
+		session().clear();
+		flashSuccess(Constant.MSG_I002);
+		return redirect(routes.Apps.index());
+	}
+
+	/**
+	 * セッションに保持しているチーム名をクリアする.
+	 *
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result clearSessionTeamName() {
+		Logger.info("Apps#clearSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		session().remove(Constant.ITEM_TEAM_NAME);
+		return redirect(routes.Apps.index());
+	}
+
+	/**
 	 * ログインに伴うデータセットを行う.
 	 */
 	protected void login(User user) {
@@ -110,19 +135,6 @@ public class Apps extends Controller {
 	}
 
 	/**
-	 * ログアウト試行時のAction.
-	 *
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result logout() {
-		Logger.info("Apps#logout");
-		session().clear();
-		flashSuccess(Constant.MSG_I002);
-		return redirect(routes.Apps.index());
-	}
-
-	/**
 	 * ログインしているユーザー名を取得する.
 	 * 取得できなかった場合、"---"を返却する.
 	 *
@@ -134,6 +146,10 @@ public class Apps extends Controller {
 		return session(Constant.ITEM_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_USER_NAME);
 	}
 
+	/**
+	 * ログインしているユーザーを取得する.
+	 * @return
+	 */
 	@Security.Authenticated(Secured.class)
 	protected static User getLoginUser() {
 		Logger.info("Apps#getLoginUser");
@@ -148,7 +164,7 @@ public class Apps extends Controller {
 	 * @param teamName
 	 */
 	@Security.Authenticated(Secured.class)
-	public void setSessionTeamName(String teamName) {
+	protected void setSessionTeamName(String teamName) {
 		Logger.info("Apps#setSessionTeamName: " + teamName);
 		session(Constant.ITEM_TEAM_NAME, teamName);
 	}
@@ -166,24 +182,12 @@ public class Apps extends Controller {
 	}
 
 	/**
-	 * セッションに保持しているチーム名をクリアする.
-	 *
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result clearSessionTeamName() {
-		Logger.info("Apps#clearSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
-		session().remove(Constant.ITEM_TEAM_NAME);
-		return redirect(routes.Apps.index());
-	}
-
-	/**
 	 * セッションにURLを保持する.
 	 *
 	 * @param url
 	 */
 	@Security.Authenticated(Secured.class)
-	public void setSessionUrl(String url) {
+	protected void setSessionUrl(String url) {
 		Logger.info("Apps#setSessionUrl: " + url);
 		session().remove(Constant.ITEM_URL);
 		session(Constant.ITEM_URL, url);

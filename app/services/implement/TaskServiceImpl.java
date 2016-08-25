@@ -292,27 +292,13 @@ public class TaskServiceImpl implements TaskService {
 
 	/**
 	 * ユーザーのタスク実施回数を返す.
-	 * @param userName
-	 * @param teamName
-	 * @param taskName
+	 * @param user
+	 * @param taskMst
 	 * @return
 	 */
-	public Integer getTaskDoneCount(String userName, String teamName, String taskName) {
+	public Integer getTaskDoneCount(User user, TaskMst taskMst) {
 		Logger.debug("TaskServiceImpl#getTaskDoneCount");
 
-		TeamServiceImpl teamService = new TeamServiceImpl();
-		UserServiceImpl userService = new UserServiceImpl();
-
-		// 元となるタスクマスタ
-		Team team = teamService.findTeamByName(teamName).get(0);
-		Logger.debug(team.teamName);
-		TaskMst taskMst = TaskMst.find.where().eq("taskTeam", team)
-				.eq("taskName", taskName)
-				.findList().get(0);
-		Logger.debug(taskMst.taskName);
-
-		// タスク実施ユーザー
-		User user = userService.findUserByName(userName).get(0);
 		// タスクトランから該当のタスクのうち特定ユーザーが実施したものを抽出
 		List<TaskTrn> taskTrnList = TaskTrn.find.where().eq("taskMst", taskMst)
 				.eq("operationUser", user)

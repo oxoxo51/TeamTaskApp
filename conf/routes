@@ -21,10 +21,10 @@ GET     /team/:teamName/change      controllers.TeamController.changeTeam(teamNa
 
 GET     /task/new                             controllers.TaskController.displayCreateTaskMst()
 GET     /task/:teamName/:taskName/edit        controllers.TaskController.displayUpdateTaskMst(teamName: String, taskName: String)
+GET     /task/:teamName/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
 POST    /task/edit/:mode                      controllers.TaskController.edit(mode: String)
 GET     /task/list/:dateStr                   controllers.TaskController.displayTaskListWithDate(dateStr: String)
 GET     /task/list                            controllers.TaskController.displayTaskList
-GET     /task/:teamName/:taskName/refer       controllers.TaskController.referTask(teamName: String, taskName: String)
 GET     /task/master/list                     controllers.TaskController.displayTaskMstList
 
 # ajax

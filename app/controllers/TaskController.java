@@ -27,49 +27,6 @@ import java.util.List;
 public class TaskController extends Apps {
 
 	/**
-	 * タスクリスト画面表示（日付指定あり）.
-	 * 渡された日付と利用チームを元に、タスクリストを表示する.
-	 * @param dateStr
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayTaskListWithDate(String dateStr) {
-		Logger.info("TaskController#displayTaskListWithDate"
-					+ " dateStr:" + dateStr);
-		setSessionUrl(routes.TaskController.displayTaskListWithDate(dateStr).url());
-
-		// チーム未選択の場合、全件表示にリダイレクトする
-		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
-			return redirect(routes.TaskController.displayTaskList());
-		}
-		// セッションのチームを取得する
-		Team team = teService.findTeamByName(getSessionTeamName()).get(0);
-
-		// 未作成のタスクトラン作成
-		super.createTaskTrn(team, dateStr);
-
-		return ok(taskList.render(dateStr, team.teamName));
-	}
-
-	/**
-	 * タスクリスト画面表示.
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayTaskList() {
-		Logger.info("TaskController#displayTaskList");
-		setSessionUrl(routes.TaskController.displayTaskList().url());
-		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
-			super.chkAndCreateTaskTrn(super.getLoginUser());
-			return ok(taskList.render("", ""));
-		} else {
-			return redirect(
-					routes.TaskController.displayTaskListWithDate(
-							DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd)));
-		}
-	}
-
-	/**
 	 * タスクマスタ新規登録画面表示.
 	 * @return
 	 */
@@ -121,17 +78,14 @@ public class TaskController extends Apps {
 	}
 
 	/**
-	 * タスクマスタ一覧画面表示.
+	 * タスク参照画面を表示する.
+	 * @param teamName
+	 * @param taskName
 	 * @return
 	 */
 	@Security.Authenticated(Secured.class)
-	public Result displayTaskMstList() {
-		Logger.info("TaskController#displayTaskMstList");
-
-		String userName = session("userName");
-		String teamName = (session("teamName") == null ? "" : session("teamName"));
-
-		return ok(taskMstList.render(userName, teamName));
+	public Result referTask(String teamName, String taskName) {
+		return ok(taskRefer.render(teamName, taskName));
 	}
 
 	/**
@@ -158,37 +112,88 @@ public class TaskController extends Apps {
 			}
 			// タスクリストに遷移
 			return redirect(routes.TaskController.displayTaskList());
-
 		} else {
 			flashError(Constant.MSG_E003);
 			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
 		}
-
 	}
 
 	/**
-	 * タスク参照画面を表示する.
+	 * タスクリスト画面表示（日付指定あり）.
+	 * 渡された日付と利用チームを元に、タスクリストを表示する.
+	 * @param dateStr
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTaskListWithDate(String dateStr) {
+		Logger.info("TaskController#displayTaskListWithDate"
+				+ " dateStr:" + dateStr);
+		setSessionUrl(routes.TaskController.displayTaskListWithDate(dateStr).url());
+
+		// チーム未選択の場合、全件表示にリダイレクトする
+		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
+			return redirect(routes.TaskController.displayTaskList());
+		}
+		// セッションのチームを取得する
+		Team team = teService.findTeamByName(getSessionTeamName()).get(0);
+
+		// 未作成のタスクトラン作成
+		super.createTaskTrn(team, dateStr);
+
+		return ok(taskList.render(dateStr, team.teamName));
+	}
+
+	/**
+	 * タスクリスト画面表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTaskList() {
+		Logger.info("TaskController#displayTaskList");
+		setSessionUrl(routes.TaskController.displayTaskList().url());
+		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
+			super.chkAndCreateTaskTrn(super.getLoginUser());
+			return ok(taskList.render("", ""));
+		} else {
+			return redirect(
+					routes.TaskController.displayTaskListWithDate(
+							DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd)));
+		}
+	}
+
+	/**
+	 * タスクマスタ一覧画面表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTaskMstList() {
+		Logger.info("TaskController#displayTaskMstList");
+
+		String userName = session("userName");
+		String teamName = (session("teamName") == null ? "" : session("teamName"));
+
+		return ok(taskMstList.render(userName, teamName));
+	}
+
+	/**
+	 * チーム名・タスク名からタスクマスタを取得する.
 	 * @param teamName
 	 * @param taskName
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
-	public Result referTask(String teamName, String taskName) {
-		return ok(taskRefer.render(teamName, taskName));
-	}
-
 	public static TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
 		TaskServiceImpl service = new TaskServiceImpl();
 		return service.findTaskMstByTeamAndTaskName(teamName, taskName);
 	}
 
+
 	/**
 	 * タスク参照画面に表示するユーザーごとのタスク実施回数をHTMLにする.
 	 * @param teamName
-	 * @param taskName
+	 * @param taskMst
 	 * @return
 	 */
-	public static String editTaskDoneCountHtml(String teamName, String taskName) {
+	public static String editTaskDoneCountHtml(String teamName, TaskMst taskMst) {
 		Logger.info("TaskController#editTaskDoneCountHtml");
 
 		TaskServiceImpl service = new TaskServiceImpl();
@@ -204,29 +209,34 @@ public class TaskController extends Apps {
 
 		for (User user : userList) {
 			Integer count = 0;
-			String userName = user.userName;
 			if ((count = service.getTaskDoneCount(
-					userName, teamName, taskName)) > 0) {
-				String addHtml = htmlFormat;
-				addHtml = addHtml.replace("[userName]", userName)
-								 .replace("NNN", count.toString());
-				html += addHtml;
+					user, taskMst)) > 0) {
+				html += htmlFormat.replace("[userName]", user.userName)
+						.replace("NNN", count.toString());
 			}
-
 		}
 		return html;
 	}
 
-	public static String getTaskRepetition(String teamName, String taskName) {
-		TaskServiceImpl service = new TaskServiceImpl();
+	/**
+	 * タスク頻度を参照画面で表示する文言にして返却する.
+	 * @param taskMst
+	 * @return
+	 */
+	public static String getTaskRepetition(TaskMst taskMst) {
 
-		TaskMst taskMst = service.findTaskMstByTeamAndTaskName(teamName, taskName);
 		String repTypeStr = getRepTypeStr(taskMst.repType);
 
 		return repTypeStr
 				+ ("".equals(taskMst.repetition) ? "" : "/" + taskMst.repetition);
 	}
 
+	/**
+	 * 頻度タイプの文言を返却する.
+	 * 例：日次/週次/月次
+	 * @param repType
+	 * @return
+	 */
 	private static String getRepTypeStr(String repType) {
 		switch (repType) {
 			case Constant.REPTYPE_DAYLY :

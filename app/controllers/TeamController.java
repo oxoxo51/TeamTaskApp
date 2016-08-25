@@ -21,19 +21,6 @@ import java.util.List;
 public class TeamController extends Apps {
 
 	/**
-	 * チームリスト表示.
-	 * @return
-	 */
-	@Security.Authenticated(Secured.class)
-	public Result displayTeamList() {
-		Logger.info("TeamController#displayTeamList");
-		setSessionUrl(routes.TeamController.displayTeamList().url());
-
-		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
-		return ok(teamList.render(getLoginUserName(), getTeamList()));
-	}
-
-	/**
 	 * チーム新規登録画面表示.
 	 * @return
 	 */
@@ -112,6 +99,19 @@ public class TeamController extends Apps {
 	}
 
 	/**
+	 * チームリスト表示.
+	 * @return
+	 */
+	@Security.Authenticated(Secured.class)
+	public Result displayTeamList() {
+		Logger.info("TeamController#displayTeamList");
+		setSessionUrl(routes.TeamController.displayTeamList().url());
+
+		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
+		return ok(teamList.render(getLoginUserName(), getTeamList()));
+	}
+
+	/**
 	 * チームの選択状態を変更する.
 	 * @param teamName
 	 * @return
@@ -123,7 +123,7 @@ public class TeamController extends Apps {
 		if (Constant.USER_TEAM_BLANK.equals(teamName)) {
 			clearSessionTeamName();
 		} else {
-			setSessionTeamName(teamName);
+			super.setSessionTeamName(teamName);
 		}
 		return redirect(session(Constant.ITEM_URL));
 
