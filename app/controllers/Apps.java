@@ -140,7 +140,6 @@ public class Apps extends Controller {
 	 *
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
 	public static String getLoginUserName() {
 		Logger.info("Apps#getLoginUserName: " + session(Constant.ITEM_USER_NAME));
 		return session(Constant.ITEM_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_USER_NAME);
@@ -150,7 +149,6 @@ public class Apps extends Controller {
 	 * ログインしているユーザーを取得する.
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
 	protected static User getLoginUser() {
 		Logger.info("Apps#getLoginUser");
 
@@ -163,7 +161,6 @@ public class Apps extends Controller {
 	 *
 	 * @param teamName
 	 */
-	@Security.Authenticated(Secured.class)
 	protected void setSessionTeamName(String teamName) {
 		Logger.info("Apps#setSessionTeamName: " + teamName);
 		session(Constant.ITEM_TEAM_NAME, teamName);
@@ -175,7 +172,6 @@ public class Apps extends Controller {
 	 *
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
 	public static String getSessionTeamName() {
 		Logger.info("Apps#getSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
 		return session(Constant.ITEM_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_TEAM_NAME);
@@ -186,7 +182,6 @@ public class Apps extends Controller {
 	 *
 	 * @param url
 	 */
-	@Security.Authenticated(Secured.class)
 	protected void setSessionUrl(String url) {
 		Logger.info("Apps#setSessionUrl: " + url);
 		session().remove(Constant.ITEM_URL);

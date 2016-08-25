@@ -133,7 +133,6 @@ public class TeamController extends Apps {
 	 * セッションのログインユーザーに紐付くチームリストを返却する.
 	 * @return
 	 */
-	@Security.Authenticated(Secured.class)
 	public static List<Team> getTeamList() {
 		Logger.info("TeamController#getTeamList");
 
