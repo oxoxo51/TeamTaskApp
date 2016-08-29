@@ -82,34 +82,6 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	/**
-	 * チームと日付でタスクトランを作成する.
-	 * @param team
-	 * @param dateStr
-	 */
-	@Override
-	public List<TaskTrn> createTaskTrnByTeam(Team team, String dateStr) {
-		Logger.info("TaskServiceImpl#createTaskTrnByTeamId");
-
-		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
-
-		try {
-			Logger.info("teamName:" + team.teamName);
-			List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
-			// タスクマスタの一覧を元に、該当日付のタスクトランを作成する
-			// ただし、タスクトランを作成する日付がタスクマスタの開始日以降の場合のみとする
-			for (TaskMst taskMst : taskMstList) {
-				if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) <= 0) {
-					taskTrnList.add(createTaskTrn(taskMst, dateStr));
-				}
-			}
-		} catch (ParseException e) {
-			// TODO エラーハンドリング
-			e.printStackTrace();
-		}
-		return taskTrnList;
-	}
-
-	/**
 	 * タスクマスタを元に、指定した日付のタスクトランを作成する.
 	 * @param taskMst
 	 * @param dateStr
@@ -124,17 +96,6 @@ public class TaskServiceImpl implements TaskService {
 
 		taskTrn.save();
 		return taskTrn;
-	}
-
-	/**
-	 * IDからタスク名称を取得する.
-	 * @param mstId
-	 * @return
-	 */
-	@Override
-	public String getTaskMstName(long mstId) {
-		TaskMst mst = TaskMst.find.byId(mstId);
-		return mst.taskName;
 	}
 
 	/**

@@ -26,11 +26,7 @@ public interface TaskService {
 
 	List<TaskTrn> findTaskList(Team team, String dateStr);
 
-	List<TaskTrn> createTaskTrnByTeam(Team team, String dateStr);
-
 	TaskTrn createTaskTrn(TaskMst taskMst, String dateStr) throws ParseException;
-
-	String getTaskMstName(long mstId);
 
 	int updateTaskTrnStatus(long taskTrnId);
 

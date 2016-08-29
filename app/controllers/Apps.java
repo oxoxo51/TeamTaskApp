@@ -252,37 +252,32 @@ public class Apps extends Controller {
 	protected void createTaskTrn(Team team, String dateStr) {
 		Logger.info("Apps#createTaskTrn " + team.teamName + dateStr);
 
-		// 利用チームに紐付くタスクリストを取得
-		// 該当日付のタスクトランを取得し、0件の場合新規作成する
-		List<TaskTrn> taskTrnList = taService.findTaskList(team, dateStr);
-		if (taskTrnList.size() == 0) {
-			taService.createTaskTrnByTeam(team, dateStr);
-		} else {
-			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
-			try {
-				List<TaskMst> taskMstList = taService.findTaskMstByTeamName(team.teamName); // throws Exception
-				for (TaskMst taskMst : taskMstList) {
-					// 開始日が未来日の場合作成しない
-					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) > 0) {
-						continue;
-					}
-					// トラン未作成フラグ
-					boolean noTrnFlg = true;
-					for (TaskTrn taskTrn : taskTrnList) {
-						if (taskMst.id == taskTrn.taskMst.id) {
-							// 作成済みならfor文を抜ける
-							noTrnFlg = false;
-							break;
-						}
-					}
-					if (noTrnFlg) {
-						taService.createTaskTrn(taskMst, dateStr); // throws ParseException
+		 // タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
+		try {
+			List<TaskMst> taskMstList = taService.findTaskMstByTeamName(team.teamName); // throws Exception
+			for (TaskMst taskMst : taskMstList) {
+				// 開始日が未来日の場合作成しない
+				if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) > 0) {
+					continue;
+				}
+				// トラン未作成フラグ
+				boolean noTrnFlg = true;
+
+				List<TaskTrn> taskTrnList = taService.findTaskList(team, dateStr);
+				for (TaskTrn taskTrn : taskTrnList) {
+					if (taskMst.id == taskTrn.taskMst.id) {
+						// 作成済みならfor文を抜ける
+						noTrnFlg = false;
+						break;
 					}
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO エラーの扱い
+				if (noTrnFlg) {
+					taService.createTaskTrn(taskMst, dateStr); // throws ParseException
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			// TODO エラーの扱い
 		}
 	}
 }
