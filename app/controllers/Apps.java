@@ -262,6 +262,10 @@ public class Apps extends Controller {
 			try {
 				List<TaskMst> taskMstList = taService.findTaskMstByTeamName(team.teamName); // throws Exception
 				for (TaskMst taskMst : taskMstList) {
+					// 開始日が未来日の場合作成しない
+					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) > 0) {
+						continue;
+					}
 					// トラン未作成フラグ
 					boolean noTrnFlg = true;
 					for (TaskTrn taskTrn : taskTrnList) {
