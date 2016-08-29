@@ -1,6 +1,5 @@
 package services.implement;
 
-import com.google.inject.Inject;
 import constant.Constant;
 import dto.task.EditTaskMstDto;
 import models.TaskMst;
@@ -10,7 +9,6 @@ import models.User;
 import play.Logger;
 import play.mvc.Http;
 import services.TaskService;
-import services.UserService;
 import util.DateUtil;
 
 import java.text.ParseException;
@@ -22,9 +20,6 @@ import java.util.Locale;
  * Created on 2016/05/24.
  */
 public class TaskServiceImpl implements TaskService {
-
-	@Inject
-	UserService userService;
 
 	/**
 	 * タスクマスタ新規登録.
@@ -54,120 +49,62 @@ public class TaskServiceImpl implements TaskService {
 	}
 
 	/**
-	 * タスクマスタ登録・更新共通処理.
-	 * @param taskMst
-	 * @param editTaskMstDto
-	 * @return
-	 */
-	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto) {
-		TeamServiceImpl teamService = new TeamServiceImpl();
-		UserServiceImpl userService = new UserServiceImpl();
-
-		taskMst.taskName = editTaskMstDto.getTaskName();
-		taskMst.taskInfo = editTaskMstDto.getTaskInfo();
-		taskMst.repType = editTaskMstDto.getRepType();
-		String repetition = "";
-		if (editTaskMstDto.getRepetition() != null) {
-			for (String repStr : editTaskMstDto.getRepetition()) {
-				if (repetition.length() > 0) {
-					repetition += ",";
-				}
-				repetition += repStr;
-			}
-		}
-
-		taskMst.repetition = repetition;
-
-		// タスク利用チーム
-		String teamName = editTaskMstDto.getTeamName();
-		Team team = teamService.findTeamByName(teamName).get(0);
-		taskMst.taskTeam = team;
-
-		// 主担当者：存在チェックはDTOで実施済の想定
-		taskMst.mainUser = userService.findUserByName(editTaskMstDto.getMainUserName()).get(0);
-
-		// 開始日
-		taskMst.startDate = editTaskMstDto.getStartDate();
-
-		return taskMst;
-	}
-
-	/**
 	 * チームと日付からタスクリストを検索する.
-	 * @param teamId
+	 * @param team
 	 * @param dateStr
 	 * @return
 	 */
 	@Override
-	public List<TaskTrn> findTaskList(long teamId, String dateStr) {
+	public List<TaskTrn> findTaskList(Team team, String dateStr) {
 		Logger.info("TaskServiceImpl#findTaskList");
 
-		TeamServiceImpl teamService = new TeamServiceImpl();
-
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
-		// 1.チームからタスクマスタの一覧を取得する
-		Team team = teamService.findTeamById(teamId);
-		if (team == null) {
-			// TODO エラー
-			return null;
-		} else {
-			try {
-				List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
 
-				// 2.タスクマスタの一覧から、紐付く該当日付のタスクトランを取得する
-				// タスクマスタと日付からは1件のみ取得される想定
-				for (TaskMst taskMst : taskMstList) {
-					Logger.debug("taskMst.taskName: " + taskMst.taskName);
-					List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
-							.where().eq("taskDate", DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)).findList();
-					for (TaskTrn task : taskTrn) {
-						Logger.debug("taskTrn.taskName, date: "
-								+ task.taskMst.taskName + ", " + task.taskDate);
-					}
-					taskTrnList.addAll(taskTrn);
+		try {
+			List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
+			// タスクマスタの一覧から、紐付く該当日付のタスクトランを取得する
+			// タスクマスタと日付からは1件のみ取得される想定
+			for (TaskMst taskMst : taskMstList) {
+				Logger.debug("taskMst.taskName: " + taskMst.taskName);
+				List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
+						.where().eq("taskDate", DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)).findList();
+				for (TaskTrn task : taskTrn) {
+					Logger.debug("taskTrn.taskName, date: "
+							+ task.taskMst.taskName + ", " + task.taskDate);
 				}
-
-			} catch (ParseException e) {
-				// TODO エラーハンドリング
-				e.printStackTrace();
+				taskTrnList.addAll(taskTrn);
 			}
+		} catch (ParseException e) {
+			// TODO エラーハンドリング
+			e.printStackTrace();
 		}
 		return taskTrnList;
 	}
 
 	/**
 	 * チームと日付でタスクトランを作成する.
-	 * @param teamId
+	 * @param team
 	 * @param dateStr
 	 */
 	@Override
-	public List<TaskTrn> createTaskTrnByTeamId(long teamId, String dateStr) {
-		Logger.info("TaskServiceImpl#createTaskTrn");
-
-		TeamServiceImpl teamService = new TeamServiceImpl();
+	public List<TaskTrn> createTaskTrnByTeam(Team team, String dateStr) {
+		Logger.info("TaskServiceImpl#createTaskTrnByTeamId");
 
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
-		// 1.チームからタスクマスタの一覧を取得する
-		Team team = teamService.findTeamById(teamId);
-		if (team == null) {
-			// TODO エラー
-			return null;
-		} else {
-			try {
-				Logger.info("teamName:" + team.teamName);
-				List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
 
-				// 2.タスクマスタの一覧を元に、該当日付のタスクトランを作成する
-				// ただし、タスクトランを作成する日付がタスクマスタの開始日以降の場合のみとする
-				for (TaskMst taskMst : taskMstList) {
-					if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) <= 0) {
-						taskTrnList.add(createTaskTrn(taskMst, dateStr));
-					}
+		try {
+			Logger.info("teamName:" + team.teamName);
+			List<TaskMst> taskMstList = TaskMst.find.where().eq("taskTeam", team).findList();
+			// タスクマスタの一覧を元に、該当日付のタスクトランを作成する
+			// ただし、タスクトランを作成する日付がタスクマスタの開始日以降の場合のみとする
+			for (TaskMst taskMst : taskMstList) {
+				if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) <= 0) {
+					taskTrnList.add(createTaskTrn(taskMst, dateStr));
 				}
-			} catch (ParseException e) {
-				// TODO エラーハンドリング
-				e.printStackTrace();
 			}
+		} catch (ParseException e) {
+			// TODO エラーハンドリング
+			e.printStackTrace();
 		}
 		return taskTrnList;
 	}
@@ -211,6 +148,8 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public int updateTaskTrnStatus(long taskTrnId) {
+		UserServiceImpl userService = new UserServiceImpl();
+
 		TaskTrn trn = TaskTrn.find.byId(taskTrnId);
 		if (trn == null) {
 			// エラー
@@ -305,6 +244,45 @@ public class TaskServiceImpl implements TaskService {
 				.findList();
 		Logger.debug(Integer.toString(taskTrnList.size()));
 		return taskTrnList == null ? 0 : taskTrnList.size();
+	}
+
+	/**
+	 * タスクマスタ登録・更新共通処理.
+	 * @param taskMst
+	 * @param editTaskMstDto
+	 * @return
+	 */
+	private TaskMst editTaskMst(TaskMst taskMst, EditTaskMstDto editTaskMstDto) {
+		TeamServiceImpl teamService = new TeamServiceImpl();
+		UserServiceImpl userService = new UserServiceImpl();
+
+		taskMst.taskName = editTaskMstDto.getTaskName();
+		taskMst.taskInfo = editTaskMstDto.getTaskInfo();
+		taskMst.repType = editTaskMstDto.getRepType();
+		String repetition = "";
+		if (editTaskMstDto.getRepetition() != null) {
+			for (String repStr : editTaskMstDto.getRepetition()) {
+				if (repetition.length() > 0) {
+					repetition += ",";
+				}
+				repetition += repStr;
+			}
+		}
+
+		taskMst.repetition = repetition;
+
+		// タスク利用チーム
+		String teamName = editTaskMstDto.getTeamName();
+		Team team = teamService.findTeamByName(teamName).get(0);
+		taskMst.taskTeam = team;
+
+		// 主担当者：存在チェックはDTOで実施済の想定
+		taskMst.mainUser = userService.findUserByName(editTaskMstDto.getMainUserName()).get(0);
+
+		// 開始日
+		taskMst.startDate = editTaskMstDto.getStartDate();
+
+		return taskMst;
 	}
 
 	/**

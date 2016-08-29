@@ -73,7 +73,7 @@ public class AjaxController extends Apps {
 		Team team = teService.findTeamByName(session(Constant.ITEM_TEAM_NAME)).get(0);
 
 		// タスクリスト抽出（レスポンスのjson作成）
-		List<TaskTrn> taskTrnList = taService.findTaskList(team.id, dateStr);
+		List<TaskTrn> taskTrnList = taService.findTaskList(team, dateStr);
 		// ArrayNodeに変換
 		for (TaskTrn task : taskTrnList) {
 			ObjectNode element = Json.newObject();

@@ -221,6 +221,7 @@ public class Apps extends Controller {
 		Date lastLoginDate = user.lastLoginDate;
 		try {
 			Date today = DateUtil.getDateWithoutTime(new Date());
+			// TODO タスクマスタ作成直後の場合の考慮：当日にログインしてるがトラン未作成
 			if (lastLoginDate != null
 					&& today != DateUtil.getDateWithoutTime(lastLoginDate)) {
 				// タスクトラン作成日付:最終ログイン日付の翌日から
@@ -253,9 +254,9 @@ public class Apps extends Controller {
 
 		// 利用チームに紐付くタスクリストを取得
 		// 該当日付のタスクトランを取得し、0件の場合新規作成する
-		List<TaskTrn> taskTrnList = taService.findTaskList(team.id, dateStr);
+		List<TaskTrn> taskTrnList = taService.findTaskList(team, dateStr);
 		if (taskTrnList.size() == 0) {
-			taService.createTaskTrnByTeamId(team.id, dateStr);
+			taService.createTaskTrnByTeam(team, dateStr);
 		} else {
 			// タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
 			try {

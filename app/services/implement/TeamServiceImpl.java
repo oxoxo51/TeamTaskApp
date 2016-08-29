@@ -25,7 +25,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<String> create(EditTeamDto editTeamDto) {
-		Logger.info("TeamServiceImpl#edit");
+		Logger.info("TeamServiceImpl#create");
 		List<String> errorMessages = new ArrayList<String>();
 		UserServiceImpl userService = new UserServiceImpl();
 
@@ -80,7 +80,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<Team> findTeamListByUser(User user) {
-		Logger.info("TeamServiceImpl#findTeamListByUserName");
+		Logger.info("TeamServiceImpl#findTeamListByUser");
 
 		// ユーザーの所属チームを取得
 		return Team.find.where().eq("members", user).setOrderBy("teamName").findList();
@@ -128,9 +128,4 @@ public class TeamServiceImpl implements TeamService {
 		return team.members;
 	}
 
-	public Team findTeamById(Long teamId) {
-		Logger.info("TeamServiceImpl#findTeamById");
-
-		return Team.find.byId(teamId);
-	}
 }
