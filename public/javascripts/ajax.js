@@ -53,7 +53,7 @@ function sendJson(id, dateStr){
             // 実施済、未実施、対象外それぞれString配列のMAPでHTMLを作成する
             for (var key in taskMap) {
                 var keyArg = key.split(",");
-                var taskReferURL = "../" + taskMap[key].teamName + "/" + taskMap[key].taskName + "/refer";
+                var taskReferURL = "/task/" + taskMap[key].teamName + "/" + taskMap[key].taskName + "/refer";
                 var htmlStr = "";
                 if ("1" === keyArg[0]) {
                     // 実施済

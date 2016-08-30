@@ -221,7 +221,6 @@ public class Apps extends Controller {
 		Date lastLoginDate = user.lastLoginDate;
 		try {
 			Date today = DateUtil.getDateWithoutTime(new Date());
-			// TODO タスクマスタ作成直後の場合の考慮：当日にログインしてるがトラン未作成
 			if (lastLoginDate != null
 					&& today != DateUtil.getDateWithoutTime(lastLoginDate)) {
 				// タスクトラン作成日付:最終ログイン日付の翌日から

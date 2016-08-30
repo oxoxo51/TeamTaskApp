@@ -111,7 +111,6 @@ public class TaskController extends Apps {
 					break;
 			}
 			// タスクリストに遷移
-			// TODO チーム選択時、多重リダイレクトでflashメッセージが表示されない
 			return redirect(routes.TaskController.displayTaskList());
 		} else {
 			flashError(Constant.MSG_E003);
@@ -156,9 +155,8 @@ public class TaskController extends Apps {
 			super.chkAndCreateTaskTrn(super.getLoginUser());
 			return ok(taskList.render("", ""));
 		} else {
-			return redirect(
-					routes.TaskController.displayTaskListWithDate(
-							DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd)));
+			return displayTaskListWithDate(
+							DateUtil.getDateStr(new Date(), Constant.DATE_FORMAT_yMd));
 		}
 	}
 
