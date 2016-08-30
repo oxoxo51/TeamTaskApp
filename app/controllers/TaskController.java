@@ -111,7 +111,8 @@ public class TaskController extends Apps {
 					break;
 			}
 			// タスクリストに遷移
-			return displayTaskList();
+			// TODO チーム選択時、多重リダイレクトでflashメッセージが表示されない
+			return redirect(routes.TaskController.displayTaskList());
 		} else {
 			flashError(Constant.MSG_E003);
 			return badRequest(taskMst.render(mode, editTaskMstDtoForm));
