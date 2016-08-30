@@ -75,6 +75,9 @@ public class Constant {
 	/* message_E013 */
 	public static final String MSG_E013 = CONF_MSG_PREFIX + "E013";
 
+	/* message_E014 */
+	public static final String MSG_E014 = CONF_MSG_PREFIX + "E014";
+
 	/* メッセージのタイプ：成功 */
 	public static final String MSG_SUCCESS = "success";
 
@@ -113,6 +116,9 @@ public class Constant {
 
 	/* 項目：mainUserName */
 	public static final String ITEM_MAIN_USER_NAME = "mainUserName";
+
+	/* 項目：startDate */
+	public static final String ITEM_START_DATE = "startDate";
 
 	/* 項目名：ユーザー名 */
 	public static final String ITEM_NAME_USER_NAME = "ユーザー名";

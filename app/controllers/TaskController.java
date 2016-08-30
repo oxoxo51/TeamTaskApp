@@ -111,7 +111,7 @@ public class TaskController extends Apps {
 					break;
 			}
 			// タスクリストに遷移
-			return redirect(routes.TaskController.displayTaskList());
+			return displayTaskList();
 		} else {
 			flashError(Constant.MSG_E003);
 			return badRequest(taskMst.render(mode, editTaskMstDtoForm));

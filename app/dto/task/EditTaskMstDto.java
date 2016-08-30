@@ -7,8 +7,10 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import services.implement.TaskServiceImpl;
 import services.implement.UserServiceImpl;
+import util.DateUtil;
 import util.MsgUtil;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -153,6 +155,9 @@ public class EditTaskMstDto {
 		// 主担当ユーザーの存在チェック
 		checkRegistryMainUSer();
 
+		// 開始日の過去日チェック
+		checkStartDate();
+
 		return errors.isEmpty() ? null : errors;
 	}
 
@@ -267,6 +272,27 @@ public class EditTaskMstDto {
 					Constant.MSG_E005,
 					mainUserName
 			));
+		}
+	}
+
+	/**
+	 * 開始日の過去日付チェック.
+	 */
+	private void checkStartDate() {
+		try {
+			// 新規の場合のみ、開始日が過去日の場合エラーとする
+			if (id == null
+				&& startDate.compareTo(DateUtil.getDateWithoutTime(new Date())) < 0) {
+				errors.add(MsgUtil.getValidationError(
+						Constant.ITEM_START_DATE,
+						Constant.MSG_E014
+				));
+
+			}
+
+		} catch (ParseException e) {
+			// TODO エラーハンドリング
+			e.printStackTrace();
 		}
 	}
 }

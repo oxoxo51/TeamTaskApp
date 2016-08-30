@@ -98,10 +98,20 @@
     args = '_label -> "タスク所有チーム"
     ))
 
-    @(inputDate(
-    field = form1("startDate"),
-    args = '_label -> "開始日"
-    ))
+    @(
+    if (mode == Constant.MODE_CREATE) {
+        inputDate(
+        field = form1("startDate"),
+        args = '_label -> "開始日"
+        )
+    } else {
+        inputDate(
+        field = form1("startDate"),
+        args = '_label -> "開始日",
+               'readonly -> true
+        )
+    }
+    )
     <input type="submit" onclick="beforeSubmit();">
     }
 }
