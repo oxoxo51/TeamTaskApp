@@ -192,6 +192,9 @@ public class Constant {
 	/* 実施タイプ：月次 */
 	public static final String REPTYPE_MONTHLY = "M";
 
+	/* 実施タイプ：1回のみ */
+	public static final String REPTYPE_TEMP = "T";
+
 	/* 実施タイプ文字列：日次 */
 	public static final String REPTYPE_STR_DAYLY = "日次";
 
@@ -200,6 +203,9 @@ public class Constant {
 
 	/* 実施タイプ文字列：月次 */
 	public static final String REPTYPE_STR_MONTHLY = "月次";
+
+	/* 実施タイプ文字列：1回のみ */
+	public static final String REPTYPE_STR_TEMP = "1回のみ";
 
 	/* 実施頻度：週次：エラーメッセージ用 */
 	public static final String REP_WEEKLY_MSG_STR = "曜日(Sun~Sat)";

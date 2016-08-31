@@ -9,15 +9,16 @@
         function changeRepType() {
             if (radio[0].checked) { // "D"
                 listW.hide();
-                //$('input[name=\'repetition[]\']').prop("checked", false);
                 listM.hide();
             } else if (radio[1].checked) { // "W"
                 listW.show();
                 listM.hide();
             } else if (radio[2].checked) { // "M"
                 listW.hide();
-                //listW.find('input').checked = "";
                 listM.show();
+            } else if (radio[3].checked){ // "T"
+                listW.hide();
+                listM.hide();
             } else { // 未選択
                 listW.hide();
                 listM.hide();
@@ -30,6 +31,8 @@
                 listM.find('input[name=\'repetition[]\']').prop("checked", false);
             } else if (radio[2].checked) { // "M"
                 listW.find('input[name=\'repetition[]\']').prop("checked", false);
+            } else if (radio[3],checked) { // "T"
+                $('input[name=\'repetition[]\']').prop("checked", false);
             } else { // 未選択
                 $('input[name=\'repetition[]\']').prop("checked", false);
             }
@@ -67,14 +70,23 @@
     <div class="div_repType" onclick="changeRepType();">
     @inputRadioGroup(
         form1("repType"),
-        options = Seq("D" -> "日次", "W" -> "週次", "M" -> "月次"),
+        options = Seq(Constant.REPTYPE_DAYLY -> Constant.REPTYPE_STR_DAYLY,
+                      Constant.REPTYPE_WEEKLY -> Constant.REPTYPE_STR_WEEKLY,
+                      Constant.REPTYPE_MONTHLY -> Constant.REPTYPE_STR_MONTHLY,
+                      Constant.REPTYPE_TEMP -> Constant.REPTYPE_STR_TEMP),
         '_label -> "実施頻度タイプ"
     )
     </div>
     <div id="repW">
     @inputCheckboxGroup(
         form1("repetition"),
-        options = Seq("Sun" -> "Sun", "Mon" -> "Mon", "Tue" -> "Tue", "Wed" -> "Wed", "Thu" -> "Thu", "Fri" -> "Fri", "Sat" -> "Sat"),
+        options = Seq(Constant.REPETITION_SUN -> Constant.REPETITION_SUN,
+                      Constant.REPETITION_MON -> Constant.REPETITION_MON,
+                      Constant.REPETITION_TUE -> Constant.REPETITION_TUE,
+                      Constant.REPETITION_WED -> Constant.REPETITION_WED,
+                      Constant.REPETITION_THU -> Constant.REPETITION_THU,
+                      Constant.REPETITION_FRI -> Constant.REPETITION_FRI,
+                      Constant.REPETITION_SAT -> Constant.REPETITION_SAT),
         '_label -> "実施頻度(曜日)"
         )
     </div>
@@ -92,7 +104,7 @@
     field = form1("mainUserName"),
     args = '_label -> "主担当ユーザー"
     ))
-    @* TODO チーム指定時、および更新時はreadOnlyにする *@
+    @* TODO プルダウンにする + チーム指定時、および更新時はreadOnlyにする *@
     @(inputText(
     field = form1("teamName"),
     args = '_label -> "タスク所有チーム"

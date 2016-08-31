@@ -113,14 +113,6 @@ function sendJson(id, dateStr){
             for (key in finishMap) {
                 res += finishMap[key];
             }
-/*
-                res += ("<p>ID:" + taskTrn[i].taskTrnId + "</p>"
-                + "<p>タスク名:" + taskTrn[i].taskName + "</p>"
-                + "<p>担当者:" + taskTrn[i].mainUserName + "</p>"
-                + "<p>実施者:" + taskTrn[i].operationUserName + "</p>"
-                + "<p>実施対象:" + taskTrn[i].operationFlg + "</p>");
-            }
-*/
             $('#ajax_list').html(res);
         },
         "json"
