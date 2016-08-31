@@ -188,13 +188,14 @@ public class EditTaskMstDto {
 
 	/**
 	 * 実施頻度タイプの区分値チェック.
-	 * repTypeがD,W,M以外の場合エラーとする.
+	 * repTypeがD,W,M,T以外の場合エラーとする.
 	 * @return
 	 */
 	private boolean checkValueRepType() {
 		if ((!Constant.REPTYPE_DAYLY.equals(repType))
 			&& (!Constant.REPTYPE_WEEKLY.equals(repType))
-			&& (!Constant.REPTYPE_MONTHLY.equals(repType))) {
+			&& (!Constant.REPTYPE_MONTHLY.equals(repType))
+			&& (!Constant.REPTYPE_TEMP.equals(repType)) ) {
 			errors.add(MsgUtil.getValidationError(Constant.ITEM_REP_TYPE, Constant.MSG_E008));
 			return false;
 		}
@@ -203,15 +204,19 @@ public class EditTaskMstDto {
 
 	/**
 	 * 実施頻度タイプと実施頻度の相関チェック.
-	 * タイプ：D→実施頻度は指定不可
+	 * タイプ：D→実施頻度は指定不可(画面表示しないため発生しない想定)
 	 * タイプ：W→曜日の定数と一致しない場合エラー
 	 * タイプ：M→１〜３１の数値出ない場合エラー
+	 * タイプ：T→実施頻度は指定不可(画面表示しないため発生しない想定)
 	 */
 	private void checkRepTypeAndRepetition() {
 		switch (repType) {
 			case Constant.REPTYPE_DAYLY:
 				if (!(repetition == null || repetition.size() == 0)) {
-					errors.add(MsgUtil.getValidationError(Constant.ITEM_REPETITION, Constant.MSG_E009));
+					errors.add(MsgUtil.getValidationError(
+							Constant.ITEM_REPETITION,
+							Constant.MSG_E009,
+							Constant.REPTYPE_STR_DAYLY));
 				}
 				break;
 			case Constant.REPTYPE_WEEKLY:
@@ -256,6 +261,15 @@ public class EditTaskMstDto {
 										Constant.REP_MONTHLY_MSG_STR));
 					}
 				}
+				break;
+			case Constant.REPTYPE_TEMP:
+				if (!(repetition == null || repetition.size() == 0)) {
+					errors.add(MsgUtil.getValidationError(
+							Constant.ITEM_REPETITION,
+							Constant.MSG_E009,
+							Constant.REPTYPE_STR_TEMP));
+				}
+
 		}
 	}
 
