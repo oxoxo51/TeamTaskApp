@@ -92,7 +92,7 @@ public class TaskServiceImpl implements TaskService {
 		TaskTrn taskTrn = new TaskTrn();
 		taskTrn.taskMst = taskMst;
 		taskTrn.taskDate = DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd);
-		taskTrn.operationFlg = getOperationFlg(taskMst.repType, taskMst.repetition, dateStr);
+		taskTrn.operationFlg = getOperationFlg(taskMst, dateStr);
 
 		taskTrn.save();
 		return taskTrn;
@@ -248,13 +248,13 @@ public class TaskServiceImpl implements TaskService {
 
 	/**
 	 * 実施頻度タイプ、実施頻度、タスクトランの日付を元に実施対象フラグをセットする.
-	 * @param repType
-	 * @param repetition
+	 * @param taskMst
 	 * @param dateStr
 	 * @return 実施対象：1、実施対象外：0
 	 */
-	private String getOperationFlg(String repType, String repetition, String dateStr) {
-		switch(repType) {
+	private String getOperationFlg(TaskMst taskMst, String dateStr) {
+		String repetition = taskMst.repetition;
+		switch(taskMst.repType) {
 			case Constant.REPTYPE_DAYLY:
 				// 日次の場合は毎日実施対象
 				return Constant.FLAG_ON;
@@ -278,7 +278,7 @@ public class TaskServiceImpl implements TaskService {
 			case Constant.REPTYPE_MONTHLY:
 				try {
 					// dateStrの日付部分を取得する
-					String d = DateUtil.getDateStrFromStr(dateStr, "yyyyMMdd", "d");
+					String d = DateUtil.getDateStrFromStr(dateStr, Constant.DATE_FORMAT_yMd, "d");
 					for (String rep : repetition.split(",")) {
 						if (rep.equals(d)) {
 							return Constant.FLAG_ON;
@@ -291,6 +291,9 @@ public class TaskServiceImpl implements TaskService {
 					// TODO エラーの扱い
 					return Constant.FLAG_OFF;
 				}
+			case Constant.REPTYPE_STR_TEMP:
+				// 1回のみ:実施日＝開始日の場合のみこの処理に入るため、入ってきたら常にON
+				return Constant.FLAG_ON;
 			default:
 				// ありえない
 				return Constant.FLAG_OFF;

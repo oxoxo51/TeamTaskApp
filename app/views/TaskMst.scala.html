@@ -2,6 +2,8 @@
 
 @import helper._
 @import constant.Constant
+@import controllers.TaskController
+@import controllers.Apps
 
 @main("タスク登録・編集") {
     <script type="text/javascript">
@@ -105,10 +107,35 @@
     args = '_label -> "主担当ユーザー"
     ))
     @* TODO プルダウンにする + チーム指定時、および更新時はreadOnlyにする *@
+@*
     @(inputText(
     field = form1("teamName"),
     args = '_label -> "タスク所有チーム"
     ))
+*@
+    @{
+    val teamNameList = TaskController.getTaskTeamName
+    var optionSeq: Seq[(String, String)] = Seq()
+    teamNameList.foreach( s => (optionSeq :+= (s, s)) )
+    // チーム未選択の場合はチーム変更可、選択済の場合は変更不可
+    if (Apps.getSessionTeamName == Constant.USER_TEAM_BLANK) {
+        select(
+        field = form1("teamName"),
+        options = optionSeq,
+        '_default -> "choose one",
+        '_label -> "タスク所有チーム"
+        )
+    } else {
+        select(
+        field = form1("teamName"),
+        options = optionSeq,
+        '_default -> "choose one",
+        '_label -> "タスク所有チーム",
+        'disabled -> true
+        )
+    }
+
+    }
 
     @(
     if (mode == Constant.MODE_CREATE) {

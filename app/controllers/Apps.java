@@ -259,6 +259,12 @@ public class Apps extends Controller {
 				if (taskMst.startDate.compareTo(DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)) > 0) {
 					continue;
 				}
+
+				// 実施タイプが1回のみの場合、開始日が当日以外の場合トランを作成しない（余計なトラン作成を防ぐ）
+				if (Constant.REPTYPE_TEMP.equals(taskMst.repType)
+					&& !dateStr.equals(DateUtil.getDateStr(taskMst.startDate, Constant.DATE_FORMAT_yMd))) {
+					continue;
+				}
 				// トラン未作成フラグ
 				boolean noTrnFlg = true;
 

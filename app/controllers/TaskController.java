@@ -249,4 +249,13 @@ public class TaskController extends Apps {
 		}
 	}
 
+	public static List<String> getTaskTeamName() {
+		List<Team> teamList = getLoginUser().teams;
+		List<String> teamNameList = new ArrayList<>();
+		for (Team team : teamList) {
+			teamNameList.add(team.teamName);
+		}
+		return teamNameList;
+	}
+
 }
