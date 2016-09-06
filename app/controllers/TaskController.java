@@ -55,6 +55,7 @@ public class TaskController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTaskMst(String teamName, String taskName) {
 		Logger.info("TaskController#displayUpdateTaskMst");
+		setSessionUrl(routes.TaskController.displayUpdateTaskMst(teamName, taskName).url());
 
 		EditTaskMstDto dto = new EditTaskMstDto();
 
@@ -85,6 +86,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result referTask(String teamName, String taskName) {
+		setSessionUrl(routes.TaskController.referTask(teamName, taskName).url());
 		return ok(taskRefer.render(teamName, taskName));
 	}
 
@@ -95,6 +97,7 @@ public class TaskController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result edit(String mode) {
 		Logger.info("TaskController#edit MODE:" + mode);
+		setSessionUrl(routes.TaskController.edit(mode).url());
 
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class).bindFromRequest();
 		if (!editTaskMstDtoForm.hasErrors()) {
@@ -167,6 +170,7 @@ public class TaskController extends Apps {
 	@Security.Authenticated(Secured.class)
 	public Result displayTaskMstList() {
 		Logger.info("TaskController#displayTaskMstList");
+		setSessionUrl(routes.TaskController.displayTaskMstList().url());
 
 		String userName = session("userName");
 		String teamName = (session("teamName") == null ? "" : session("teamName"));
