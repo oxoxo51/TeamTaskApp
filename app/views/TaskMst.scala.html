@@ -106,13 +106,7 @@
     field = form1("mainUserName"),
     args = '_label -> "主担当ユーザー"
     ))
-    @* TODO プルダウンにする + チーム指定時、および更新時はreadOnlyにする *@
-@*
-    @(inputText(
-    field = form1("teamName"),
-    args = '_label -> "タスク所有チーム"
-    ))
-*@
+
     @{
     val teamNameList = TaskController.getTaskTeamName
     var optionSeq: Seq[(String, String)] = Seq()
@@ -126,12 +120,10 @@
         '_label -> "タスク所有チーム"
         )
     } else {
-        select(
+        inputText(
         field = form1("teamName"),
-        options = optionSeq,
-        '_default -> "choose one",
         '_label -> "タスク所有チーム",
-        'disabled -> true
+        'readonly -> true
         )
     }
 

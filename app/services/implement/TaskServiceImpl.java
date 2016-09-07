@@ -65,13 +65,8 @@ public class TaskServiceImpl implements TaskService {
 			// タスクマスタの一覧から、紐付く該当日付のタスクトランを取得する
 			// タスクマスタと日付からは1件のみ取得される想定
 			for (TaskMst taskMst : taskMstList) {
-				Logger.debug("taskMst.taskName: " + taskMst.taskName);
 				List<TaskTrn> taskTrn = TaskTrn.find.where().eq("taskMst", taskMst)
 						.where().eq("taskDate", DateUtil.getDate(dateStr, Constant.DATE_FORMAT_yMd)).findList();
-				for (TaskTrn task : taskTrn) {
-					Logger.debug("taskTrn.taskName, date: "
-							+ task.taskMst.taskName + ", " + task.taskDate);
-				}
 				taskTrnList.addAll(taskTrn);
 			}
 		} catch (ParseException e) {
