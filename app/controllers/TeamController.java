@@ -4,7 +4,6 @@ import constant.Constant;
 import dto.team.EditTeamDto;
 import models.Team;
 import models.User;
-import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -26,7 +25,7 @@ public class TeamController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayCreateTeam() {
-		Logger.info("TeamController#displayCreateTeam");
+		logClassAndMethodName();
 		setSessionUrl(routes.TeamController.displayCreateTeam().url());
 
 		Form<EditTeamDto> editTeamDtoForm = Form.form(EditTeamDto.class);
@@ -39,7 +38,7 @@ public class TeamController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTeam(String teamName) {
-		Logger.info("TeamController#displayTeam");
+		logClassAndMethodName();
 		setSessionUrl(routes.TeamController.displayUpdateTeam(teamName).url());
 
 		EditTeamDto dto = new EditTeamDto();
@@ -65,7 +64,7 @@ public class TeamController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result edit(String mode) {
-		Logger.info("TeamController#edit MODE:" + mode);
+		logClassAndMethodName();
 
 		List<String> errorMessages = new ArrayList<String>();
 
@@ -104,7 +103,7 @@ public class TeamController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayTeamList() {
-		Logger.info("TeamController#displayTeamList");
+		logClassAndMethodName();
 		setSessionUrl(routes.TeamController.displayTeamList().url());
 
 		// ログイン状態確認の上ユーザーに紐付くチームリストを表示
@@ -118,7 +117,7 @@ public class TeamController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result changeTeam(String teamName) {
-		Logger.info("TeamController#changeTeam");
+		logClassAndMethodName();
 
 		if (Constant.USER_TEAM_BLANK.equals(teamName)) {
 			clearSessionTeamName();
@@ -134,7 +133,7 @@ public class TeamController extends Apps {
 	 * @return
 	 */
 	public static List<Team> getTeamList() {
-		Logger.info("TeamController#getTeamList");
+		logClassAndMethodName();
 
 		TeamServiceImpl teamService = new TeamServiceImpl();
 		return teamService.findTeamListByUser(getLoginUser());

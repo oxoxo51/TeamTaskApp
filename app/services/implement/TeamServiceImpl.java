@@ -5,7 +5,6 @@ import controllers.Apps;
 import dto.team.EditTeamDto;
 import models.Team;
 import models.User;
-import play.Logger;
 import services.TeamService;
 import services.UserService;
 import util.MsgUtil;
@@ -25,7 +24,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<String> create(EditTeamDto editTeamDto) {
-		Logger.info("TeamServiceImpl#create");
+		Apps.logClassAndMethodName();
 		List<String> errorMessages = new ArrayList<String>();
 		UserServiceImpl userService = new UserServiceImpl();
 
@@ -49,7 +48,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<String> update(EditTeamDto editTeamDto) {
-		Logger.info("TeamServiceImpl#update");
+		Apps.logClassAndMethodName();
 		List<String> errorMessages = new ArrayList<String>();
 
 		Team team = Team.find.byId(editTeamDto.getId());
@@ -80,7 +79,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<Team> findTeamListByUser(User user) {
-		Logger.info("TeamServiceImpl#findTeamListByUser");
+		Apps.logClassAndMethodName();
 
 		// ユーザーの所属チームを取得
 		return Team.find.where().eq("members", user).setOrderBy("teamName").findList();
@@ -94,7 +93,7 @@ public class TeamServiceImpl implements TeamService {
 	 */
 	@Override
 	public List<Team> findTeamByName(String teamName) {
-		Logger.info("TeamServiceImpl#findTeamByName");
+		Apps.logClassAndMethodName();
 		return Team.find.where().eq("teamName", teamName).findList();
 	}
 
@@ -122,7 +121,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	public List<User> findUserByTeamName(String teamName) {
-		Logger.info("TeamServiceImpl#findUserByTeamName");
+		Apps.logClassAndMethodName();
 
 		Team team = Team.find.where().eq("teamName", teamName).findList().get(0);
 		return team.members;

@@ -13,13 +13,13 @@ public class Secured extends Security.Authenticator {
 
 	@Override
 	public String getUsername(Http.Context ctx) {
-		Logger.info("Secured#getUsername userName:" + ctx.session().get(Constant.ITEM_USER_NAME));
+		Apps.logClassAndMethodName();
 		return ctx.session().get(Constant.ITEM_USER_NAME);
 	}
 
 	@Override
 	public Result onUnauthorized(Http.Context ctx) {
-		Logger.info("Secured#onUnauthorized");
+		Apps.logClassAndMethodName();
 		Apps.flashError(Constant.MSG_E002);
 		return redirect(routes.Apps.index());
 	}

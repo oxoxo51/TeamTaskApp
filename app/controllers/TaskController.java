@@ -5,7 +5,6 @@ import dto.task.EditTaskMstDto;
 import models.TaskMst;
 import models.Team;
 import models.User;
-import play.Logger;
 import play.data.Form;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -32,7 +31,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayCreateTaskMst() {
-		Logger.info("TaskController#displayCreateTaskMst");
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.displayCreateTaskMst().url());
 
 		EditTaskMstDto dto = new EditTaskMstDto();
@@ -54,7 +53,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayUpdateTaskMst(String teamName, String taskName) {
-		Logger.info("TaskController#displayUpdateTaskMst");
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.displayUpdateTaskMst(teamName, taskName).url());
 
 		EditTaskMstDto dto = new EditTaskMstDto();
@@ -96,7 +95,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result edit(String mode) {
-		Logger.info("TaskController#edit MODE:" + mode);
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.edit(mode).url());
 
 		Form<EditTaskMstDto> editTaskMstDtoForm = Form.form(EditTaskMstDto.class).bindFromRequest();
@@ -129,8 +128,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayTaskListWithDate(String dateStr) {
-		Logger.info("TaskController#displayTaskListWithDate"
-				+ " dateStr:" + dateStr);
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.displayTaskListWithDate(dateStr).url());
 
 		// チーム未選択の場合、全件表示にリダイレクトする
@@ -152,7 +150,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayTaskList() {
-		Logger.info("TaskController#displayTaskList");
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.displayTaskList().url());
 		if (Constant.USER_TEAM_BLANK.equals(getSessionTeamName())) {
 			super.chkAndCreateTaskTrn(super.getLoginUser());
@@ -169,7 +167,7 @@ public class TaskController extends Apps {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result displayTaskMstList() {
-		Logger.info("TaskController#displayTaskMstList");
+		logClassAndMethodName();
 		setSessionUrl(routes.TaskController.displayTaskMstList().url());
 
 		String userName = session("userName");
@@ -197,7 +195,7 @@ public class TaskController extends Apps {
 	 * @return
 	 */
 	public static String editTaskDoneCountHtml(String teamName, TaskMst taskMst) {
-		Logger.info("TaskController#editTaskDoneCountHtml");
+		logClassAndMethodName();
 
 		TaskServiceImpl service = new TaskServiceImpl();
 		TeamServiceImpl teamService = new TeamServiceImpl();

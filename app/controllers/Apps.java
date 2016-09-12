@@ -63,7 +63,7 @@ public class Apps extends Controller {
 	 * @return
 	 */
 	public Result index() {
-		Logger.info("Apps#index");
+		logClassAndMethodName();
 		if (!getLoginUserName().equals(Constant.USER_TEAM_BLANK)) {
 			return redirect(routes.TaskController.displayTaskList());
 		} else {
@@ -78,7 +78,7 @@ public class Apps extends Controller {
 	 * @return
 	 */
 	public Result auth() {
-		Logger.info("Apps#auth");
+		logClassAndMethodName();
 		Form<LoginUserDto> loginForm = Form.form(LoginUserDto.class).bindFromRequest();
 		if (!loginForm.hasErrors()) {
 			login(
@@ -100,7 +100,7 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result logout() {
-		Logger.info("Apps#logout");
+		logClassAndMethodName();
 		session().clear();
 		flashSuccess(Constant.MSG_I002);
 		return redirect(routes.Apps.index());
@@ -113,7 +113,7 @@ public class Apps extends Controller {
 	 */
 	@Security.Authenticated(Secured.class)
 	public Result clearSessionTeamName() {
-		Logger.info("Apps#clearSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		logClassAndMethodName();
 		session().remove(Constant.ITEM_TEAM_NAME);
 		return redirect(routes.Apps.index());
 	}
@@ -122,7 +122,7 @@ public class Apps extends Controller {
 	 * ログインに伴うデータセットを行う.
 	 */
 	protected void login(User user) {
-		Logger.info("Apps#login");
+		logClassAndMethodName();
 		session().clear();
 		session(Constant.ITEM_USER_NAME, user.userName);
 
@@ -141,7 +141,7 @@ public class Apps extends Controller {
 	 * @return
 	 */
 	public static String getLoginUserName() {
-		Logger.info("Apps#getLoginUserName: " + session(Constant.ITEM_USER_NAME));
+		logClassAndMethodName();
 		return session(Constant.ITEM_USER_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_USER_NAME);
 	}
 
@@ -150,7 +150,7 @@ public class Apps extends Controller {
 	 * @return
 	 */
 	protected static User getLoginUser() {
-		Logger.info("Apps#getLoginUser");
+		logClassAndMethodName();
 
 		UserServiceImpl userService = new UserServiceImpl();
 		return userService.findUserByName(getLoginUserName()).get(0);
@@ -162,7 +162,7 @@ public class Apps extends Controller {
 	 * @param teamName
 	 */
 	protected void setSessionTeamName(String teamName) {
-		Logger.info("Apps#setSessionTeamName: " + teamName);
+		logClassAndMethodName();
 		session(Constant.ITEM_TEAM_NAME, teamName);
 	}
 
@@ -173,7 +173,7 @@ public class Apps extends Controller {
 	 * @return
 	 */
 	public static String getSessionTeamName() {
-		Logger.info("Apps#getSessionTeamName: " + session(Constant.ITEM_TEAM_NAME));
+		logClassAndMethodName();
 		return session(Constant.ITEM_TEAM_NAME) == null ? Constant.USER_TEAM_BLANK : session(Constant.ITEM_TEAM_NAME);
 	}
 
@@ -183,7 +183,7 @@ public class Apps extends Controller {
 	 * @param url
 	 */
 	protected void setSessionUrl(String url) {
-		Logger.info("Apps#setSessionUrl: " + url);
+		logClassAndMethodName();
 		session().remove(Constant.ITEM_URL);
 		session(Constant.ITEM_URL, url);
 	}
@@ -214,7 +214,7 @@ public class Apps extends Controller {
 	 * @param user
 	 */
 	protected void chkAndCreateTaskTrn(User user) {
-		Logger.info("Apps#chkAndCreateTaskTrn " + user.userName);
+		logClassAndMethodName();
 
 		// ログインユーザの所属チーム、最終ログイン日付を取得
 		List<Team> teamList = teService.findTeamListByUser(user);
@@ -249,7 +249,7 @@ public class Apps extends Controller {
 	 * @param dateStr
 	 */
 	protected void createTaskTrn(Team team, String dateStr) {
-		Logger.info("Apps#createTaskTrn " + team.teamName + dateStr);
+		logClassAndMethodName();
 
 		 // タスクマスタにあってタスクトラン未作成の場合個別にトランを作成する
 		try {
@@ -284,5 +284,11 @@ public class Apps extends Controller {
 			e.printStackTrace();
 			// TODO エラーの扱い
 		}
+	}
+
+	public static void logClassAndMethodName() {
+		StackTraceElement e = Thread.currentThread().getStackTrace()[2];
+		Logger.debug(e.getClassName()
+					+ "#" + e.getMethodName());
 	}
 }

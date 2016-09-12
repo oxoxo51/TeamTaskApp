@@ -1,6 +1,7 @@
 package services.implement;
 
 import constant.Constant;
+import controllers.Apps;
 import dto.task.EditTaskMstDto;
 import models.TaskMst;
 import models.TaskTrn;
@@ -27,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public void createTaskMst(EditTaskMstDto editTaskMstDto) {
-		Logger.info("TaskServiceImpl#createTaskMst");
+		Apps.logClassAndMethodName();
 
 		TaskMst taskMst = new TaskMst();
 		taskMst = editTaskMst(taskMst, editTaskMstDto);
@@ -41,7 +42,7 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public void updateTaskMst(EditTaskMstDto editTaskMstDto) {
-		Logger.info("TaskServiceImpl#updateTaskMst");
+		Apps.logClassAndMethodName();
 
 		TaskMst taskMst = TaskMst.find.byId(editTaskMstDto.getId());
 		taskMst = editTaskMst(taskMst, editTaskMstDto);
@@ -56,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public List<TaskTrn> findTaskList(Team team, String dateStr) {
-		Logger.info("TaskServiceImpl#findTaskList");
+		Apps.logClassAndMethodName();
 
 		List<TaskTrn> taskTrnList = new ArrayList<TaskTrn>();
 
@@ -139,7 +140,7 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public List<TaskMst> findTaskMstByTeamName(String teamName) throws Exception {
-		Logger.info("TaskServiceImpl#findTaskMstByTeamName");
+		Apps.logClassAndMethodName();
 		TeamServiceImpl teamService = new TeamServiceImpl();
 		List<Team> teamList = teamService.findTeamByName(teamName);
 		if (teamList == null || teamList.size() == 0) {
@@ -158,7 +159,7 @@ public class TaskServiceImpl implements TaskService {
 	 */
 	@Override
 	public TaskMst findTaskMstByTeamAndTaskName(String teamName, String taskName) {
-		Logger.info("TaskServiceImpl#findTaskMstByTeamAndTaskName");
+		Apps.logClassAndMethodName();
 
 		try {
 			List<TaskMst> taskMstList = findTaskMstByTeamName(teamName);
