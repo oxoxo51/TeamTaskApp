@@ -21,7 +21,6 @@ public class DateUtil {
 	 */
 	public static Date getDate(String dateStr, String format) throws ParseException {
 		DateFormat df = new SimpleDateFormat(format);
-		Calendar cal = Calendar.getInstance();
 		return df.parse(dateStr);
 	}
 
